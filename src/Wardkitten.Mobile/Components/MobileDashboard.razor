@@ -1,0 +1,53 @@
+@inject WardkittenApiClient Api
+@inject ClientAuthService Auth
+@inject FcmTokenRegistrar Fcm
+
+<div class="screen">
+    <div class="header">
+        <span class="brand">🐾 Wardkitten</span>
+        <button class="link" @onclick="LogoutAsync">Salir</button>
+    </div>
+
+    @if (_loading)
+    {
+        <p>Cargando…</p>
+    }
+    else if (_watches.Count == 0)
+    {
+        <p class="muted">Aún no vigilas nada. Crea tareas desde la web por ahora.</p>
+    }
+    else
+    {
+        @foreach (var w in _watches)
+        {
+            <div class="card">
+                <div class="card-top">
+                    <strong>@w.Name</strong>
+                    <StatusBadge Status="w.Status" />
+                </div>
+                <button class="primary small" @onclick="() => CheckInAsync(w)">✅ Hecho</button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<WatchDto> _watches = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Fcm.RegisterAsync();
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var result = await Api.GetWatchesAsync();
+        if (result.Ok && result.Value is not null) _watches = result.Value;
+        _loading = false;
+    }
+
+    private async Task CheckInAsync(WatchDto w) { await Api.CheckInAsync(w.Id); await LoadAsync(); }
+    private async Task LogoutAsync() => await Auth.LogoutAsync();
+}

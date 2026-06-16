@@ -1,0 +1,11 @@
+@* Raíz Blazor del shell móvil: muestra login o dashboard según el estado de autenticación. *@
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <MobileDashboard />
+        </Authorized>
+        <NotAuthorized>
+            <MobileLogin />
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>

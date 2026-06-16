@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!--
+    App móvil .NET MAUI Blazor Hybrid (iOS + Android), reutiliza Wardkitten.Shared.UI.
+    Requiere la workload MAUI: `dotnet workload install maui` + Android SDK/JDK (y un Mac para iOS).
+    Va en una solución aparte (wardkitten.mobile.slnx) para no acoplar el build del núcleo.
+    Assets de tienda (iconos, splash, fonts) y firma quedan pendientes (ver tech-debt.md).
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Wardkitten.Mobile</RootNamespace>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <EnableDefaultCssItems>false</EnableDefaultCssItems>
+
+    <ApplicationTitle>Wardkitten</ApplicationTitle>
+    <ApplicationId>com.danwave.wardkitten</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Wardkitten.Shared.UI\Wardkitten.Shared.UI.csproj" />
+    <ProjectReference Include="..\Wardkitten.Shared.Contracts\Wardkitten.Shared.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

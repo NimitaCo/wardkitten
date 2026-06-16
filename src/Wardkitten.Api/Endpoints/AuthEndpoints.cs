@@ -80,6 +80,19 @@ public static class AuthEndpoints
             var r = await auth.VerifyPhoneAsync(principal.UserId()!, req.Code, ct);
             return r.Success ? Results.NoContent() : Results.BadRequest(new { error = r.Error });
         }).RequireAuthorization();
+
+        // Registro del token de push (FCM) de un dispositivo móvil. Feature: F09.
+        g.MapPost("/push-tokens", async (ClaimsPrincipal principal, PushTokenRequest req, IUserRepository users, CancellationToken ct) =>
+        {
+            var user = await users.GetByIdAsync(principal.UserId()!, ct);
+            if (user is null) return Results.NotFound();
+            if (!string.IsNullOrWhiteSpace(req.Token) && !user.PushTokens.Contains(req.Token))
+            {
+                user.PushTokens.Add(req.Token);
+                await users.ReplaceAsync(user, ct);
+            }
+            return Results.NoContent();
+        }).RequireAuthorization();
     }
 
     private static AuthResponse ToResponse(AuthResult a)

@@ -1,0 +1,26 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }
+
+.screen { padding: 24px 16px; max-width: 640px; margin: 0 auto; }
+.brand { font-size: 22px; font-weight: 700; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.muted { color: #94a3b8; }
+.error { background: #7f1d1d; color: #fff; padding: 8px 12px; border-radius: 8px; margin: 8px 0; }
+
+.field { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; }
+.primary { width: 100%; padding: 12px; border: 0; border-radius: 10px; background: #6d28d9; color: #fff; font-weight: 600; }
+.primary.small { width: auto; padding: 8px 14px; }
+.link { background: none; border: 0; color: #a78bfa; }
+
+.card { background: #1e293b; border-radius: 12px; padding: 14px; margin: 10px 0; }
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+
+.badge { padding: 3px 8px; border-radius: 999px; font-size: 12px; }
+.bg-success { background: #16a34a; color: #fff; }
+.bg-warning { background: #f59e0b; color: #111; }
+.bg-danger { background: #dc2626; color: #fff; }
+.bg-secondary { background: #475569; color: #fff; }
+.bg-info { background: #0ea5e9; color: #111; }
+
+#blazor-error-ui { display: none; position: fixed; bottom: 0; width: 100%; background: #b91c1c; color: #fff; padding: 8px; }

@@ -22,6 +22,7 @@ public sealed class WardkittenApiClient
     public Task<ApiResult> VerifyEmailAsync(string code) => PostAsync("/api/auth/email/verify", new VerifyCodeRequest(code));
     public Task<ApiResult> SendPhoneOtpAsync(string phone) => PostAsync("/api/auth/phone/send-otp", new PhoneOtpRequest(phone));
     public Task<ApiResult> VerifyPhoneAsync(string code) => PostAsync("/api/auth/phone/verify", new VerifyCodeRequest(code));
+    public Task<ApiResult> RegisterPushTokenAsync(string token) => PostAsync("/api/auth/push-tokens", new PushTokenRequest(token));
 
     // ---- Watches ----
     public Task<ApiResult<List<WatchDto>>> GetWatchesAsync() => GetAsync<List<WatchDto>>("/api/watches");

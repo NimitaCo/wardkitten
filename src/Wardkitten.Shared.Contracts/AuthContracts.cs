@@ -23,3 +23,5 @@ public sealed record UserDto(
 public sealed record VerifyCodeRequest(string Code);
 
 public sealed record PhoneOtpRequest(string Phone);
+
+public sealed record PushTokenRequest(string Token);

@@ -1,0 +1,27 @@
+@inject ClientAuthService Auth
+
+<div class="screen">
+    <div class="brand">🐾 Wardkitten</div>
+    <input class="field" type="email" placeholder="Email" @bind="_email" />
+    <input class="field" type="password" placeholder="Contraseña" @bind="_password" />
+    @if (_error is not null)
+    {
+        <div class="error">@_error</div>
+    }
+    <button class="primary" @onclick="LoginAsync" disabled="@_busy">@(_busy ? "Entrando…" : "Entrar")</button>
+</div>
+
+@code {
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private string? _error;
+    private bool _busy;
+
+    private async Task LoginAsync()
+    {
+        _busy = true; _error = null;
+        var result = await Auth.LoginAsync(_email, _password);
+        _busy = false;
+        if (!result.Ok) _error = result.Error;
+    }
+}

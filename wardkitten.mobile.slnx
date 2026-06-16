@@ -1,0 +1,10 @@
+<Solution>
+  <!--
+    Solución de la app móvil (MAUI). Separada de wardkitten.slnx para no exigir la workload MAUI
+    al build del núcleo. Requiere: `dotnet workload install maui` + Android SDK/JDK (y un Mac para iOS).
+  -->
+  <Project Path="src/Wardkitten.Domain/Wardkitten.Domain.csproj" />
+  <Project Path="src/Wardkitten.Shared.Contracts/Wardkitten.Shared.Contracts.csproj" />
+  <Project Path="src/Wardkitten.Shared.UI/Wardkitten.Shared.UI.csproj" />
+  <Project Path="src/Wardkitten.Mobile/Wardkitten.Mobile.csproj" />
+</Solution>
