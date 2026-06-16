@@ -96,6 +96,7 @@ app.MapGet("/", () => Results.Ok(new { name = "Wardkitten API", docs = "/swagger
 
 app.MapAuthEndpoints();
 app.MapWatchEndpoints();
+app.MapTemplateEndpoints();
 app.MapMoneyEndpoints();
 app.MapPublicEndpoints();
 app.MapInternalEndpoints();

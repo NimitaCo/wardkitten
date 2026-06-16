@@ -34,6 +34,8 @@ public sealed class WardkittenApiClient
     public Task<ApiResult> PauseAsync(string id) => PostAsync($"/api/watches/{id}/pause", new { });
     public Task<ApiResult> ResumeAsync(string id) => PostAsync($"/api/watches/{id}/resume", new { });
     public Task<ApiResult<List<CheckInDto>>> GetCheckInsAsync(string id) => GetAsync<List<CheckInDto>>($"/api/watches/{id}/checkins");
+    public Task<ApiResult<List<WatchTemplateDto>>> GetTemplatesAsync() => GetAsync<List<WatchTemplateDto>>("/api/templates");
+    public Task<ApiResult<WatchDto>> CreateFromTemplateAsync(string id) => PostAsync<WatchDto>($"/api/templates/{id}", new { });
 
     // ---- Wallet & billing ----
     public Task<ApiResult<WalletDto>> GetWalletAsync() => GetAsync<WalletDto>("/api/wallet");

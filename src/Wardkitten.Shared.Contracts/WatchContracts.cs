@@ -34,3 +34,5 @@ public sealed record WatchDto(
     DateTime CreatedAtUtc);
 
 public sealed record CheckInDto(string Id, string Kind, string Source, DateTime ReceivedAtUtc, int? DurationMs);
+
+public sealed record WatchTemplateDto(string Id, string Name, string Description, string Emoji);
