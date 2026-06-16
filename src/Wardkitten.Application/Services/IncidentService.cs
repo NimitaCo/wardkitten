@@ -13,14 +13,14 @@ public sealed class IncidentService
 {
     private readonly IIncidentRepository _incidents;
     private readonly IWatchRepository _watches;
-    private readonly NotificationDispatcher _dispatcher;
+    private readonly INotificationDispatcher _dispatcher;
     private readonly IWatchEventPublisher _events;
     private readonly IClock _clock;
 
     public IncidentService(
         IIncidentRepository incidents,
         IWatchRepository watches,
-        NotificationDispatcher dispatcher,
+        INotificationDispatcher dispatcher,
         IWatchEventPublisher events,
         IClock clock)
     {

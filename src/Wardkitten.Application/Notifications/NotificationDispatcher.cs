@@ -15,7 +15,7 @@ namespace Wardkitten.Application.Notifications;
 /// garantizando idempotencia por (canal, escalón). Muta <c>incident.Deliveries</c>; el llamante persiste.
 /// Feature: F05.01.
 /// </summary>
-public sealed class NotificationDispatcher
+public sealed class NotificationDispatcher : INotificationDispatcher
 {
     private readonly IReadOnlyDictionary<ChannelType, INotificationChannel> _channels;
     private readonly IUserRepository _users;

@@ -18,14 +18,14 @@ public sealed class EvaluationEngine
 
     private readonly IWatchRepository _watches;
     private readonly IIncidentRepository _incidents;
-    private readonly NotificationDispatcher _dispatcher;
+    private readonly INotificationDispatcher _dispatcher;
     private readonly IClock _clock;
     private readonly ILogger<EvaluationEngine> _logger;
 
     public EvaluationEngine(
         IWatchRepository watches,
         IIncidentRepository incidents,
-        NotificationDispatcher dispatcher,
+        INotificationDispatcher dispatcher,
         IClock clock,
         ILogger<EvaluationEngine> logger)
     {
