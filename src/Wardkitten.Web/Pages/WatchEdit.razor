@@ -1,0 +1,165 @@
+@page "/watches/new"
+@page "/watches/{Id}/edit"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@inject WardkittenApiClient Api
+@inject NavigationManager Nav
+
+<PageTitle>@(IsEdit ? "Editar" : "Nueva") vigilancia · Wardkitten</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <h1 class="h3 mb-3">@(IsEdit ? "Editar vigilancia" : "Nueva vigilancia")</h1>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input class="form-control" @bind="_name" placeholder="Regar las plantas" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <input class="form-control" @bind="_description" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" @bind="_type">
+                <option value="@WatchType.Manual">Manual (confirmo yo)</option>
+                <option value="@WatchType.Ping">Ping (un proceso avisa por URL)</option>
+            </select>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label">Periodicidad</label></div>
+            <div class="col-4">
+                <select class="form-select" @bind="_scheduleKind">
+                    <option value="@ScheduleKind.Interval">Cada…</option>
+                    <option value="@ScheduleKind.Cron">Cron</option>
+                </select>
+            </div>
+            @if (_scheduleKind == ScheduleKind.Interval)
+            {
+                <div class="col-4"><input type="number" min="1" class="form-control" @bind="_intervalValue" /></div>
+                <div class="col-4">
+                    <select class="form-select" @bind="_intervalUnit">
+                        <option value="60">minutos</option>
+                        <option value="3600">horas</option>
+                        <option value="86400">días</option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="col-8"><input class="form-control" @bind="_cron" placeholder="0 9 * * 1 (lunes 9:00)" /></div>
+            }
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <label class="form-label">Margen de retraso (min)</label>
+                <input type="number" min="0" class="form-control" @bind="_graceMinutes" />
+            </div>
+            <div class="col-6">
+                <label class="form-label">Fallos tolerados</label>
+                <input type="number" min="0" class="form-control" @bind="_skip" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Avisarme por (apilable)</label>
+            <div>
+                <label class="me-3"><input type="checkbox" @bind="_email" /> Email</label>
+                <label class="me-3"><input type="checkbox" @bind="_telegram" /> Telegram</label>
+                <label class="me-3"><input type="checkbox" @bind="_push" /> Push</label>
+                <label class="me-3"><input type="checkbox" @bind="_sms" /> SMS 💳</label>
+                <label class="me-3"><input type="checkbox" @bind="_whatsapp" /> WhatsApp 💳</label>
+            </div>
+            <small class="text-muted">💳 = consume créditos de tu wallet.</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Severidad</label>
+            <select class="form-select" @bind="_severity">
+                <option value="@Severity.Low">Baja</option>
+                <option value="@Severity.Medium">Media</option>
+                <option value="@Severity.High">Alta</option>
+                <option value="@Severity.Critical">Crítica</option>
+            </select>
+        </div>
+
+        @if (_error is not null)
+        {
+            <div class="alert alert-danger py-2">@_error</div>
+        }
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" @onclick="SaveAsync" disabled="@_busy">@(_busy ? "Guardando…" : "Guardar")</button>
+            <a class="btn btn-outline-secondary" href="">Cancelar</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    private bool IsEdit => !string.IsNullOrEmpty(Id);
+
+    private string _name = string.Empty;
+    private string? _description;
+    private WatchType _type = WatchType.Manual;
+    private ScheduleKind _scheduleKind = ScheduleKind.Interval;
+    private int _intervalValue = 1;
+    private int _intervalUnit = 86400;
+    private string _cron = "0 9 * * *";
+    private int _graceMinutes = 30;
+    private int _skip;
+    private Severity _severity = Severity.Medium;
+    private bool _email = true, _telegram, _push, _sms, _whatsapp;
+    private string? _error;
+    private bool _busy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!IsEdit) return;
+        var result = await Api.GetWatchAsync(Id!);
+        if (!result.Ok || result.Value is null) { _error = result.Error; return; }
+        var w = result.Value;
+        _name = w.Name; _description = w.Description; _type = w.Type;
+        _scheduleKind = w.Schedule.Kind; _cron = w.Schedule.CronExpression ?? _cron;
+        if (w.Schedule.IntervalSeconds is { } secs) { _intervalUnit = secs % 86400 == 0 ? 86400 : secs % 3600 == 0 ? 3600 : 60; _intervalValue = Math.Max(1, secs / _intervalUnit); }
+        _graceMinutes = w.Tolerance.GraceSeconds / 60; _skip = w.Tolerance.SkipTolerance; _severity = w.Severity;
+        _email = Has(w, ChannelType.Email); _telegram = Has(w, ChannelType.Telegram); _push = Has(w, ChannelType.Push);
+        _sms = Has(w, ChannelType.Sms); _whatsapp = Has(w, ChannelType.WhatsApp);
+    }
+
+    private static bool Has(WatchDto w, ChannelType t) => w.ChannelBindings.Any(b => b.ChannelType == t && b.Enabled);
+
+    private async Task SaveAsync()
+    {
+        _busy = true; _error = null;
+        var schedule = new Schedule
+        {
+            Kind = _scheduleKind,
+            IntervalSeconds = _scheduleKind == ScheduleKind.Interval ? _intervalValue * _intervalUnit : null,
+            CronExpression = _scheduleKind == ScheduleKind.Cron ? _cron : null,
+            TimeZoneId = TimeZoneInfo.Local.Id,
+        };
+        var tolerance = new Tolerance { GraceSeconds = _graceMinutes * 60, SkipTolerance = _skip };
+        var bindings = BuildBindings();
+        var req = new WatchRequest(_name, _description, _type, schedule, tolerance, bindings, _severity, null, null);
+
+        var result = IsEdit ? await Api.UpdateWatchAsync(Id!, req) : await Api.CreateWatchAsync(req);
+        _busy = false;
+        if (result.Ok) Nav.NavigateTo("/");
+        else _error = result.Error;
+    }
+
+    private List<ChannelBinding> BuildBindings()
+    {
+        var list = new List<ChannelBinding>();
+        void Add(bool on, ChannelType t) { if (on) list.Add(new ChannelBinding { ChannelType = t, Enabled = true, Order = list.Count }); }
+        Add(_email, ChannelType.Email);
+        Add(_telegram, ChannelType.Telegram);
+        Add(_push, ChannelType.Push);
+        Add(_sms, ChannelType.Sms);
+        Add(_whatsapp, ChannelType.WhatsApp);
+        return list;
+    }
+}

@@ -1,0 +1,49 @@
+@page "/register"
+@inject ClientAuthService Auth
+@inject NavigationManager Nav
+
+<PageTitle>Crear cuenta · Wardkitten</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h1 class="h3 mb-3">Crear cuenta</h1>
+        <EditForm Model="this" OnValidSubmit="SubmitAsync">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <InputText @bind-Value="_name" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="_email" type="email" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contraseña (mín. 8)</label>
+                <InputText @bind-Value="_password" type="password" class="form-control" />
+            </div>
+            @if (_error is not null)
+            {
+                <div class="alert alert-danger py-2">@_error</div>
+            }
+            <button class="btn btn-primary w-100" type="submit" disabled="@_busy">@(_busy ? "Creando…" : "Crear cuenta")</button>
+        </EditForm>
+        <p class="mt-3 text-center">¿Ya tienes cuenta? <a href="login">Entrar</a></p>
+    </div>
+</div>
+
+@code {
+    private string _name = string.Empty;
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private string? _error;
+    private bool _busy;
+
+    private async Task SubmitAsync()
+    {
+        _busy = true; _error = null;
+        var tz = TimeZoneInfo.Local.Id;
+        var result = await Auth.RegisterAsync(_email, _password, _name, tz);
+        _busy = false;
+        if (result.Ok) Nav.NavigateTo("/");
+        else _error = result.Error;
+    }
+}

@@ -1,0 +1,110 @@
+@page "/wallet"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@inject WardkittenApiClient Api
+@inject NavigationManager Nav
+
+<PageTitle>Créditos · Wardkitten</PageTitle>
+
+<h1 class="h3 mb-3">Créditos y plan</h1>
+
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Wallet</h5>
+                @if (_wallet is not null)
+                {
+                    <p class="display-6 mb-0">@_wallet.BalanceCredits <small class="text-muted fs-6">créditos</small></p>
+                    @if (_wallet.IsBelowThreshold)
+                    {
+                        <div class="alert alert-warning py-2 mt-2">Saldo bajo: SMS y WhatsApp pueden desactivarse.</div>
+                    }
+                    <div class="input-group mt-3">
+                        <input type="number" min="1" class="form-control" @bind="_topUp" />
+                        <button class="btn btn-primary" @onclick="TopUpAsync" disabled="@_busy">Recargar</button>
+                    </div>
+                    <small class="text-muted">Los créditos pagan SMS/WhatsApp, independientemente de tu plan.</small>
+                }
+                else { <p>Cargando…</p> }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Plan</h5>
+                <p class="text-muted small">Mejora para más vigilancias, intervalos cortos, escalado y status pages.</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" @onclick='() => SubscribeAsync("Pro")'>Pasar a Pro</button>
+                    <button class="btn btn-outline-primary" @onclick='() => SubscribeAsync("Team")'>Pasar a Team</button>
+                    <button class="btn btn-outline-secondary" @onclick="PortalAsync">Gestionar facturación</button>
+                </div>
+                @if (_error is not null)
+                {
+                    <div class="alert alert-danger py-2 mt-2">@_error</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5 mt-4">Movimientos</h2>
+<table class="table table-sm">
+    <thead><tr><th>Fecha</th><th>Tipo</th><th class="text-end">Créditos</th><th class="text-end">Saldo</th><th>Concepto</th></tr></thead>
+    <tbody>
+        @foreach (var t in _transactions)
+        {
+            <tr>
+                <td>@t.CreatedAtUtc.ToLocalTime().ToString("dd/MM HH:mm")</td>
+                <td>@t.Type</td>
+                <td class="text-end @(t.AmountCredits < 0 ? "text-danger" : "text-success")">@t.AmountCredits</td>
+                <td class="text-end">@t.BalanceAfter</td>
+                <td>@t.Reason</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private WalletDto? _wallet;
+    private List<CreditTransactionDto> _transactions = new();
+    private decimal _topUp = 50;
+    private string? _error;
+    private bool _busy;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        var w = await Api.GetWalletAsync();
+        if (w.Ok) _wallet = w.Value;
+        var t = await Api.GetTransactionsAsync();
+        if (t.Ok && t.Value is not null) _transactions = t.Value;
+    }
+
+    private async Task TopUpAsync()
+    {
+        _busy = true; _error = null;
+        var r = await Api.TopUpAsync(_topUp);
+        _busy = false;
+        if (r.Ok && r.Value is not null) Nav.NavigateTo(r.Value.Url, forceLoad: true);
+        else _error = r.Error;
+    }
+
+    private async Task SubscribeAsync(string plan)
+    {
+        _error = null;
+        var r = await Api.SubscribeAsync(plan);
+        if (r.Ok && r.Value is not null) Nav.NavigateTo(r.Value.Url, forceLoad: true);
+        else _error = r.Error;
+    }
+
+    private async Task PortalAsync()
+    {
+        _error = null;
+        var r = await Api.BillingPortalAsync();
+        if (r.Ok && r.Value is not null) Nav.NavigateTo(r.Value.Url, forceLoad: true);
+        else _error = r.Error;
+    }
+}

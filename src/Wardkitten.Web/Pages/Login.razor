@@ -1,0 +1,47 @@
+@page "/login"
+@inject ClientAuthService Auth
+@inject NavigationManager Nav
+
+<PageTitle>Entrar · Wardkitten</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h1 class="h3 mb-3">Entrar</h1>
+        <EditForm Model="this" OnValidSubmit="SubmitAsync">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="_email" type="email" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <InputText @bind-Value="_password" type="password" class="form-control" />
+            </div>
+            @if (_error is not null)
+            {
+                <div class="alert alert-danger py-2">@_error</div>
+            }
+            <button class="btn btn-primary w-100" type="submit" disabled="@_busy">@(_busy ? "Entrando…" : "Entrar")</button>
+        </EditForm>
+        <p class="mt-3 text-center">¿Sin cuenta? <a href="register">Crear una</a></p>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private string? _error;
+    private bool _busy;
+
+    private async Task SubmitAsync()
+    {
+        _busy = true; _error = null;
+        var result = await Auth.LoginAsync(_email, _password);
+        _busy = false;
+        if (result.Ok)
+            Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : Uri.UnescapeDataString(ReturnUrl));
+        else
+            _error = result.Error;
+    }
+}

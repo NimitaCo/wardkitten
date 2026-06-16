@@ -1,0 +1,26 @@
+@using Wardkitten.Domain.Watches
+
+<span class="badge @CssClass">@Text</span>
+
+@code {
+    [Parameter] public WatchStatus Status { get; set; }
+
+    private string CssClass => Status switch
+    {
+        WatchStatus.Up => "bg-success",
+        WatchStatus.Grace => "bg-warning text-dark",
+        WatchStatus.Down => "bg-danger",
+        WatchStatus.Paused => "bg-secondary",
+        _ => "bg-info text-dark",
+    };
+
+    private string Text => Status switch
+    {
+        WatchStatus.Up => "Al día",
+        WatchStatus.Grace => "En gracia",
+        WatchStatus.Down => "¡Incumplido!",
+        WatchStatus.Paused => "Pausado",
+        WatchStatus.New => "Nuevo",
+        _ => Status.ToString(),
+    };
+}

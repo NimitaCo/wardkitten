@@ -1,0 +1,111 @@
+@page "/"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@inject WardkittenApiClient Api
+@inject NavigationManager Nav
+@implements IDisposable
+
+<PageTitle>Panel · Wardkitten</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Tus vigilancias</h1>
+    <a class="btn btn-primary" href="watches/new">+ Nueva</a>
+</div>
+
+@if (_loading)
+{
+    <p>Cargando…</p>
+}
+else if (_watches.Count == 0)
+{
+    <div class="text-center text-muted py-5">
+        <div style="font-size:48px">🐾</div>
+        <p>Aún no vigilas nada. Crea tu primera tarea y Wardkitten te avisará si se te pasa.</p>
+        <a class="btn btn-primary" href="watches/new">Crear vigilancia</a>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var w in _watches)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">@w.Name</h5>
+                            <StatusBadge Status="w.Status" />
+                        </div>
+                        @if (!string.IsNullOrEmpty(w.Description))
+                        {
+                            <p class="text-muted small mb-2">@w.Description</p>
+                        }
+                        <p class="small mb-1">Próximo: <strong>@FormatDue(w.NextDueAtUtc)</strong></p>
+                        @if (w.Type == WatchType.Ping && !string.IsNullOrEmpty(w.PingToken))
+                        {
+                            <p class="small text-truncate"><code>@PingUrl(w.PingToken!)</code></p>
+                        }
+                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                            <button class="btn btn-sm btn-success" @onclick="() => CheckInAsync(w)">✅ Hecho</button>
+                            @if (w.Paused)
+                            {
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => ResumeAsync(w)">Reanudar</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => PauseAsync(w)">Pausar</button>
+                            }
+                            <a class="btn btn-sm btn-outline-primary" href="@($"watches/{w.Id}/edit")">Editar</a>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteAsync(w)">Borrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<WatchDto> _watches = new();
+    private bool _loading = true;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+        _cts = new CancellationTokenSource();
+        _ = PollAsync(_cts.Token);
+    }
+
+    private async Task LoadAsync()
+    {
+        var result = await Api.GetWatchesAsync();
+        if (result.Ok && result.Value is not null) _watches = result.Value;
+        _loading = false;
+    }
+
+    private async Task PollAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(15), ct);
+                await LoadAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { /* navegación */ }
+    }
+
+    private async Task CheckInAsync(WatchDto w) { await Api.CheckInAsync(w.Id); await LoadAsync(); }
+    private async Task PauseAsync(WatchDto w) { await Api.PauseAsync(w.Id); await LoadAsync(); }
+    private async Task ResumeAsync(WatchDto w) { await Api.ResumeAsync(w.Id); await LoadAsync(); }
+    private async Task DeleteAsync(WatchDto w) { await Api.DeleteWatchAsync(w.Id); await LoadAsync(); }
+
+    private string PingUrl(string token) => $"{Api.BaseAddress?.ToString().TrimEnd('/')}/p/{token}";
+
+    private static string FormatDue(DateTime? dueUtc)
+        => dueUtc is null ? "—" : dueUtc.Value.ToLocalTime().ToString("dd/MM HH:mm");
+
+    public void Dispose() => _cts?.Cancel();
+}
