@@ -66,6 +66,7 @@ public static class IntegrationsRegistration
         services.AddSingleton<INotificationChannel, WebhookChannel>();
         services.AddSingleton<INotificationChannel, SlackChannel>();
         services.AddSingleton<INotificationChannel, DiscordChannel>();
+        services.AddSingleton<INotificationChannel, MicrosoftTeamsChannel>();
 
         // ---- Pagos (Stripe) ----
         services.Configure<StripeOptions>(o =>

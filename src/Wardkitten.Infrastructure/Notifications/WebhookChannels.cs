@@ -81,3 +81,45 @@ public sealed class DiscordChannel : INotificationChannel
         catch (Exception ex) { return NotificationResult.Fail(ex.Message); }
     }
 }
+
+public sealed class MicrosoftTeamsChannel : INotificationChannel
+{
+    private readonly IHttpClientFactory _httpFactory;
+    public MicrosoftTeamsChannel(IHttpClientFactory httpFactory) => _httpFactory = httpFactory;
+
+    public ChannelType Channel => ChannelType.MicrosoftTeams;
+
+    public async Task<NotificationResult> SendAsync(NotificationMessage message, CancellationToken ct = default)
+    {
+        try
+        {
+            var client = _httpFactory.CreateClient(nameof(MicrosoftTeamsChannel));
+            var card = new Dictionary<string, object?>
+            {
+                ["@type"] = "MessageCard",
+                ["@context"] = "https://schema.org/extensions",
+                ["summary"] = message.Title,
+                ["themeColor"] = "6d28d9",
+                ["title"] = message.Title,
+                ["text"] = message.Body,
+            };
+            if (!string.IsNullOrEmpty(message.AckUrl))
+            {
+                card["potentialAction"] = new object[]
+                {
+                    new Dictionary<string, object?>
+                    {
+                        ["@type"] = "OpenUri",
+                        ["name"] = "Marcar como hecho",
+                        ["targets"] = new object[] { new Dictionary<string, string> { ["os"] = "default", ["uri"] = message.AckUrl! } },
+                    },
+                };
+            }
+            using var response = await client.PostAsJsonAsync(message.Destination, card, ct);
+            return response.IsSuccessStatusCode
+                ? NotificationResult.Ok()
+                : NotificationResult.Fail($"Teams HTTP {(int)response.StatusCode}");
+        }
+        catch (Exception ex) { return NotificationResult.Fail(ex.Message); }
+    }
+}

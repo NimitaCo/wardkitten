@@ -80,11 +80,15 @@ catch (Exception ex)
     app.Logger.LogWarning(ex, "No se pudo inicializar MongoDB en el arranque; se reintentará en el worker.");
 }
 
-if (app.Environment.IsDevelopment())
+// Documentación de la API expuesta SIEMPRE (también en producción) para los usuarios:
+//   - OpenAPI JSON: /openapi/v1.json
+//   - Swagger UI:   /swagger
+app.MapOpenApi();
+app.UseSwaggerUI(o =>
 {
-    app.MapOpenApi();
-    app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "Wardkitten API"));
-}
+    o.SwaggerEndpoint("/openapi/v1.json", "Wardkitten API");
+    o.DocumentTitle = "Wardkitten · API";
+});
 
 app.UseCors();
 app.UseRateLimiter();

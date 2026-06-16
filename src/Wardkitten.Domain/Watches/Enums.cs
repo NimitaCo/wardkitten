@@ -49,6 +49,7 @@ public enum ChannelType
     Webhook = 5,
     Slack = 6,
     Discord = 7,
+    MicrosoftTeams = 8,
 }
 
 public static class ChannelTypeExtensions

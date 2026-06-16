@@ -79,6 +79,7 @@
             <label class="form-label">Integraciones salientes (opcional)</label>
             <input class="form-control mb-1" @bind="_slackUrl" placeholder="URL de webhook de Slack" />
             <input class="form-control mb-1" @bind="_discordUrl" placeholder="URL de webhook de Discord" />
+            <input class="form-control mb-1" @bind="_teamsUrl" placeholder="URL de webhook de Microsoft Teams" />
             <input class="form-control" @bind="_webhookUrl" placeholder="URL de webhook genérico (POST JSON)" />
         </div>
 
@@ -119,7 +120,7 @@
     private int _skip;
     private Severity _severity = Severity.Medium;
     private bool _email = true, _telegram, _push, _sms, _whatsapp;
-    private string? _slackUrl, _discordUrl, _webhookUrl;
+    private string? _slackUrl, _discordUrl, _teamsUrl, _webhookUrl;
     private string? _error;
     private bool _busy;
 
@@ -135,7 +136,8 @@
         _graceMinutes = w.Tolerance.GraceSeconds / 60; _skip = w.Tolerance.SkipTolerance; _severity = w.Severity;
         _email = Has(w, ChannelType.Email); _telegram = Has(w, ChannelType.Telegram); _push = Has(w, ChannelType.Push);
         _sms = Has(w, ChannelType.Sms); _whatsapp = Has(w, ChannelType.WhatsApp);
-        _slackUrl = Dest(w, ChannelType.Slack); _discordUrl = Dest(w, ChannelType.Discord); _webhookUrl = Dest(w, ChannelType.Webhook);
+        _slackUrl = Dest(w, ChannelType.Slack); _discordUrl = Dest(w, ChannelType.Discord);
+        _teamsUrl = Dest(w, ChannelType.MicrosoftTeams); _webhookUrl = Dest(w, ChannelType.Webhook);
     }
 
     private static bool Has(WatchDto w, ChannelType t) => w.ChannelBindings.Any(b => b.ChannelType == t && b.Enabled);
@@ -178,6 +180,7 @@
         }
         AddUrl(_slackUrl, ChannelType.Slack);
         AddUrl(_discordUrl, ChannelType.Discord);
+        AddUrl(_teamsUrl, ChannelType.MicrosoftTeams);
         AddUrl(_webhookUrl, ChannelType.Webhook);
         return list;
     }
