@@ -57,4 +57,5 @@ Sin Docker puedes validar el bucle completo contra un Mongo real embebido:
 dotnet test test/Wardkitten.IntegrationTests/Wardkitten.IntegrationTests.csproj
 ```
 
-Ver `AGENTS.md` (convenciones), `SECURITY.md` (seguridad) y `docs/` (features y arquitectura).
+Ver `AGENTS.md` (convenciones), `SECURITY.md` (seguridad), `docs/` (features y arquitectura) y
+[`docs/PUBLISHING.md`](docs/PUBLISHING.md) (cómo publicar la web y las apps móviles).
