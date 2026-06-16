@@ -11,7 +11,9 @@ public sealed record WatchRequest(
     List<ChannelBinding> ChannelBindings,
     Severity Severity,
     List<string>? Tags,
-    string? ProjectId);
+    string? ProjectId,
+    string? EscalationTeamId = null,
+    int TeamEscalationDelaySeconds = 0);
 
 public sealed record WatchDto(
     string Id,
@@ -33,6 +35,8 @@ public sealed record WatchDto(
     string? CurrentIncidentId,
     int CurrentStreak,
     int BestStreak,
+    string? EscalationTeamId,
+    int TeamEscalationDelaySeconds,
     DateTime CreatedAtUtc);
 
 public sealed record CheckInDto(string Id, string Kind, string Source, DateTime ReceivedAtUtc, int? DurationMs);

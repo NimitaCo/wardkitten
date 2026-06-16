@@ -26,6 +26,9 @@ Tabla maestra de funcionalidades. Cada una tiene su código `FXX.YY` y, si proce
 | F08.02 | Estado en vivo (SignalR) | implementada (web por polling) | — |
 | F09 | App móvil (MAUI Blazor Hybrid) + push | scaffold | — |
 | F10.01 | Streaks / gamificación | implementada | — |
+| F12.01 | Equipos (miembros, plan Team) | implementada | — |
+| F12.02 | Guardias on-call (rotación por turnos + overrides) | implementada | — |
+| F12.03 | Escalado de incidente a la persona de guardia | implementada | — |
 | F11.01 | Crear tareas con lenguaje natural (**sin IA**, parser determinista) | planificada (futuro) | — |
 
 > **Decisión de proyecto:** Wardkitten no incorpora funcionalidades de IA (ver `ToDo.md` → Decisiones de proyecto y `AGENTS.md`). La feature F11.01 es a futuro y deberá implementarse sin LLM.

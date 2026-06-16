@@ -102,6 +102,7 @@ app.MapAuthEndpoints();
 app.MapWatchEndpoints();
 app.MapTemplateEndpoints();
 app.MapStatusPageEndpoints();
+app.MapTeamEndpoints();
 app.MapMoneyEndpoints();
 app.MapPublicEndpoints();
 app.MapInternalEndpoints();

@@ -7,6 +7,7 @@ using Wardkitten.Domain.Incidents;
 using Wardkitten.Domain.Leasing;
 using Wardkitten.Domain.Notifications;
 using Wardkitten.Domain.StatusPages;
+using Wardkitten.Domain.Teams;
 using Wardkitten.Domain.Watches;
 
 namespace Wardkitten.Infrastructure.Mongo;
@@ -36,6 +37,7 @@ public sealed class MongoContext
     public IMongoCollection<ChannelRate> ChannelRates => Database.GetCollection<ChannelRate>(CollectionNames.ChannelRates);
     public IMongoCollection<NotificationLog> NotificationLogs => Database.GetCollection<NotificationLog>(CollectionNames.NotificationLogs);
     public IMongoCollection<StatusPage> StatusPages => Database.GetCollection<StatusPage>(CollectionNames.StatusPages);
+    public IMongoCollection<Team> Teams => Database.GetCollection<Team>(CollectionNames.Teams);
     public IMongoCollection<Lease> Leases => Database.GetCollection<Lease>(CollectionNames.Leases);
 
     public async Task InitializeAsync(CancellationToken ct = default)
@@ -139,6 +141,14 @@ public sealed class MongoContext
                 new CreateIndexOptions { Unique = true, Name = "ux_statuspage_slug" }),
             new CreateIndexModel<StatusPage>(Builders<StatusPage>.IndexKeys.Ascending(s => s.UserId),
                 new CreateIndexOptions { Name = "ix_statuspage_user" }),
+        }, ct);
+
+        await Teams.Indexes.CreateManyAsync(new[]
+        {
+            new CreateIndexModel<Team>(Builders<Team>.IndexKeys.Ascending(t => t.OwnerId),
+                new CreateIndexOptions { Name = "ix_team_owner" }),
+            new CreateIndexModel<Team>(Builders<Team>.IndexKeys.Ascending(t => t.MemberUserIds),
+                new CreateIndexOptions { Name = "ix_team_members" }),
         }, ct);
 
         await Leases.Indexes.CreateOneAsync(new CreateIndexModel<Lease>(

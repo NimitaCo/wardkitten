@@ -26,7 +26,7 @@ Seguimiento de construcción por fases (ver plan aprobado). `[x]` hecho · `[ ]`
 - [x] Gamificación / streaks (habit tracker)
 - [x] Plantillas de watch
 - [x] Integraciones salientes: Webhook / Slack / Discord (Microsoft Teams pendiente)
-- [ ] Equipos y guardias (on-call rotations)
+- [x] Equipos y guardias (on-call rotations + overrides)
 - [ ] **Crear tareas con lenguaje natural** — *feature a futuro*. Permitir describir una tarea en texto
   ("recuérdame regar cada 3 días") y derivar su schedule/tolerancia. Debe implementarse **sin IA**
   (p. ej. parser de reglas/patrones deterministas) conforme a la decisión de proyecto; no usar LLM.

@@ -43,6 +43,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<IChannelRateRepository, ChannelRateRepository>();
         services.AddSingleton<INotificationLogRepository, NotificationLogRepository>();
         services.AddSingleton<IStatusPageRepository, StatusPageRepository>();
+        services.AddSingleton<ITeamRepository, TeamRepository>();
         services.AddSingleton<ILeaseStore, MongoLeaseStore>();
 
         return services;

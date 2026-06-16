@@ -15,5 +15,6 @@ public static class CollectionNames
     public const string ChannelRates = "channelRates";
     public const string NotificationLogs = "notificationLogs";
     public const string StatusPages = "statusPages";
+    public const string Teams = "teams";
     public const string Leases = "leases";
 }

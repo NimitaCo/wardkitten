@@ -39,6 +39,12 @@ public sealed class Watch : Entity
     public string PingToken { get; set; } = string.Empty;
 
     public string? EscalationPolicyId { get; set; }
+
+    /// <summary>Equipo al que escalar si el incidente sigue sin reconocer (on-call). Feature: F12.03.</summary>
+    public string? EscalationTeamId { get; set; }
+    /// <summary>Segundos desde la apertura del incidente antes de avisar a la persona de guardia del equipo.</summary>
+    public int TeamEscalationDelaySeconds { get; set; }
+
     public List<MaintenanceWindow> MaintenanceWindows { get; set; } = new();
 
     /// <summary>Incidente abierto actualmente (garantiza idempotencia de alertas). Null si está OK.</summary>

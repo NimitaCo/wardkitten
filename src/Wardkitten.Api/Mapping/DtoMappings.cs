@@ -17,7 +17,7 @@ public static class DtoMappings
         w.Id, w.Name, w.Description, w.Type, w.Schedule, w.Tolerance, w.ChannelBindings,
         w.Severity, w.Status, w.Paused, w.NextDueAtUtc, w.LastCheckInAtUtc, w.ConsecutiveMisses,
         w.Type == WatchType.Ping ? w.PingToken : null, w.Tags, w.ProjectId, w.CurrentIncidentId,
-        w.CurrentStreak, w.BestStreak, w.CreatedAtUtc);
+        w.CurrentStreak, w.BestStreak, w.EscalationTeamId, w.TeamEscalationDelaySeconds, w.CreatedAtUtc);
 
     public static CheckInDto ToDto(this CheckIn c) => new(c.Id, c.Kind.ToString(), c.Source.ToString(), c.ReceivedAtUtc, c.DurationMs);
 

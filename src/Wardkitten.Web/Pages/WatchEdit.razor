@@ -93,6 +93,24 @@
             </select>
         </div>
 
+        @if (_teams.Count > 0)
+        {
+            <div class="mb-3">
+                <label class="form-label">Escalar a equipo (on-call) si no se reconoce</label>
+                <div class="input-group">
+                    <select class="form-select" @bind="_escalationTeamId">
+                        <option value="">— ninguno —</option>
+                        @foreach (var t in _teams)
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    </select>
+                    <span class="input-group-text">tras (min)</span>
+                    <input type="number" min="0" class="form-control" style="max-width:110px" @bind="_teamDelayMinutes" />
+                </div>
+            </div>
+        }
+
         @if (_error is not null)
         {
             <div class="alert alert-danger py-2">@_error</div>
@@ -121,11 +139,17 @@
     private Severity _severity = Severity.Medium;
     private bool _email = true, _telegram, _push, _sms, _whatsapp;
     private string? _slackUrl, _discordUrl, _teamsUrl, _webhookUrl;
+    private List<TeamDto> _teams = new();
+    private string? _escalationTeamId;
+    private int _teamDelayMinutes = 15;
     private string? _error;
     private bool _busy;
 
     protected override async Task OnInitializedAsync()
     {
+        var teamsResult = await Api.GetTeamsAsync();
+        if (teamsResult.Ok && teamsResult.Value is not null) _teams = teamsResult.Value;
+
         if (!IsEdit) return;
         var result = await Api.GetWatchAsync(Id!);
         if (!result.Ok || result.Value is null) { _error = result.Error; return; }
@@ -138,6 +162,8 @@
         _sms = Has(w, ChannelType.Sms); _whatsapp = Has(w, ChannelType.WhatsApp);
         _slackUrl = Dest(w, ChannelType.Slack); _discordUrl = Dest(w, ChannelType.Discord);
         _teamsUrl = Dest(w, ChannelType.MicrosoftTeams); _webhookUrl = Dest(w, ChannelType.Webhook);
+        _escalationTeamId = w.EscalationTeamId;
+        _teamDelayMinutes = w.TeamEscalationDelaySeconds / 60;
     }
 
     private static bool Has(WatchDto w, ChannelType t) => w.ChannelBindings.Any(b => b.ChannelType == t && b.Enabled);
@@ -155,7 +181,8 @@
         };
         var tolerance = new Tolerance { GraceSeconds = _graceMinutes * 60, SkipTolerance = _skip };
         var bindings = BuildBindings();
-        var req = new WatchRequest(_name, _description, _type, schedule, tolerance, bindings, _severity, null, null);
+        var req = new WatchRequest(_name, _description, _type, schedule, tolerance, bindings, _severity, null, null,
+            string.IsNullOrEmpty(_escalationTeamId) ? null : _escalationTeamId, _teamDelayMinutes * 60);
 
         var result = IsEdit ? await Api.UpdateWatchAsync(Id!, req) : await Api.CreateWatchAsync(req);
         _busy = false;

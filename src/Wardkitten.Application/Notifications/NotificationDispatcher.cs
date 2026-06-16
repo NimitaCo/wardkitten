@@ -17,8 +17,12 @@ namespace Wardkitten.Application.Notifications;
 /// </summary>
 public sealed class NotificationDispatcher : INotificationDispatcher
 {
+    private static readonly ChannelType[] TeamChannels = { ChannelType.Email, ChannelType.Telegram, ChannelType.Push };
+    private const int TeamEscalationStep = 100_000;
+
     private readonly IReadOnlyDictionary<ChannelType, INotificationChannel> _channels;
     private readonly IUserRepository _users;
+    private readonly ITeamRepository _teams;
     private readonly WalletService _wallet;
     private readonly INotificationLogRepository _logs;
     private readonly IAckLinkBuilder _ackLinks;
@@ -28,6 +32,7 @@ public sealed class NotificationDispatcher : INotificationDispatcher
     public NotificationDispatcher(
         IEnumerable<INotificationChannel> channels,
         IUserRepository users,
+        ITeamRepository teams,
         WalletService wallet,
         INotificationLogRepository logs,
         IAckLinkBuilder ackLinks,
@@ -36,6 +41,7 @@ public sealed class NotificationDispatcher : INotificationDispatcher
     {
         _channels = channels.ToDictionary(c => c.Channel);
         _users = users;
+        _teams = teams;
         _wallet = wallet;
         _logs = logs;
         _ackLinks = ackLinks;
@@ -144,6 +150,49 @@ public sealed class NotificationDispatcher : INotificationDispatcher
                 _logger.LogInformation("Alerta enviada watch={Watch} canal={Channel}", watch.Id, binding.ChannelType);
             else
                 _logger.LogWarning("Fallo de alerta watch={Watch} canal={Channel}: {Error}", watch.Id, binding.ChannelType, result.Error);
+        }
+
+        await EscalateToTeamAsync(watch, incident, now, ct);
+    }
+
+    /// <summary>
+    /// Si el watch tiene equipo de escalado y el incidente sigue abierto pasado el retardo, avisa a la
+    /// persona de guardia (on-call) del equipo por sus canales gratuitos. Idempotente. Feature: F12.03.
+    /// </summary>
+    private async Task EscalateToTeamAsync(Watch watch, Incident incident, DateTime now, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(watch.EscalationTeamId)) return;
+        if (incident.OpenedAtUtc.AddSeconds(watch.TeamEscalationDelaySeconds) > now) return;
+
+        var team = await _teams.GetByIdAsync(watch.EscalationTeamId, ct);
+        var onCallId = team?.OnCall?.CurrentOnCall(now);
+        if (onCallId is null) return;
+        var onCall = await _users.GetByIdAsync(onCallId, ct);
+        if (onCall is null) return;
+
+        foreach (var channelType in TeamChannels)
+        {
+            if (incident.HasDispatched(channelType, TeamEscalationStep)) continue;
+            if (!_channels.TryGetValue(channelType, out var channel)) continue;
+            var destination = ResolveDestination(new ChannelBinding { ChannelType = channelType }, onCall);
+            if (string.IsNullOrWhiteSpace(destination)) continue;
+
+            var message = BuildMessage(watch, incident, new ChannelBinding { ChannelType = channelType }, destination!, onCall);
+            NotificationResult result;
+            try { result = await channel.SendAsync(message, ct); }
+            catch (Exception ex) { result = NotificationResult.Fail(ex.Message); }
+
+            RecordFinal(incident, channelType, TeamEscalationStep, destination,
+                result.Success ? AlertDeliveryStatus.Sent : AlertDeliveryStatus.Failed,
+                now, 0m, result.ProviderMessageId, result.Error);
+
+            await _logs.InsertAsync(new NotificationLog
+            {
+                UserId = onCall.Id, WatchId = watch.Id, IncidentId = incident.Id,
+                Channel = channelType, Destination = destination!, Kind = "team-escalation",
+                Success = result.Success, ProviderMessageId = result.ProviderMessageId,
+                Error = result.Error, SentAtUtc = now,
+            }, ct);
         }
     }
 

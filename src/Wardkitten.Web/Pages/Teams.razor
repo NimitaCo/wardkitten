@@ -1,0 +1,114 @@
+@page "/teams"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@inject WardkittenApiClient Api
+
+<PageTitle>Equipos · Wardkitten</PageTitle>
+
+<h1 class="h3 mb-3">Equipos y guardias</h1>
+<p class="text-muted">Escala incidentes no reconocidos a la persona de guardia. (Plan Team.)</p>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Nuevo equipo</h5>
+        <div class="input-group">
+            <input class="form-control" @bind="_newName" placeholder="Nombre del equipo" />
+            <button class="btn btn-primary" @onclick="CreateAsync" disabled="@_busy">Crear</button>
+        </div>
+        @if (_error is not null)
+        {
+            <div class="alert alert-danger py-2 mt-2">@_error</div>
+        }
+    </div>
+</div>
+
+@foreach (var t in _teams)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <h5 class="mb-2">@t.Name</h5>
+                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteAsync(t)">Borrar equipo</button>
+            </div>
+
+            <p class="small mb-1">
+                De guardia ahora: <strong>@OnCallName(t)</strong>
+            </p>
+
+            <table class="table table-sm mb-2">
+                <tbody>
+                    @foreach (var m in t.Members)
+                    {
+                        <tr>
+                            <td>@m.DisplayName <span class="text-muted">(@m.Email)</span> @(m.IsOwner ? "· owner" : "")</td>
+                            <td class="text-end">
+                                @if (!m.IsOwner)
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => RemoveMemberAsync(t, m)">Quitar</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="input-group input-group-sm mb-2">
+                <input class="form-control" placeholder="email del miembro a añadir" @bind="_memberEmail" />
+                <button class="btn btn-outline-primary" @onclick="() => AddMemberAsync(t)">Añadir miembro</button>
+            </div>
+
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">Turno (días)</span>
+                <input type="number" min="1" class="form-control" @bind="_shiftDays" style="max-width:90px" />
+                <button class="btn btn-outline-primary" @onclick="() => SetWeeklyRotationAsync(t)">Rotar guardia entre todos</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<TeamDto> _teams = new();
+    private string _newName = string.Empty;
+    private string _memberEmail = string.Empty;
+    private int _shiftDays = 7;
+    private string? _error;
+    private bool _busy;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        var r = await Api.GetTeamsAsync();
+        if (r.Ok && r.Value is not null) _teams = r.Value;
+    }
+
+    private string OnCallName(TeamDto t)
+        => t.Members.FirstOrDefault(m => m.UserId == t.CurrentOnCallUserId)?.DisplayName ?? "—";
+
+    private async Task CreateAsync()
+    {
+        _busy = true; _error = null;
+        var r = await Api.CreateTeamAsync(_newName);
+        _busy = false;
+        if (r.Ok) { _newName = string.Empty; await LoadAsync(); }
+        else _error = r.Error;
+    }
+
+    private async Task DeleteAsync(TeamDto t) { await Api.DeleteTeamAsync(t.Id); await LoadAsync(); }
+
+    private async Task AddMemberAsync(TeamDto t)
+    {
+        _error = null;
+        var r = await Api.AddTeamMemberAsync(t.Id, _memberEmail);
+        if (r.Ok) { _memberEmail = string.Empty; await LoadAsync(); } else _error = r.Error;
+    }
+
+    private async Task RemoveMemberAsync(TeamDto t, TeamMemberDto m) { await Api.RemoveTeamMemberAsync(t.Id, m.UserId); await LoadAsync(); }
+
+    private async Task SetWeeklyRotationAsync(TeamDto t)
+    {
+        var rotation = t.Members.Select(m => m.UserId).ToList();
+        var req = new SetOnCallRequest(DateTime.UtcNow, Math.Max(1, _shiftDays) * 86400, rotation);
+        var r = await Api.SetOnCallAsync(t.Id, req);
+        if (r.Ok) await LoadAsync(); else _error = r.Error;
+    }
+}

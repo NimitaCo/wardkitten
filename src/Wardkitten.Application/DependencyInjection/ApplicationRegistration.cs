@@ -30,6 +30,7 @@ public static class ApplicationRegistration
         services.AddSingleton<AuthService>();
         services.AddSingleton<BillingService>();
         services.AddSingleton<StatusPageService>();
+        services.AddSingleton<TeamService>();
         services.AddSingleton<NotificationDispatcher>();
         services.AddSingleton<INotificationDispatcher>(sp => sp.GetRequiredService<NotificationDispatcher>());
         services.AddSingleton<EvaluationEngine>();

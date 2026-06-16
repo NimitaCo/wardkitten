@@ -17,7 +17,9 @@ public sealed record WatchInput(
     List<ChannelBinding> ChannelBindings,
     Severity Severity,
     List<string>? Tags,
-    string? ProjectId);
+    string? ProjectId,
+    string? EscalationTeamId = null,
+    int TeamEscalationDelaySeconds = 0);
 
 /// <summary>
 /// Alta/edición/borrado de watches con validación de schedule y aplicación de los límites del plan
@@ -77,6 +79,8 @@ public sealed class WatchService
             ProjectId = input.ProjectId,
             Status = WatchStatus.New,
             PingToken = input.Type == WatchType.Ping ? SecureTokenGenerator.New() : string.Empty,
+            EscalationTeamId = input.EscalationTeamId,
+            TeamEscalationDelaySeconds = input.TeamEscalationDelaySeconds,
         };
         watch.ScheduleNextFrom(_clock.UtcNow);
 
@@ -109,6 +113,8 @@ public sealed class WatchService
         watch.Severity = input.Severity;
         watch.Tags = input.Tags ?? new List<string>();
         watch.ProjectId = input.ProjectId;
+        watch.EscalationTeamId = input.EscalationTeamId;
+        watch.TeamEscalationDelaySeconds = input.TeamEscalationDelaySeconds;
         if (watch.Type == WatchType.Ping && string.IsNullOrEmpty(watch.PingToken))
             watch.PingToken = SecureTokenGenerator.New();
 

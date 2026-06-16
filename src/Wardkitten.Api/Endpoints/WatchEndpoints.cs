@@ -68,5 +68,5 @@ public static class WatchEndpoints
 
     private static WatchInput ToInput(WatchRequest req)
         => new(req.Name, req.Description, req.Type, req.Schedule, req.Tolerance, req.ChannelBindings,
-               req.Severity, req.Tags, req.ProjectId);
+               req.Severity, req.Tags, req.ProjectId, req.EscalationTeamId, req.TeamEscalationDelaySeconds);
 }

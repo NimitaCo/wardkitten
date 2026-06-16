@@ -50,6 +50,15 @@ public sealed class WardkittenApiClient
     public Task<ApiResult> DeleteStatusPageAsync(string id) => DeleteAsync($"/api/status-pages/{id}");
     public Task<ApiResult<PublicStatusPageDto>> GetPublicStatusAsync(string slug) => GetAsync<PublicStatusPageDto>($"/s/{slug}");
 
+    // ---- Teams & on-call ----
+    public Task<ApiResult<List<TeamDto>>> GetTeamsAsync() => GetAsync<List<TeamDto>>("/api/teams");
+    public Task<ApiResult<TeamDto>> CreateTeamAsync(string name) => PostAsync<TeamDto>("/api/teams", new CreateTeamRequest(name));
+    public Task<ApiResult> DeleteTeamAsync(string id) => DeleteAsync($"/api/teams/{id}");
+    public Task<ApiResult> AddTeamMemberAsync(string id, string email) => PostAsync($"/api/teams/{id}/members", new AddMemberRequest(email));
+    public Task<ApiResult> RemoveTeamMemberAsync(string id, string userId) => DeleteAsync($"/api/teams/{id}/members/{userId}");
+    public Task<ApiResult> SetOnCallAsync(string id, SetOnCallRequest req) => PutAsync($"/api/teams/{id}/oncall", req);
+    public Task<ApiResult> AddOnCallOverrideAsync(string id, AddOnCallOverrideRequest req) => PostAsync($"/api/teams/{id}/oncall/overrides", req);
+
     // ---- Incidents ----
     public Task<ApiResult<List<IncidentDto>>> GetIncidentsAsync() => GetAsync<List<IncidentDto>>("/api/incidents");
     public Task<ApiResult> AckIncidentAsync(string id) => PostAsync($"/api/incidents/{id}/ack", new { });
@@ -76,6 +85,12 @@ public sealed class WardkittenApiClient
     private async Task<ApiResult> PostAsync(string url, object body)
     {
         try { return await ReadAsync(await _http.PostAsJsonAsync(url, body)); }
+        catch (Exception ex) { return ApiResult.Failure(ex.Message); }
+    }
+
+    private async Task<ApiResult> PutAsync(string url, object body)
+    {
+        try { return await ReadAsync(await _http.PutAsJsonAsync(url, body)); }
         catch (Exception ex) { return ApiResult.Failure(ex.Message); }
     }
 
