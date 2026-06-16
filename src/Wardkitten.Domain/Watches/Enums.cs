@@ -45,6 +45,10 @@ public enum ChannelType
     Push = 2,
     Sms = 3,
     WhatsApp = 4,
+    // Integraciones salientes (gratuitas). El destino es la URL del webhook (DestinationOverride).
+    Webhook = 5,
+    Slack = 6,
+    Discord = 7,
 }
 
 public static class ChannelTypeExtensions

@@ -63,6 +63,9 @@ public static class IntegrationsRegistration
         services.AddSingleton<INotificationChannel, PushChannel>();
         services.AddSingleton<INotificationChannel, TwilioSmsChannel>();
         services.AddSingleton<INotificationChannel, TwilioWhatsAppChannel>();
+        services.AddSingleton<INotificationChannel, WebhookChannel>();
+        services.AddSingleton<INotificationChannel, SlackChannel>();
+        services.AddSingleton<INotificationChannel, DiscordChannel>();
 
         // ---- Pagos (Stripe) ----
         services.Configure<StripeOptions>(o =>

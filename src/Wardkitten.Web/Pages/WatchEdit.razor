@@ -76,6 +76,13 @@
         </div>
 
         <div class="mb-3">
+            <label class="form-label">Integraciones salientes (opcional)</label>
+            <input class="form-control mb-1" @bind="_slackUrl" placeholder="URL de webhook de Slack" />
+            <input class="form-control mb-1" @bind="_discordUrl" placeholder="URL de webhook de Discord" />
+            <input class="form-control" @bind="_webhookUrl" placeholder="URL de webhook genérico (POST JSON)" />
+        </div>
+
+        <div class="mb-3">
             <label class="form-label">Severidad</label>
             <select class="form-select" @bind="_severity">
                 <option value="@Severity.Low">Baja</option>
@@ -112,6 +119,7 @@
     private int _skip;
     private Severity _severity = Severity.Medium;
     private bool _email = true, _telegram, _push, _sms, _whatsapp;
+    private string? _slackUrl, _discordUrl, _webhookUrl;
     private string? _error;
     private bool _busy;
 
@@ -127,9 +135,11 @@
         _graceMinutes = w.Tolerance.GraceSeconds / 60; _skip = w.Tolerance.SkipTolerance; _severity = w.Severity;
         _email = Has(w, ChannelType.Email); _telegram = Has(w, ChannelType.Telegram); _push = Has(w, ChannelType.Push);
         _sms = Has(w, ChannelType.Sms); _whatsapp = Has(w, ChannelType.WhatsApp);
+        _slackUrl = Dest(w, ChannelType.Slack); _discordUrl = Dest(w, ChannelType.Discord); _webhookUrl = Dest(w, ChannelType.Webhook);
     }
 
     private static bool Has(WatchDto w, ChannelType t) => w.ChannelBindings.Any(b => b.ChannelType == t && b.Enabled);
+    private static string? Dest(WatchDto w, ChannelType t) => w.ChannelBindings.FirstOrDefault(b => b.ChannelType == t)?.DestinationOverride;
 
     private async Task SaveAsync()
     {
@@ -160,6 +170,15 @@
         Add(_push, ChannelType.Push);
         Add(_sms, ChannelType.Sms);
         Add(_whatsapp, ChannelType.WhatsApp);
+
+        void AddUrl(string? url, ChannelType t)
+        {
+            if (!string.IsNullOrWhiteSpace(url))
+                list.Add(new ChannelBinding { ChannelType = t, Enabled = true, Order = list.Count, DestinationOverride = url!.Trim() });
+        }
+        AddUrl(_slackUrl, ChannelType.Slack);
+        AddUrl(_discordUrl, ChannelType.Discord);
+        AddUrl(_webhookUrl, ChannelType.Webhook);
         return list;
     }
 }
