@@ -58,11 +58,15 @@ public sealed class Incident : Entity
 
     public bool IsOpen => State == IncidentState.Open;
 
-    /// <summary>¿Ya se despachó (con éxito o en curso) este canal en este escalón? Evita duplicados.</summary>
+    /// <summary>
+    /// ¿Ya se intentó la entrega por este canal en este escalón con resultado definitivo (enviado o
+    /// fallido)? Los "Skipped" (quiet hours / saldo insuficiente) NO cuentan, para poder reintentar
+    /// en un tick posterior cuando cambien las condiciones.
+    /// </summary>
     public bool HasDispatched(ChannelType channel, int step)
         => Deliveries.Any(d => d.Channel == channel
                             && d.EscalationStep == step
-                            && d.Status != AlertDeliveryStatus.Failed);
+                            && d.Status is AlertDeliveryStatus.Sent or AlertDeliveryStatus.Failed);
 
     public void Acknowledge(string by, DateTime nowUtc)
     {

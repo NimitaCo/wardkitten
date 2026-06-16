@@ -31,6 +31,12 @@ public sealed class User : Entity
     public string? StripeCustomerId { get; set; }
     public bool IsActive { get; set; } = true;
 
+    // Códigos de verificación (hasheados, con expiración). El OTP de teléfono habilita SMS/WhatsApp.
+    public string? EmailVerificationCodeHash { get; set; }
+    public DateTime? EmailVerificationExpiresUtc { get; set; }
+    public string? PhoneOtpHash { get; set; }
+    public DateTime? PhoneOtpExpiresUtc { get; set; }
+
     public bool IsInRole(string role) => Roles.Contains(role);
 }
 

@@ -93,6 +93,19 @@ public sealed class IncidentRepository : MongoRepository<Incident>, IIncidentRep
             foreach (var incident in cursor.Current)
                 yield return incident;
     }
+
+    public async Task<Incident> OpenOrGetExistingAsync(Incident candidate, CancellationToken ct = default)
+    {
+        try
+        {
+            await InsertAsync(candidate, ct);
+            return candidate;
+        }
+        catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+        {
+            return (await GetOpenByWatchAsync(candidate.WatchId, ct))!;
+        }
+    }
 }
 
 public sealed class EscalationPolicyRepository : MongoRepository<EscalationPolicy>, IEscalationPolicyRepository

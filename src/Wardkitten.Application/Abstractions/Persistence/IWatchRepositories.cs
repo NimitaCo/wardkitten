@@ -28,6 +28,12 @@ public interface IIncidentRepository : IRepository<Incident>
     Task<Incident?> GetOpenByWatchAsync(string watchId, CancellationToken ct = default);
     Task<IReadOnlyList<Incident>> GetByUserAsync(string userId, int skip, int take, CancellationToken ct = default);
     IAsyncEnumerable<Incident> StreamOpenAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Inserta el incidente candidato; si ya existe uno abierto para el watch (índice parcial único),
+    /// devuelve el existente. Garantiza un único incidente abierto por watch sin acoplar Application a Mongo.
+    /// </summary>
+    Task<Incident> OpenOrGetExistingAsync(Incident candidate, CancellationToken ct = default);
 }
 
 public interface IEscalationPolicyRepository : IRepository<EscalationPolicy>
