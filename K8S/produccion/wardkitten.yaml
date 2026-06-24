@@ -130,3 +130,25 @@ spec:
             pathType: Prefix
             backend:
               service: { name: wardkitten, port: { number: 80 } }
+
+---
+# Redirige www.wardkitten.com -> app.wardkitten.com (canónico).
+# Ingress aparte porque la anotación permanent-redirect aplica a todo el Ingress.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wardkitten-www-redirect
+  namespace: wardkitten
+  annotations:
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://app.wardkitten.com$request_uri"
+    nginx.ingress.kubernetes.io/permanent-redirect-code: "308"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: www.wardkitten.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: wardkitten-web, port: { number: 80 } }
