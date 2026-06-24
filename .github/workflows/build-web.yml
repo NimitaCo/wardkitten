@@ -24,8 +24,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Web
         uses: docker/build-push-action@v6
         with:
@@ -33,5 +33,5 @@ jobs:
           file: src/Wardkitten.Web/Dockerfile
           push: true
           tags: |
-            ghcr.io/avanware/wardkitten-web:${{ github.run_number }}
-            ghcr.io/avanware/wardkitten-web:latest
+            ghcr.io/nimitaco/wardkitten-web:${{ github.run_number }}
+            ghcr.io/nimitaco/wardkitten-web:latest
