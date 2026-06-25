@@ -53,8 +53,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-// ---- CORS (web Blazor + app móvil) ----
-var corsOrigins = (config["CORS_ORIGINS"] ?? "http://localhost:5173,https://app.wardkitten.com")
+// ---- CORS (app móvil; la web va same-origin al estar hospedada por la API) ----
+var corsOrigins = (config["CORS_ORIGINS"] ?? "http://localhost:5173,https://www.wardkitten.com")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
     p.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
@@ -96,13 +96,16 @@ app.UseSwaggerUI(o =>
     o.DocumentTitle = "Wardkitten · API";
 });
 
+// La web (Blazor WASM) la sirve la propia API (un solo despliegue): assets estáticos + framework WASM.
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "wardkitten-api" })).WithTags("Health");
-app.MapGet("/", () => Results.Ok(new { name = "Wardkitten API", docs = "/swagger" }));
 
 app.MapAuthEndpoints();
 app.MapWatchEndpoints();
@@ -116,6 +119,10 @@ app.MapHub<WatchHub>("/hubs/watch");
 
 // Endpoint MCP (Streamable HTTP), protegido por JWT (ver SECURITY.md). Feature: F14.
 app.MapMcp("/mcp").RequireAuthorization();
+
+// Fallback SPA: toda ruta no resuelta por la API ni por un fichero estático sirve el index.html
+// del WASM, para que el enrutado del lado cliente (Blazor) funcione con recargas y deep-links.
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

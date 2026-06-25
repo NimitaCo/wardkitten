@@ -1,6 +1,8 @@
 ## .NET
 bin/
 obj/
+# Backups temporales que genera el SDK resolver de MSBuild (p.ej. al restaurar el proyecto MAUI).
+*.SdkResolver.*.proj.Backup.tmp
 [Dd]ebug/
 [Rr]elease/
 x64/

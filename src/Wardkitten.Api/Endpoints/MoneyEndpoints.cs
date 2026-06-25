@@ -70,5 +70,5 @@ public static class MoneyEndpoints
     }
 
     private static string BaseUrl(IConfiguration config)
-        => (config["PUBLIC_BASE_URL"] ?? "https://app.wardkitten.com").TrimEnd('/');
+        => (config["PUBLIC_BASE_URL"] ?? "https://www.wardkitten.com").TrimEnd('/');
 }

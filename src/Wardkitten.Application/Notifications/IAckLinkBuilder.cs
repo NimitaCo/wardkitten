@@ -12,5 +12,5 @@ public interface IAckLinkBuilder
 public sealed class NotificationOptions
 {
     /// <summary>URL pública base de la app para construir magic links y deep links (sin barra final).</summary>
-    public string PublicBaseUrl { get; set; } = "https://app.wardkitten.com";
+    public string PublicBaseUrl { get; set; } = "https://www.wardkitten.com";
 }

@@ -1,6 +1,8 @@
 # Entorno local. Dos modos:
 #   docker compose up -d                    -> solo MongoDB (+ mongo-express) para `dotnet run` en host
-#   docker compose --profile app up --build -> stack completo: Mongo + API + Worker + Web
+#   docker compose --profile app up --build -> stack completo: Mongo + API (sirve la web) + Worker
+#
+# La API hospeda el Blazor WASM (un solo contenedor), así que la web está en http://localhost:5080.
 #
 # Wardkitten no usa transacciones ni change streams: un Mongo standalone es suficiente en dev.
 services:
@@ -43,8 +45,8 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
       MONGOSETTINGS_CONNECTION: "mongodb://mongo:27017"
       MONGOSETTINGS_DATABASENAME: "Wardkitten"
-      PUBLIC_BASE_URL: "http://localhost:8080"
-      CORS_ORIGINS: "http://localhost:8080"
+      PUBLIC_BASE_URL: "http://localhost:5080"
+      CORS_ORIGINS: "http://localhost:5080"
       JWT_SECRET: "dev-insecure-secret-change-me-please-0123456789"
       MAGICLINK_SECRET: "dev-insecure-magiclink-secret-0123456789"
       INTERNAL_TOKEN: "dev-internal-token"
@@ -61,7 +63,7 @@ services:
     environment:
       MONGOSETTINGS_CONNECTION: "mongodb://mongo:27017"
       MONGOSETTINGS_DATABASENAME: "Wardkitten"
-      PUBLIC_BASE_URL: "http://localhost:8080"
+      PUBLIC_BASE_URL: "http://localhost:5080"
       MAGICLINK_SECRET: "dev-insecure-magiclink-secret-0123456789"
       POLLING_INTERVAL_SECONDS: "15"
       API_INTERNAL_URL: "http://api:80"
@@ -69,19 +71,6 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
-
-  web:
-    profiles: ["app"]
-    build:
-      context: .
-      dockerfile: src/Wardkitten.Web/Dockerfile
-    container_name: wardkitten-web
-    ports:
-      - "8080:80"
-    environment:
-      API_BASE_URL: "http://localhost:5080"
-    depends_on:
-      - api
 
 volumes:
   wardkitten-mongo-data:

@@ -35,23 +35,28 @@ test/Wardkitten.Tests           # unit + integration
 ## Publicar nueva versión (K8S deploy)
 
 La imagen Docker se etiqueta con el número de build del workflow de CI. `wardkitten` y
-`wardkitten-worker` tienen numeraciones independientes.
+`wardkitten-worker` tienen numeraciones independientes. **La imagen `wardkitten` empaqueta y sirve
+también el Blazor WASM** (un solo despliegue; no hay imagen `wardkitten-web` separada).
 
 ```bash
 # 1. Número de build actual
-gh run list --repo Danwave/wardkitten --workflow "Build" --limit 1 --json number,status,displayTitle
+gh run list --repo NimitaCo/wardkitten --workflow "Build" --limit 1 --json number,status,displayTitle
 
 # 2. Actualizar manifiestos (los entornos a la vez)
 OLD=12; NEW=13
-find K8S -name "wardkitten.yaml" | xargs sed -i "s|ghcr.io/avanware/wardkitten:$OLD|ghcr.io/avanware/wardkitten:$NEW|g"
+find K8S -name "wardkitten.yaml" | xargs sed -i "s|ghcr.io/nimitaco/wardkitten:$OLD|ghcr.io/nimitaco/wardkitten:$NEW|g"
 
 # 3. Commit y push
 git add K8S/ && git commit -m "K8S deploy wardkitten:$NEW" && git push
 ```
 
-Imágenes: `ghcr.io/avanware/wardkitten` y `ghcr.io/avanware/wardkitten-worker`. Pull secret:
-`avanware.ghcr.io`. Entornos en `K8S/produccion/` y `K8S/preproduccion/`. Despliegue por ArgoCD;
+Imágenes: `ghcr.io/nimitaco/wardkitten` y `ghcr.io/nimitaco/wardkitten-worker`. Pull secret:
+`avanware.ghcr.io` (nombre histórico del `dockerconfigjson`; debe tener acceso de lectura a
+`ghcr.io/nimitaco`). Entornos en `K8S/produccion/` y `K8S/preproduccion/`. Despliegue por ArgoCD;
 se considera completo con `sync == Synced` y `health == Healthy`.
+
+Dominio canónico de la web: `www.wardkitten.com` (la API sirve WASM + API same-origin);
+`app.wardkitten.com` redirige (308) a `www`. `api.wardkitten.com` sigue sirviendo la API.
 
 ## Despliegue Linux vs. desarrollo Windows
 

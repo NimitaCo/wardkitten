@@ -20,7 +20,8 @@ Esta guía explica, paso a paso, cómo publicar la **web** (Blazor WASM) y las *
 
 ## 0. Estado actual del proyecto (qué falta antes de un release real)
 
-- **Web**: lista para producción (Dockerfile + nginx + manifiestos K8s ya existen).
+- **Web**: lista para producción. La **sirve la propia API** (Blazor WASM empaquetado en la imagen
+  `wardkitten`, same-origin); no hay imagen `wardkitten-web` separada. Manifiestos K8s ya existen.
 - **Móvil** (`src/Wardkitten.Mobile`, solución aparte `wardkitten.mobile.slnx`): es un **scaffold** que
   reutiliza `Wardkitten.Shared.UI`. **Antes de compilar** necesita: la *workload* de MAUI, los SDKs, y
   unos **assets** (icono, splash, fuente) que el scaffold no incluye. Ver §2.
@@ -31,48 +32,50 @@ Esta guía explica, paso a paso, cómo publicar la **web** (Blazor WASM) y las *
 
 ## 1. WEB (Blazor WASM) — la más sencilla
 
-La web es WASM estática servida por **nginx**. La `ApiBaseUrl` se inyecta en **arranque** del contenedor
-desde la variable `API_BASE_URL` (una sola imagen sirve todos los entornos).
+La web es **Blazor WASM servido por la propia API** (`UseBlazorFrameworkFiles`): un **único** despliegue
+(imagen `wardkitten`) sirve el WASM y la API en el **mismo origen**, así que la web no necesita CORS ni
+una `ApiBaseUrl` cruzada (`appsettings.Production.json` lleva `ApiBaseUrl` vacío → mismo origen).
 
 ### 1.1 Probar en local
 
 ```bash
-# Opción A: solo Mongo en Docker y la web/API desde el IDE
+# Opción A: solo Mongo en Docker y la API (que ya sirve la web) desde el IDE
 docker compose up -d
-dotnet run --project src/Wardkitten.Api      # API en http://localhost:5080
-dotnet run --project src/Wardkitten.Web      # Web en su puerto de dev
+dotnet run --project src/Wardkitten.Api      # API + web en http://localhost:5080
 
 # Opción B: todo el stack en contenedores
-docker compose --profile app up --build      # Web :8080, API :5080
+docker compose --profile app up --build      # API+web :5080, worker, Mongo
 ```
+
+> Para iterar solo en la web con hot-reload puedes seguir levantando el dev-server del WASM aparte
+> (`dotnet run --project src/Wardkitten.Web`), que usa `appsettings.json` (apunta a la API en `:5080`).
 
 ### 1.2 Publicar la imagen a GHCR (automático con CI)
 
-Al hacer push a `main`, el workflow **Build Web** (`.github/workflows/build-web.yml`) construye y publica
-`ghcr.io/avanware/wardkitten-web:<nº-de-build>`. Requiere dos *secrets* en el repo de GitHub
-(`Settings → Secrets and variables → Actions`):
-
-- `GHCR_USERNAME` — usuario con permiso de escritura en `ghcr.io/avanware`.
-- `GHCR_TOKEN` — PAT con scope `write:packages`.
+Al hacer push a `main`, el workflow **Build** (`.github/workflows/build-api.yml`) construye y publica
+`ghcr.io/nimitaco/wardkitten:<nº-de-build>` — **esa imagen ya incluye el WASM**. El workflow se dispara
+también con cambios en `src/Wardkitten.Web/**` y `src/Wardkitten.Shared.UI/**`. Autenticación vía
+`GITHUB_TOKEN` (no requieren secrets extra).
 
 Build manual (si quieres construir a mano):
 
 ```bash
-docker build -f src/Wardkitten.Web/Dockerfile -t ghcr.io/avanware/wardkitten-web:test .
-docker push ghcr.io/avanware/wardkitten-web:test
+docker build -f src/Wardkitten.Api/Dockerfile -t ghcr.io/nimitaco/wardkitten:test .
+docker push ghcr.io/nimitaco/wardkitten:test
 ```
 
 ### 1.3 Desplegar en Kubernetes
 
 Los manifiestos están en `K8S/produccion/` y `K8S/preproduccion/`.
 
-1. **Pull secret** de GHCR (una vez por namespace), para que el clúster pueda bajar la imagen privada:
+1. **Pull secret** de GHCR (una vez por namespace), para que el clúster pueda bajar la imagen privada
+   (si el paquete `ghcr.io/nimitaco` es público, este paso no hace falta):
 
    ```bash
    kubectl create namespace wardkitten
    kubectl -n wardkitten create secret docker-registry avanware.ghcr.io \
      --docker-server=ghcr.io \
-     --docker-username=<usuario> \
+     --docker-username=<usuario con acceso a ghcr.io/nimitaco> \
      --docker-password=<PAT read:packages>
    ```
 
@@ -80,9 +83,10 @@ Los manifiestos están en `K8S/produccion/` y `K8S/preproduccion/`.
    por valores reales **fuera de git** (sealed-secrets o `kubectl edit secret`). Como mínimo:
    `MONGOSETTINGS_CONNECTION`, `JWT_SECRET`, `MAGICLINK_SECRET`, `INTERNAL_TOKEN`.
 
-3. **DNS + TLS**: apunta `app.wardkitten.com` y `api.wardkitten.com` al ingress. Para HTTPS, instala
-   `cert-manager` y añade un `ClusterIssuer` (Let's Encrypt) + anotación TLS al `Ingress` (el ingress ya
-   enruta `app.*` → web y `api.*` → API).
+3. **DNS + TLS**: apunta `www.wardkitten.com` (canónico), `app.wardkitten.com` (redirige a `www`) y
+   `api.wardkitten.com` al ingress. Para HTTPS, instala `cert-manager` y añade un `ClusterIssuer`
+   (Let's Encrypt) + anotación TLS al `Ingress`. El ingress enruta `www.*` y `api.*` → servicio
+   `wardkitten` (mismo proceso) y redirige `app.*` → `www.*`.
 
 4. **Aplicar** (o dejar que **ArgoCD** lo sincronice):
 
@@ -92,16 +96,17 @@ Los manifiestos están en `K8S/produccion/` y `K8S/preproduccion/`.
 
 5. **Subir versión** (deploy de una imagen nueva): ver `CLAUDE.md` → "Publicar nueva versión".
 
-### 1.4 `API_BASE_URL` por entorno
+### 1.4 Dominios y orígenes
 
-El deployment de la web (`K8S/**/web.yaml`) define `API_BASE_URL`. La web apunta a esa URL de la API.
-Producción: `https://api.wardkitten.com`; preproducción: `https://api-pre.wardkitten.com`. (CORS ya está
-configurado en la API para esos orígenes; si cambias dominios, actualiza `CORS_ORIGINS` en el ConfigMap.)
+La web va **same-origin** con la API, así que no hay `API_BASE_URL` que configurar. El ConfigMap define
+`PUBLIC_BASE_URL`/`CORS_ORIGINS` = `https://www.wardkitten.com` (prod) y `https://app-pre.wardkitten.com`
+(pre). Si cambias dominios, actualízalos ahí. CORS solo es relevante para la **app móvil** (cliente
+nativo cross-origin contra `api.wardkitten.com`).
 
 ### 1.5 Verificación
 
-- `https://app.wardkitten.com` carga la web.
-- `https://api.wardkitten.com/health` responde `{"status":"ok"}`.
+- `https://www.wardkitten.com` carga la web (y `https://app.wardkitten.com` redirige 308 a `www`).
+- `https://www.wardkitten.com/health` (o `https://api.wardkitten.com/health`) responde `{"status":"ok"}`.
 - `https://api.wardkitten.com/swagger` muestra la documentación de la API.
 
 ---
@@ -293,10 +298,10 @@ No se incluyen en el repo porque la firma depende de credenciales que aún no ex
 ## 6. Checklist de "primera publicación de prueba"
 
 **Web**
-- [ ] `GHCR_USERNAME` / `GHCR_TOKEN` configurados → CI publica `wardkitten-web`.
-- [ ] Pull secret `avanware.ghcr.io` creado en el namespace.
+- [ ] CI **Build** (`GITHUB_TOKEN`) publica `ghcr.io/nimitaco/wardkitten` (imagen con WASM incluido).
+- [ ] Pull secret `avanware.ghcr.io` creado en el namespace (con acceso a `ghcr.io/nimitaco`), salvo paquete público.
 - [ ] Secretos reales sustituyendo los `REPLACE_ME`.
-- [ ] DNS `app.*` y `api.*` + TLS (cert-manager).
+- [ ] DNS `www.*`, `app.*` (redirige) y `api.*` + TLS (cert-manager).
 - [ ] `kubectl apply -f K8S/produccion/` (o ArgoCD synced/healthy).
 
 **Android (prueba privada, sin cuenta)**

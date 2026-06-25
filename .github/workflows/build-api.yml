@@ -9,6 +9,9 @@ on:
       - 'src/Wardkitten.Infrastructure/**'
       - 'src/Wardkitten.Domain/**'
       - 'src/Wardkitten.Shared.Contracts/**'
+      # La imagen de la API empaqueta el Blazor WASM, así que reconstruye también con cambios de web/UI.
+      - 'src/Wardkitten.Web/**'
+      - 'src/Wardkitten.Shared.UI/**'
       - '.github/workflows/build-api.yml'
   workflow_dispatch:
 
