@@ -2,11 +2,14 @@
 
   <PropertyGroup>
     <RootNamespace>Wardkitten.Web</RootNamespace>
-    <!-- WASM hospedado por la API: sin fingerprinting. El rewrite del placeholder
-         #[.{fingerprint}] no se aplica en el publish del server (consume el build del
-         cliente), así que usamos nombres planos en index.html y assets sin hash. -->
-    <WasmFingerprintAssets>false</WasmFingerprintAssets>
-    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <!-- WASM hospedado por la API (no standalone): la reescritura del index.html que resuelve
+         el placeholder #[.{fingerprint}] de blazor.webassembly.js y puebla el importmap SOLO corre
+         al publicar el cliente en solitario, no cuando la API (host) recoge sus assets -> el
+         bootstrap quedaba fingerprinteado y daba 404 ("Loading"). Mismo fix que lumo (8c19007):
+         desactivar fingerprint de blazor.webassembly.js y dotnet.js + referencia plana en index.html.
+         Los DLL/wasm internos se siguen versionando vía boot manifest. -->
+    <BlazorFingerprintBlazorJs>false</BlazorFingerprintBlazorJs>
+    <WasmFingerprintDotnetJs>false</WasmFingerprintDotnetJs>
   </PropertyGroup>
 
   <ItemGroup>
