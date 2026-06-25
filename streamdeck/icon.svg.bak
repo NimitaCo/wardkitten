@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="0 0 144 144">
-<!--sd-placeholder-->
-<defs><clipPath id="c"><rect width="144" height="144" rx="24"/></clipPath></defs>
-<g clip-path="url(#c)"><rect width="144" height="144" fill="#FF2D55"/><polygon points="144,0 144,144 0,144" fill="#FFD60A"/></g>
-<text x="72" y="72" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#ffffff" stroke="#000000" stroke-opacity="0.4" stroke-width="3" paint-order="stroke" text-anchor="middle" dominant-baseline="central">WA</text>
-</svg>
