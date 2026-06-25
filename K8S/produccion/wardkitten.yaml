@@ -70,7 +70,7 @@ spec:
     spec:
       containers:
         - name: wardkitten
-          image: ghcr.io/nimitaco/wardkitten:16
+          image: ghcr.io/nimitaco/wardkitten:17
           ports:
             - containerPort: 80
               protocol: TCP
