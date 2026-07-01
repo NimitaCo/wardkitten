@@ -27,7 +27,7 @@ data:
   STRIPE_PRICE_TEAM: "price_1ToKpRBwCubRzMH53YcJwKit"
   STRIPE_PRICE_CREDIT: "price_1ToKpmBwCubRzMH5LCxQCk0k"
   STRIPE_CREDIT_CENTS: "100"
-  STRIPE_AUTOMATIC_TAX: "false"   # -> "true" cuando Stripe Tax esté configurado en el dashboard
+  STRIPE_AUTOMATIC_TAX: "true"    # requiere Stripe Tax configurado en el dashboard (dirección origen + registro IVA)
 
 ---
 # PLACEHOLDERS: los valores reales se aplican fuera de git (ver SECURITY.md). No commitear secretos.
