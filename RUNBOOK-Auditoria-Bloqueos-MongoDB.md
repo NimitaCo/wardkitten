@@ -11,7 +11,7 @@ Guía para diagnosticar y resolver la saturación de MongoDB causada por **consu
 
 ## Contexto del entorno
 - Replica set **MongoReplica0** (MongoDB 6.0), puerto **2717**, auth con keyFile.
-- Nodos: `mongo-a-0` (10.200.0.10), `mongo-b-0` (10.200.0.19), `mongo-b-1` (10.200.0.69).
+- Nodos: `mongo-a-0` (10.200.0.10), `mongo-b-0` (10.200.0.19), `mongo-c-0` (10.200.0.69).
 - Cliente `mongosh` disponible en **mongo-b-0**: `C:\mongodb\mongosh\...\bin\mongosh.exe`.
 - Clave: `logRotate` es **local a cada nodo**, y `logRotate`/lecturas van al **primario** si la app
   usa `primaryPreferred`.
