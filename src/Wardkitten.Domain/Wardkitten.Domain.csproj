@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <!-- Parser de expresiones cron (lógica de scheduling pura, sin infraestructura). -->
-    <PackageReference Include="NCrontab" Version="3.3.3" />
+    <PackageReference Include="NCrontab" Version="3.4.0" />
   </ItemGroup>
 
 </Project>
