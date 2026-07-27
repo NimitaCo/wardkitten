@@ -28,7 +28,7 @@ Tres familias de endpoints son públicas por diseño; cada una tiene su propia d
 
 | Endpoint | Defensa |
 |---|---|
-| **Ping** `/p/{token}` (+ `/start`, `/fail`) | `pingToken` = UUIDv4 **no adivinable** (128 bits). Rate-limit por token e IP. No revela existencia del watch a terceros. |
+| **Ping** `/p/{token}` (+ `/start`, `/fail`) | `pingToken` = UUIDv4 **no adivinable** (128 bits). Rate-limit por token e IP. No revela existencia del watch a terceros. Un token en pruebas (F03.03) responde igual que uno real (`200`), sin distinguir para terceros si la vigilancia existe. |
 | **Webhooks** Stripe/Twilio | **Verificación de firma** obligatoria (`Stripe-Signature`, `X-Twilio-Signature`) antes de procesar. Idempotencia por event id. |
 | **Magic links** (ACK/Snooze/Done) | Token **firmado** (HMAC) con expiración corta y un solo uso; acción acotada al watch/incident. |
 

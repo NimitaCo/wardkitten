@@ -62,7 +62,16 @@ public sealed class EvaluationEngine
     /// <summary>Evalúa un watch. Devuelve true si hubo cambios persistidos.</summary>
     public async Task<bool> EvaluateWatchAsync(Watch watch, DateTime now, CancellationToken ct = default)
     {
-        if (!watch.IsActiveForEvaluation(now)) return false;
+        // Un ensayo de la URL que nadie cerró (el usuario abandonó la pantalla) no puede acabar en falsa
+        // alarma: al expirar su ventana se cierra y se reprograma desde ahora. Feature: F03.03.
+        var closedTestMode = watch.CloseExpiredTestMode(now);
+        if (closedTestMode)
+        {
+            await _watches.ReplaceAsync(watch, ct);
+            await _events.WatchUpdatedAsync(watch, ct);
+        }
+
+        if (!watch.IsActiveForEvaluation(now)) return closedTestMode;
 
         var missed = false;
         var guard = 0;
@@ -106,7 +115,7 @@ public sealed class EvaluationEngine
             return true;
         }
 
-        return false;
+        return closedTestMode;
     }
 
     /// <summary>

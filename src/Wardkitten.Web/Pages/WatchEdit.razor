@@ -3,6 +3,8 @@
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 @inject WardkittenApiClient Api
 @inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <PageTitle>@(IsEdit ? "Editar" : "Nueva") vigilancia · Wardkitten</PageTitle>
 
@@ -21,11 +23,150 @@
 
         <div class="mb-3">
             <label class="form-label">Tipo</label>
-            <select class="form-select" @bind="_type">
+            <select class="form-select" @bind="_type" @bind:after="OnTypeChangedAsync">
                 <option value="@WatchType.Manual">Manual (confirmo yo)</option>
                 <option value="@WatchType.Ping">Ping (un proceso avisa por URL)</option>
             </select>
         </div>
+
+        @if (_type == WatchType.Ping)
+        {
+            <div class="card border-primary-subtle mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                        <div>
+                            <h2 class="h6 mb-0">🧪 Comprobar que llegan las solicitudes</h2>
+                            <small class="text-muted">Llama a esta URL desde tu sistema y verás aquí cada solicitud.</small>
+                        </div>
+                        @if (_test is not null)
+                        {
+                            <div class="d-flex gap-2">
+                                @if (_test.Mode == PingProbeMode.DryRun && _test.TestModeUntilUtc is null)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="StartTestAsync" disabled="@_testBusy">Reanudar prueba</button>
+                                }
+                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="StopTestAsync" disabled="@_testBusy">Terminar prueba</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="StartTestAsync" disabled="@_testBusy">
+                                @(HasSavedUrl ? "Probar sin que cuente" : "Obtener URL de prueba")
+                            </button>
+                        }
+                    </div>
+
+                    @if (PingUrl is { Length: > 0 } url)
+                    {
+                        <div class="input-group input-group-sm mb-1">
+                            <input class="form-control font-monospace" readonly value="@url" />
+                            <button type="button" class="btn btn-outline-secondary" @onclick="() => CopyAsync(url)">@(_copied ? "¡Copiada!" : "Copiar")</button>
+                        </div>
+                        <p class="small text-muted mb-2">
+                            <code>curl -fsS @url</code> · variantes <code>/start</code> y <code>/fail</code>.
+                        </p>
+                    }
+
+                    @if (_test?.Mode == PingProbeMode.DryRun)
+                    {
+                        @if (_test.TestModeUntilUtc is DateTime until)
+                        {
+                            <div class="alert alert-warning py-2 small mb-2">
+                                <strong>Prueba en curso hasta las @Hora(until).</strong> Las solicitudes a esta URL no
+                                reinician los contadores y, mientras dure, esta vigilancia no se evalúa ni avisa.
+                                Al guardar o al terminar la prueba vuelve a contar.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary py-2 small mb-2">
+                                La ventana de prueba ha terminado: la URL <strong>vuelve a contar</strong>.
+                                Puedes reanudarla o cerrar el panel.
+                            </div>
+                        }
+                    }
+                    else if (_test is not null)
+                    {
+                        <div class="alert alert-info py-2 small mb-2">
+                            Las solicitudes que lleguen ahora <strong>no cuentan</strong>. Al guardar, esta misma URL
+                            queda como definitiva: es la que reseteará los contadores en producción.
+                        </div>
+                    }
+                    else if (HasSavedUrl && _savedTestModeUntil is DateTime pending && pending > DateTime.UtcNow)
+                    {
+                        <div class="alert alert-warning py-2 small mb-2">
+                            Hay una prueba en curso hasta las @Hora(pending): esta vigilancia <strong>no está
+                            contando</strong> ni se evalúa.
+                            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" @onclick="StartTestAsync" disabled="@_testBusy">Ver la prueba</button>
+                        </div>
+                    }
+                    else if (HasSavedUrl)
+                    {
+                        <p class="small text-muted mb-2">
+                            Esta URL está en producción: cada solicitud confirma la tarea. Para ensayar sin que
+                            cuente, pulsa «Probar sin que cuente».
+                        </p>
+                    }
+
+                    <p class="mb-1 small">
+                        @if (_lastHit is DateTime last)
+                        {
+                            <span class="badge text-bg-success">✔</span>
+                            <span class="ms-1">Última solicitud: <strong>@Hora(last)</strong> (@Hace(last))</span>
+                        }
+                        else if (_test is not null)
+                        {
+                            <span class="spinner-border spinner-border-sm text-secondary" role="status"></span>
+                            <span class="ms-1 text-muted">Esperando la primera solicitud…</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Todavía no ha llegado ninguna solicitud.</span>
+                        }
+                    </p>
+
+                    @if (_hits.Count > 0)
+                    {
+                        <details>
+                            <summary class="small">Historial de solicitudes (@_hits.Count)</summary>
+                            <div class="table-responsive mt-2" style="max-height:16rem;overflow:auto">
+                                <table class="table table-sm small align-middle mb-0">
+                                    <thead>
+                                        <tr><th>Hora</th><th>Tipo</th><th>Origen</th><th>IP</th><th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var h in _hits)
+                                        {
+                                            <tr>
+                                                <td class="text-nowrap">@Hora(h.ReceivedAtUtc)</td>
+                                                <td>@Tipo(h.Kind)</td>
+                                                <td class="text-nowrap">@h.Source @(h.Method is null ? null : $"({h.Method})")</td>
+                                                <td class="font-monospace">@h.RemoteIp</td>
+                                                <td>
+                                                    @if (h.Counted)
+                                                    {
+                                                        <span class="badge text-bg-success">cuenta</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge text-bg-secondary">prueba</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    }
+
+                    @if (_testError is not null)
+                    {
+                        <div class="alert alert-danger py-2 small mb-0 mt-2">@_testError</div>
+                    }
+                </div>
+            </div>
+        }
 
         <div class="row g-2 mb-3">
             <div class="col-12"><label class="form-label">Periodicidad</label></div>
@@ -145,16 +286,35 @@
     private string? _error;
     private bool _busy;
 
+    // ---- Banco de pruebas de la URL de ping (F03.03) ----
+    private PingTestStateDto? _test;
+    private string? _savedPingToken;
+    private DateTime? _savedTestModeUntil;
+    private List<PingTestHitDto> _hits = new();
+    private DateTime? _lastHit;
+    private bool _testBusy, _copied;
+    private string? _testError;
+    private CancellationTokenSource? _pollCts;
+
+    private bool HasSavedUrl => !string.IsNullOrEmpty(_savedPingToken);
+    private string? PingUrl => _test?.Url
+        ?? (HasSavedUrl ? $"{Api.BaseAddress?.ToString().TrimEnd('/')}/p/{_savedPingToken}" : null);
+
     protected override async Task OnInitializedAsync()
     {
         var teamsResult = await Api.GetTeamsAsync();
         if (teamsResult.Ok && teamsResult.Value is not null) _teams = teamsResult.Value;
+
+        _pollCts = new CancellationTokenSource();
+        _ = PollAsync(_pollCts.Token);
 
         if (!IsEdit) return;
         var result = await Api.GetWatchAsync(Id!);
         if (!result.Ok || result.Value is null) { _error = result.Error; return; }
         var w = result.Value;
         _name = w.Name; _description = w.Description; _type = w.Type;
+        _savedPingToken = w.PingToken;
+        _savedTestModeUntil = w.TestModeUntilUtc;
         _scheduleKind = w.Schedule.Kind; _cron = w.Schedule.CronExpression ?? _cron;
         if (w.Schedule.IntervalSeconds is { } secs) { _intervalUnit = secs % 86400 == 0 ? 86400 : secs % 3600 == 0 ? 3600 : 60; _intervalValue = Math.Max(1, secs / _intervalUnit); }
         _graceMinutes = w.Tolerance.GraceSeconds / 60; _skip = w.Tolerance.SkipTolerance; _severity = w.Severity;
@@ -164,10 +324,127 @@
         _teamsUrl = Dest(w, ChannelType.MicrosoftTeams); _webhookUrl = Dest(w, ChannelType.Webhook);
         _escalationTeamId = w.EscalationTeamId;
         _teamDelayMinutes = w.TeamEscalationDelaySeconds / 60;
+
+        if (HasSavedUrl) await RefreshHistoryAsync();
     }
 
     private static bool Has(WatchDto w, ChannelType t) => w.ChannelBindings.Any(b => b.ChannelType == t && b.Enabled);
     private static string? Dest(WatchDto w, ChannelType t) => w.ChannelBindings.FirstOrDefault(b => b.ChannelType == t)?.DestinationOverride;
+
+    // ---- Banco de pruebas (F03.03) ----
+
+    /// <summary>Al elegir «Ping» se reserva ya la URL definitiva para poder ensayarla durante el alta.</summary>
+    private async Task OnTypeChangedAsync()
+    {
+        if (_type == WatchType.Ping && _test is null && !HasSavedUrl) await StartTestAsync();
+    }
+
+    private async Task StartTestAsync()
+    {
+        _testBusy = true; _testError = null;
+        var r = await Api.StartPingTestAsync(new StartPingTestRequest(IsEdit ? Id : null));
+        _testBusy = false;
+        if (r.Ok && r.Value is not null) Apply(r.Value);
+        else _testError = r.Error;
+    }
+
+    private async Task StopTestAsync()
+    {
+        _testBusy = true;
+        var probeId = _test?.ProbeId;
+        _test = null;
+        _savedTestModeUntil = null;
+        if (probeId is not null) await Api.StopPingTestAsync(probeId);
+        _testBusy = false;
+        if (HasSavedUrl) await RefreshHistoryAsync(); else { _hits.Clear(); _lastHit = null; }
+    }
+
+    private void Apply(PingTestStateDto state)
+    {
+        _test = state;
+        _hits = state.Hits;
+        _lastHit = state.Hits.Count > 0 ? state.Hits[0].ReceivedAtUtc : state.LastHitAtUtc;
+        _savedTestModeUntil = state.TestModeUntilUtc;
+    }
+
+    /// <summary>Sin prueba en curso el histórico son los check-ins reales de la vigilancia.</summary>
+    private async Task RefreshHistoryAsync()
+    {
+        var r = await Api.GetCheckInsAsync(Id!);
+        if (!r.Ok || r.Value is null) return;
+        _hits = r.Value.Select(c => new PingTestHitDto(c.ReceivedAtUtc, c.Kind, c.Source, true, null, null, null, null)).ToList();
+        _lastHit = _hits.Count > 0 ? _hits[0].ReceivedAtUtc : null;
+    }
+
+    /// <summary>Refresco en vivo: rápido mientras se ensaya, pausado cuando solo se mira el histórico.</summary>
+    private async Task PollAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(_test is not null ? 3 : 15), ct);
+                if (_type != WatchType.Ping) continue;
+
+                if (_test is not null)
+                {
+                    var r = await Api.GetPingTestAsync(_test.ProbeId);
+                    if (r.Ok && r.Value is not null) Apply(r.Value);
+                    else _test = null;                      // caducó: el TTL ya lo ha limpiado
+                }
+                else if (HasSavedUrl)
+                {
+                    await RefreshHistoryAsync();
+                }
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { /* navegación */ }
+    }
+
+    private async Task CopyAsync(string url)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
+            _copied = true;
+            StateHasChanged();
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            _copied = false;
+        }
+        catch { _testError = "No se ha podido copiar; selecciona la URL y cópiala a mano."; }
+    }
+
+    private static string Hora(DateTime utc) => utc.ToLocalTime().ToString("HH:mm:ss");
+
+    private static string Hace(DateTime utc)
+    {
+        var seconds = (DateTime.UtcNow - utc).TotalSeconds;
+        if (seconds < 60) return $"hace {Math.Max(0, (int)seconds)} s";
+        if (seconds < 3600) return $"hace {(int)(seconds / 60)} min";
+        return $"hace {(int)(seconds / 3600)} h";
+    }
+
+    private static string Tipo(string kind) => kind switch
+    {
+        "Start" => "▶ inicio",
+        "Fail" => "✖ fallo",
+        _ => "✔ hecho",
+    };
+
+    public async ValueTask DisposeAsync()
+    {
+        _pollCts?.Cancel();
+        _pollCts?.Dispose();
+
+        // Salir sin guardar cierra la prueba: el dry-run deja de suspender la vigilancia y el borrador
+        // se borra (el TTL de Mongo es solo la red de seguridad si el navegador se cierra de golpe).
+        if (_test is not null)
+        {
+            try { await Api.StopPingTestAsync(_test.ProbeId); } catch { /* el TTL lo limpiará */ }
+        }
+    }
 
     private async Task SaveAsync()
     {
@@ -181,13 +458,17 @@
         };
         var tolerance = new Tolerance { GraceSeconds = _graceMinutes * 60, SkipTolerance = _skip };
         var bindings = BuildBindings();
+        // La vigilancia adopta el token ensayado: la URL probada es exactamente la de producción (F03.03).
         var req = new WatchRequest(_name, _description, _type, schedule, tolerance, bindings, _severity, null, null,
-            string.IsNullOrEmpty(_escalationTeamId) ? null : _escalationTeamId, _teamDelayMinutes * 60);
+            string.IsNullOrEmpty(_escalationTeamId) ? null : _escalationTeamId, _teamDelayMinutes * 60,
+            _type == WatchType.Ping ? _test?.ProbeId : null);
 
         var result = IsEdit ? await Api.UpdateWatchAsync(Id!, req) : await Api.CreateWatchAsync(req);
         _busy = false;
-        if (result.Ok) Nav.NavigateTo("/");
-        else _error = result.Error;
+        if (!result.Ok) { _error = result.Error; return; }
+
+        _test = null;   // guardado: la prueba termina en servidor, no hay que cerrarla al navegar
+        Nav.NavigateTo("/");
     }
 
     private List<ChannelBinding> BuildBindings()

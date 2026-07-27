@@ -13,6 +13,7 @@ Tabla maestra de funcionalidades. Cada una tiene su código `FXX.YY` y, si proce
 | F02.03 | Channel bindings apilables por tarea | implementada | [F02-watches](F02-watches/overview.md) |
 | F03.01 | Check-in por ping HTTP (start/success/fail) | implementada | — |
 | F03.02 | Check-in manual (app/magic link) | implementada | — |
+| F03.03 | Banco de pruebas de la URL de ping (dry-run en alta/edición) | implementada | [F03-checkins](F03-checkins/overview.md) |
 | F04.01 | Incidentes con idempotencia de alertas | implementada | [F04-evaluation](F04-evaluation/overview.md) |
 | F04.02 | Escalado por bindings / políticas | implementada | [F04-evaluation](F04-evaluation/overview.md) |
 | F04.03 | Motor de evaluación + leader election | implementada | [F04-evaluation](F04-evaluation/overview.md) |

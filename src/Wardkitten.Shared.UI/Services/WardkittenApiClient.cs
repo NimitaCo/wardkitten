@@ -35,6 +35,11 @@ public sealed class WardkittenApiClient
     public Task<ApiResult> ResumeAsync(string id) => PostAsync($"/api/watches/{id}/resume", new { });
     public Task<ApiResult<List<CheckInDto>>> GetCheckInsAsync(string id) => GetAsync<List<CheckInDto>>($"/api/watches/{id}/checkins");
     public Task<ApiResult<List<WatchTemplateDto>>> GetTemplatesAsync() => GetAsync<List<WatchTemplateDto>>("/api/templates");
+
+    // ---- Banco de pruebas de la URL de ping (F03.03) ----
+    public Task<ApiResult<PingTestStateDto>> StartPingTestAsync(StartPingTestRequest req) => PostAsync<PingTestStateDto>("/api/ping-tests", req);
+    public Task<ApiResult<PingTestStateDto>> GetPingTestAsync(string probeId) => GetAsync<PingTestStateDto>($"/api/ping-tests/{probeId}");
+    public Task<ApiResult> StopPingTestAsync(string probeId) => DeleteAsync($"/api/ping-tests/{probeId}");
     public Task<ApiResult<WatchDto>> CreateFromTemplateAsync(string id) => PostAsync<WatchDto>($"/api/templates/{id}", new { });
 
     // ---- Wallet & billing ----

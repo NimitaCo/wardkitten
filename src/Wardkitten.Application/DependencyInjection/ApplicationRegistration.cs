@@ -24,6 +24,7 @@ public static class ApplicationRegistration
         services.AddSingleton<IWatchEventPublisher, NoopWatchEventPublisher>();
 
         services.AddSingleton<WalletService>();
+        services.AddSingleton<PingProbeService>();
         services.AddSingleton<WatchService>();
         services.AddSingleton<IncidentService>();
         services.AddSingleton<CheckInService>();

@@ -4,6 +4,7 @@ using Wardkitten.Application.Common;
 using Wardkitten.Application.RealTime;
 using Wardkitten.Application.Security;
 using Wardkitten.Domain.Billing;
+using Wardkitten.Domain.CheckIns;
 using Wardkitten.Domain.Watches;
 
 namespace Wardkitten.Application.Services;
@@ -19,7 +20,10 @@ public sealed record WatchInput(
     List<string>? Tags,
     string? ProjectId,
     string? EscalationTeamId = null,
-    int TeamEscalationDelaySeconds = 0);
+    int TeamEscalationDelaySeconds = 0,
+    // Banco de pruebas usado al configurar: la vigilancia adopta su token para que la URL ensayada sea
+    // exactamente la definitiva (F03.03).
+    string? PingProbeId = null);
 
 /// <summary>
 /// Alta/edición/borrado de watches con validación de schedule y aplicación de los límites del plan
@@ -29,13 +33,20 @@ public sealed class WatchService
 {
     private readonly IWatchRepository _watches;
     private readonly IUserRepository _users;
+    private readonly PingProbeService _probes;
     private readonly IWatchEventPublisher _events;
     private readonly IClock _clock;
 
-    public WatchService(IWatchRepository watches, IUserRepository users, IWatchEventPublisher events, IClock clock)
+    public WatchService(
+        IWatchRepository watches,
+        IUserRepository users,
+        PingProbeService probes,
+        IWatchEventPublisher events,
+        IClock clock)
     {
         _watches = watches;
         _users = users;
+        _probes = probes;
         _events = events;
         _clock = clock;
     }
@@ -65,6 +76,12 @@ public sealed class WatchService
         if (string.IsNullOrWhiteSpace(schedule.TimeZoneId) || schedule.TimeZoneId == "UTC")
             schedule.TimeZoneId = user.TimeZoneId;
 
+        // Si se ensayó la URL durante el alta, la vigilancia adopta ese token: la URL con la que el
+        // usuario acaba de comprobar que llegan las solicitudes es ya la definitiva (F03.03).
+        var probe = input.Type == WatchType.Ping
+            ? await _probes.ClaimDraftAsync(input.PingProbeId ?? string.Empty, userId, ct)
+            : null;
+
         var watch = new Watch
         {
             UserId = userId,
@@ -78,13 +95,17 @@ public sealed class WatchService
             Tags = input.Tags ?? new List<string>(),
             ProjectId = input.ProjectId,
             Status = WatchStatus.New,
-            PingToken = input.Type == WatchType.Ping ? SecureTokenGenerator.New() : string.Empty,
+            PingToken = input.Type == WatchType.Ping ? probe?.Token ?? SecureTokenGenerator.New() : string.Empty,
             EscalationTeamId = input.EscalationTeamId,
             TeamEscalationDelaySeconds = input.TeamEscalationDelaySeconds,
         };
         watch.ScheduleNextFrom(_clock.UtcNow);
 
         await _watches.InsertAsync(watch, ct);
+
+        if (probe is not null) await _probes.BindAsync(probe, watch.Id, ct);
+        else if (!string.IsNullOrEmpty(input.PingProbeId)) await _probes.DiscardAsync(input.PingProbeId!, userId, ct);
+
         await _events.WatchUpdatedAsync(watch, ct);
         return Result<Watch>.Ok(watch);
     }
@@ -115,12 +136,21 @@ public sealed class WatchService
         watch.ProjectId = input.ProjectId;
         watch.EscalationTeamId = input.EscalationTeamId;
         watch.TeamEscalationDelaySeconds = input.TeamEscalationDelaySeconds;
+
+        // Al guardar termina cualquier ensayo en curso: la URL vuelve a contar de inmediato (F03.03).
+        watch.EndTestMode(_clock.UtcNow);
+
+        PingProbe? probe = null;
         if (watch.Type == WatchType.Ping && string.IsNullOrEmpty(watch.PingToken))
-            watch.PingToken = SecureTokenGenerator.New();
+        {
+            probe = await _probes.ClaimDraftAsync(input.PingProbeId ?? string.Empty, userId, ct);
+            watch.PingToken = probe?.Token ?? SecureTokenGenerator.New();
+        }
 
         if (scheduleChanged) watch.ScheduleNextFrom(_clock.UtcNow);
 
         await _watches.ReplaceAsync(watch, ct);
+        if (probe is not null) await _probes.BindAsync(probe, watch.Id, ct);
         await _events.WatchUpdatedAsync(watch, ct);
         return Result<Watch>.Ok(watch);
     }
@@ -130,6 +160,7 @@ public sealed class WatchService
         var watch = await GetAsync(watchId, userId, ct);
         if (watch is null) return Result.Fail("Watch no encontrado.");
         await _watches.DeleteAsync(watchId, ct);
+        await _probes.DeleteForWatchAsync(watchId, ct);
         return Result.Ok();
     }
 

@@ -38,6 +38,13 @@ public sealed class Watch : Entity
     /// <summary>Token secreto e inadivinable de la URL de ping (ver SECURITY.md). Solo para tipo Ping.</summary>
     public string PingToken { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Fin (UTC) de la ventana de ensayo de la URL de ping. Mientras esté vigente, los pings se registran
+    /// en el banco de pruebas pero <b>no cuentan</b> y la vigilancia <b>no se evalúa</b> (para que el
+    /// ensayo no dispare alertas). Null = operación normal. Feature: F03.03.
+    /// </summary>
+    public DateTime? TestModeUntilUtc { get; set; }
+
     public string? EscalationPolicyId { get; set; }
 
     /// <summary>Equipo al que escalar si el incidente sigue sin reconocer (on-call). Feature: F12.03.</summary>
@@ -61,12 +68,16 @@ public sealed class Watch : Entity
 
     public bool IsInMaintenance(DateTime nowUtc) => MaintenanceWindows.Any(w => w.Contains(nowUtc));
 
+    /// <summary>¿Está en marcha un ensayo de la URL de ping (dry-run)? Feature: F03.03.</summary>
+    public bool IsTestMode(DateTime nowUtc) => TestModeUntilUtc is { } until && nowUtc < until;
+
     /// <summary>¿Debe el motor evaluar este watch ahora mismo?</summary>
     public bool IsActiveForEvaluation(DateTime nowUtc)
         => !Paused
         && Status != WatchStatus.Paused
         && NextDueAtUtc.HasValue
-        && !IsInMaintenance(nowUtc);
+        && !IsInMaintenance(nowUtc)
+        && !IsTestMode(nowUtc);
 
     /// <summary>¿Se ha superado el deadline (vencimiento + gracia)?</summary>
     public bool IsPastDeadline(DateTime nowUtc) => DeadlineUtc is { } d && nowUtc > d;
@@ -94,6 +105,31 @@ public sealed class Watch : Entity
     {
         ConsecutiveMisses++;
         CurrentStreak = 0;
+    }
+
+    /// <summary>Abre la ventana de ensayo de la URL: durante ella los pings no cuentan ni se evalúa. F03.03.</summary>
+    public void StartTestMode(DateTime untilUtc) => TestModeUntilUtc = untilUtc;
+
+    /// <summary>
+    /// Cierra el ensayo y devuelve la vigilancia a la operación normal. Si el deadline venció durante la
+    /// prueba, reprograma desde ahora: el tiempo del ensayo no debe convertirse en un incumplimiento.
+    /// </summary>
+    public void EndTestMode(DateTime nowUtc)
+    {
+        if (TestModeUntilUtc is null) return;
+        TestModeUntilUtc = null;
+        if (IsPastDeadline(nowUtc)) ScheduleNextFrom(nowUtc);
+    }
+
+    /// <summary>
+    /// Cierra el ensayo si su ventana ya expiró (el usuario cerró la pantalla sin pararlo). Devuelve true
+    /// si hubo cambios que persistir. Lo llama el motor de evaluación antes de juzgar la vigilancia.
+    /// </summary>
+    public bool CloseExpiredTestMode(DateTime nowUtc)
+    {
+        if (TestModeUntilUtc is not { } until || nowUtc < until) return false;
+        EndTestMode(nowUtc);
+        return true;
     }
 
     public void Pause()

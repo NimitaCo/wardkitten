@@ -64,9 +64,40 @@ public static class WatchEndpoints
             var recent = await checkIns.GetRecentByWatchAsync(id, 50, ct);
             return Results.Ok(recent.Select(c => c.ToDto()));
         });
+
+        MapPingTestEndpoints(app);
+    }
+
+    /// <summary>
+    /// Banco de pruebas de la URL de ping (F03.03): permite comprobar durante el alta o la edición que el
+    /// sistema remoto llega, sin que esas solicitudes cuenten. Ver <see cref="PingProbeService"/>.
+    /// </summary>
+    private static void MapPingTestEndpoints(IEndpointRouteBuilder app)
+    {
+        var g = app.MapGroup("/api/ping-tests").WithTags("PingTest").RequireAuthorization();
+
+        g.MapPost("/", async (StartPingTestRequest req, ClaimsPrincipal p, PingProbeService svc, CancellationToken ct) =>
+        {
+            var window = req.Minutes is > 0 ? TimeSpan.FromMinutes(req.Minutes.Value) : (TimeSpan?)null;
+            var r = await svc.StartAsync(p.UserId()!, req.WatchId, window, ct);
+            return r.Success ? Results.Ok(r.Value!.ToDto()) : Results.BadRequest(new { error = r.Error });
+        });
+
+        g.MapGet("/{probeId}", async (string probeId, ClaimsPrincipal p, PingProbeService svc, CancellationToken ct) =>
+        {
+            var r = await svc.GetAsync(probeId, p.UserId()!, ct);
+            return r.Success ? Results.Ok(r.Value!.ToDto()) : Results.NotFound(new { error = r.Error });
+        });
+
+        g.MapDelete("/{probeId}", async (string probeId, ClaimsPrincipal p, PingProbeService svc, CancellationToken ct) =>
+        {
+            var r = await svc.StopAsync(probeId, p.UserId()!, ct);
+            return r.Success ? Results.NoContent() : Results.NotFound(new { error = r.Error });
+        });
     }
 
     private static WatchInput ToInput(WatchRequest req)
         => new(req.Name, req.Description, req.Type, req.Schedule, req.Tolerance, req.ChannelBindings,
-               req.Severity, req.Tags, req.ProjectId, req.EscalationTeamId, req.TeamEscalationDelaySeconds);
+               req.Severity, req.Tags, req.ProjectId, req.EscalationTeamId, req.TeamEscalationDelaySeconds,
+               req.PingProbeId);
 }

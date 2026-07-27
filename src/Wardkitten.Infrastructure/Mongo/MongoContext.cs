@@ -29,6 +29,7 @@ public sealed class MongoContext
     public IMongoCollection<RefreshToken> RefreshTokens => Database.GetCollection<RefreshToken>(CollectionNames.RefreshTokens);
     public IMongoCollection<Watch> Watches => Database.GetCollection<Watch>(CollectionNames.Watches);
     public IMongoCollection<CheckIn> CheckIns => Database.GetCollection<CheckIn>(CollectionNames.CheckIns);
+    public IMongoCollection<PingProbe> PingProbes => Database.GetCollection<PingProbe>(CollectionNames.PingProbes);
     public IMongoCollection<Incident> Incidents => Database.GetCollection<Incident>(CollectionNames.Incidents);
     public IMongoCollection<EscalationPolicy> EscalationPolicies => Database.GetCollection<EscalationPolicy>(CollectionNames.EscalationPolicies);
     public IMongoCollection<Subscription> Subscriptions => Database.GetCollection<Subscription>(CollectionNames.Subscriptions);
@@ -91,6 +92,20 @@ public sealed class MongoContext
                     Unique = true,
                     PartialFilterExpression = Builders<Watch>.Filter.Gt(w => w.PingToken, ""),
                 }),
+        }, ct);
+
+        await PingProbes.Indexes.CreateManyAsync(new[]
+        {
+            new CreateIndexModel<PingProbe>(Builders<PingProbe>.IndexKeys.Ascending(p => p.Token),
+                new CreateIndexOptions { Unique = true, Name = "ux_pingprobe_token" }),
+            new CreateIndexModel<PingProbe>(Builders<PingProbe>.IndexKeys.Ascending(p => p.WatchId),
+                new CreateIndexOptions { Name = "ix_pingprobe_watch" }),
+            new CreateIndexModel<PingProbe>(Builders<PingProbe>.IndexKeys.Ascending(p => p.UserId),
+                new CreateIndexOptions { Name = "ix_pingprobe_user" }),
+            // Auto-borrado: Mongo elimina el banco de pruebas al llegar su caducidad (F03.03). Es lo que
+            // limpia los borradores de quien empieza a crear una vigilancia y no termina el proceso.
+            new CreateIndexModel<PingProbe>(Builders<PingProbe>.IndexKeys.Ascending(p => p.ExpiresAtUtc),
+                new CreateIndexOptions { Name = "ttl_pingprobe_expiry", ExpireAfter = TimeSpan.Zero }),
         }, ct);
 
         await Incidents.Indexes.CreateManyAsync(new[]

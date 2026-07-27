@@ -35,6 +35,7 @@ public static class InfrastructureRegistration
         services.AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddSingleton<IWatchRepository, WatchRepository>();
         services.AddSingleton<ICheckInRepository, CheckInRepository>();
+        services.AddSingleton<IPingProbeRepository, PingProbeRepository>();
         services.AddSingleton<IIncidentRepository, IncidentRepository>();
         services.AddSingleton<IEscalationPolicyRepository, EscalationPolicyRepository>();
         services.AddSingleton<ISubscriptionRepository, SubscriptionRepository>();

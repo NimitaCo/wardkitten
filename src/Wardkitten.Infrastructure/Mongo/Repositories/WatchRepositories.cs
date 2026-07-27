@@ -69,6 +69,57 @@ public sealed class CheckInRepository : ICheckInRepository
                             .ToListAsync(ct);
 }
 
+/// <summary>
+/// Bancos de pruebas de URLs de ping (F03.03). El auto-borrado lo hace el índice TTL sobre
+/// <c>expiresAtUtc</c> (ver <see cref="MongoContext"/>); las consultas filtran también por caducidad
+/// porque el barrido TTL de Mongo solo corre cada ~60 s.
+/// </summary>
+public sealed class PingProbeRepository : MongoRepository<PingProbe>, IPingProbeRepository
+{
+    public PingProbeRepository(MongoContext ctx, IClock clock) : base(ctx.PingProbes, clock) { }
+
+    public async Task<PingProbe?> GetByTokenAsync(string token, CancellationToken ct = default)
+        => await Collection.Find(Builders<PingProbe>.Filter.Eq(p => p.Token, token)).FirstOrDefaultAsync(ct);
+
+    public async Task<PingProbe?> GetByWatchAsync(string watchId, CancellationToken ct = default)
+        => await Collection.Find(Builders<PingProbe>.Filter.Eq(p => p.WatchId, watchId))
+                           .SortByDescending(p => p.CreatedAtUtc)
+                           .FirstOrDefaultAsync(ct);
+
+    public async Task<IReadOnlyList<PingProbe>> GetActiveByUserAsync(string userId, DateTime nowUtc, CancellationToken ct = default)
+        => await Collection.Find(Builders<PingProbe>.Filter.And(
+                               Builders<PingProbe>.Filter.Eq(p => p.UserId, userId),
+                               Builders<PingProbe>.Filter.Gt(p => p.ExpiresAtUtc, nowUtc)))
+                           .SortByDescending(p => p.CreatedAtUtc)
+                           .ToListAsync(ct);
+
+    public async Task<bool> RegisterHitAsync(string probeId, PingProbeHit hit, DateTime nowUtc, CancellationToken ct = default)
+    {
+        // Push acotado + contadores en una sola operación atómica: dos pings simultáneos no se pisan.
+        var filter = Builders<PingProbe>.Filter.And(
+            ById(probeId),
+            Builders<PingProbe>.Filter.Gt(p => p.ExpiresAtUtc, nowUtc));
+
+        var update = Builders<PingProbe>.Update
+            .PushEach(p => p.Hits, new[] { hit }, slice: -PingProbe.MaxHits)
+            .Inc(p => p.HitCount, 1)
+            .Set(p => p.LastHitAtUtc, (DateTime?)hit.ReceivedAtUtc)
+            .Set(p => p.UpdatedAtUtc, nowUtc);
+
+        var result = await Collection.UpdateOneAsync(filter, update, cancellationToken: ct);
+        return result.ModifiedCount > 0;
+    }
+
+    public async Task ExtendAsync(string probeId, DateTime expiresAtUtc, CancellationToken ct = default)
+        => await Collection.UpdateOneAsync(
+            ById(probeId),
+            Builders<PingProbe>.Update.Set(p => p.ExpiresAtUtc, expiresAtUtc).Set(p => p.UpdatedAtUtc, Clock.UtcNow),
+            cancellationToken: ct);
+
+    public async Task DeleteByWatchAsync(string watchId, CancellationToken ct = default)
+        => await Collection.DeleteManyAsync(Builders<PingProbe>.Filter.Eq(p => p.WatchId, watchId), ct);
+}
+
 public sealed class IncidentRepository : MongoRepository<Incident>, IIncidentRepository
 {
     public IncidentRepository(MongoContext ctx, IClock clock) : base(ctx.Incidents, clock) { }

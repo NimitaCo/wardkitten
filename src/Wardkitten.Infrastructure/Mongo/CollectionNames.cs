@@ -7,6 +7,7 @@ public static class CollectionNames
     public const string RefreshTokens = "refreshTokens";
     public const string Watches = "watches";
     public const string CheckIns = "checkIns";
+    public const string PingProbes = "pingProbes";
     public const string Incidents = "incidents";
     public const string EscalationPolicies = "escalationPolicies";
     public const string Subscriptions = "subscriptions";

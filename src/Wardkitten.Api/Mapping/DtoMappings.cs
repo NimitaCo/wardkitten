@@ -1,6 +1,7 @@
 using Wardkitten.Domain.Billing;
 using Wardkitten.Domain.CheckIns;
 using Wardkitten.Domain.Identity;
+using Wardkitten.Application.Services;
 using Wardkitten.Domain.Incidents;
 using Wardkitten.Domain.Watches;
 using Wardkitten.Shared.Contracts;
@@ -17,9 +18,15 @@ public static class DtoMappings
         w.Id, w.Name, w.Description, w.Type, w.Schedule, w.Tolerance, w.ChannelBindings,
         w.Severity, w.Status, w.Paused, w.NextDueAtUtc, w.LastCheckInAtUtc, w.ConsecutiveMisses,
         w.Type == WatchType.Ping ? w.PingToken : null, w.Tags, w.ProjectId, w.CurrentIncidentId,
-        w.CurrentStreak, w.BestStreak, w.EscalationTeamId, w.TeamEscalationDelaySeconds, w.CreatedAtUtc);
+        w.CurrentStreak, w.BestStreak, w.EscalationTeamId, w.TeamEscalationDelaySeconds, w.CreatedAtUtc,
+        w.TestModeUntilUtc);
 
     public static CheckInDto ToDto(this CheckIn c) => new(c.Id, c.Kind.ToString(), c.Source.ToString(), c.ReceivedAtUtc, c.DurationMs);
+
+    public static PingTestStateDto ToDto(this PingTestState s) => new(
+        s.ProbeId, s.Token, s.Url, s.Mode, s.ExpiresAtUtc, s.TestModeUntilUtc, s.LastHitAtUtc, s.HitCount,
+        s.Activity.Select(a => new PingTestHitDto(
+            a.ReceivedAtUtc, a.Kind.ToString(), a.Source, a.Counted, a.Method, a.RemoteIp, a.UserAgent, a.Payload)).ToList());
 
     public static WalletDto ToDto(this Wallet w) => new(w.BalanceCredits, w.MinThresholdCredits, w.Currency, w.IsBelowThreshold);
 

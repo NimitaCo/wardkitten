@@ -59,9 +59,33 @@ public static class PublicEndpoints
 
     private static async Task<IResult> HandlePingAsync(string token, CheckInKind kind, CheckInService svc, HttpContext http, CancellationToken ct)
     {
-        var ip = http.Connection.RemoteIpAddress?.ToString();
-        var r = await svc.RecordByPingTokenAsync(token, kind, payload: null, ip, ct);
-        return r.Success ? Results.Ok(new { status = "ok" }) : Results.NotFound();
+        var userAgent = http.Request.Headers.UserAgent.ToString();
+        var request = new PingRequest(
+            kind,
+            Payload: await ReadPayloadAsync(http.Request, ct),
+            RemoteIp: http.Connection.RemoteIpAddress?.ToString(),
+            Method: http.Request.Method,
+            UserAgent: string.IsNullOrWhiteSpace(userAgent) ? null : userAgent);
+
+        return await svc.RecordByPingTokenAsync(token, request, ct) switch
+        {
+            PingResolution.Recorded => Results.Ok(new { status = "ok", mode = "live" }),
+            // En pruebas se responde 200 igual que en producción: el sistema remoto no tiene que cambiar
+            // nada para ensayar, y el usuario ve la solicitud en la pantalla de alta/edición (F03.03).
+            PingResolution.Test => Results.Ok(new { status = "ok", mode = "test", counted = false }),
+            _ => Results.NotFound(),
+        };
+    }
+
+    /// <summary>Cuerpo de la solicitud recortado: lo enseña el banco de pruebas y se guarda en el check-in.</summary>
+    private static async Task<string?> ReadPayloadAsync(HttpRequest request, CancellationToken ct)
+    {
+        if (request.ContentLength is null or 0) return null;
+
+        using var reader = new StreamReader(request.Body, leaveOpen: true);
+        var buffer = new char[PingProbe.MaxPayloadChars];
+        var read = await reader.ReadBlockAsync(buffer.AsMemory(), ct);
+        return read == 0 ? null : new string(buffer, 0, read);
     }
 
     private static string Html(string message) => $"""
