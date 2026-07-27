@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [main, Release]
 
-# Credenciales del feed privado NimitaCo (las lee nuget.config).
-# Inerte mientras el repo no referencie paquetes Es.Nimita.*.
-env:
-  NIMITACO_NUGET_USER: ${{ github.actor }}
-  NIMITACO_NUGET_TOKEN: ${{ secrets.NIMITACO_NUGET_TOKEN }}
-
 jobs:
   build-test:
     runs-on: ubuntu-latest
