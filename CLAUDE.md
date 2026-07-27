@@ -6,6 +6,10 @@ Watchdog SaaS para tareas/procesos periódicos (dead-man's-switch). Stack: .NET 
 MongoDB, Blazor WASM (web) + .NET MAUI Blazor Hybrid (móvil), Stripe (suscripciones + créditos),
 canales Email/Telegram/Push (gratis) y SMS/WhatsApp (de pago, vía wallet de créditos). K8s + ArgoCD.
 
+**Librerías compartidas:** lo genérico va a `NimitaCo/Domain` (nugets `Es.Nimita.Domain.*` /
+`Es.Nimita.Infra.*`; prohibido `Com.Avanware.*`; TDD + DDD; NO vendorizar en este repo).
+Detalle y estado de adopción: sección «Librerías compartidas NimitaCo» de `AGENTS.md`.
+
 ## Publicar nueva versión (K8S deploy)
 
 > **⚠️ Sincronización de manifiestos K8S (temporal, hasta nueva orden):** los YAML de `K8S/` deben mantenerse **a la vez** en este repo **y** en el repo de infraestructura (`Avanware/infra/Clusters/C/misc/wardkitten/wardkitten.yaml`). Temporalmente es **infra** quien los publica (ArgoCD app `infra`, sync recursivo de `Clusters/C/`); todo cambio en un manifiesto de `K8S/` hay que replicarlo en su copia de infra o no se desplegará.
