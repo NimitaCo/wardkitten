@@ -10,6 +10,9 @@
     <!-- Sirve el Blazor WASM desde la API (UseBlazorFrameworkFiles). -->
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <!-- Pin directo: la transitiva Microsoft.OpenApi 2.0.0 (vía Swashbuckle) tiene una
+         vulnerabilidad alta conocida (NU1903); se eleva a la versión parcheada. -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="1.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
   </ItemGroup>
