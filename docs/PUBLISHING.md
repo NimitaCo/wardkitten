@@ -73,7 +73,7 @@ Los manifiestos están en `K8S/produccion/` y `K8S/preproduccion/`.
 
    ```bash
    kubectl create namespace wardkitten
-   kubectl -n wardkitten create secret docker-registry avanware.ghcr.io \
+   kubectl -n wardkitten create secret docker-registry nimitaco.ghcr.io \
      --docker-server=ghcr.io \
      --docker-username=<usuario con acceso a ghcr.io/nimitaco> \
      --docker-password=<PAT read:packages>
@@ -299,7 +299,7 @@ No se incluyen en el repo porque la firma depende de credenciales que aún no ex
 
 **Web**
 - [ ] CI **Build** (`GITHUB_TOKEN`) publica `ghcr.io/nimitaco/wardkitten` (imagen con WASM incluido).
-- [ ] Pull secret `avanware.ghcr.io` creado en el namespace (con acceso a `ghcr.io/nimitaco`), salvo paquete público.
+- [ ] Pull secret `nimitaco.ghcr.io` creado en el namespace (con acceso a `ghcr.io/nimitaco`), salvo paquete público.
 - [ ] Secretos reales sustituyendo los `REPLACE_ME`.
 - [ ] DNS `www.*`, `app.*` (redirige) y `api.*` + TLS (cert-manager).
 - [ ] `kubectl apply -f K8S/produccion/` (o ArgoCD synced/healthy).

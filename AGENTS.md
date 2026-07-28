@@ -53,8 +53,7 @@ git add K8S/ && git commit -m "K8S deploy wardkitten:$NEW" && git push
 ```
 
 Imágenes: `ghcr.io/nimitaco/wardkitten` y `ghcr.io/nimitaco/wardkitten-worker`. Pull secret:
-`avanware.ghcr.io` (nombre histórico del `dockerconfigjson`; debe tener acceso de lectura a
-`ghcr.io/nimitaco`). Entornos en `K8S/produccion/` y `K8S/preproduccion/`. Despliegue por ArgoCD;
+`nimitaco.ghcr.io` (el `dockerconfigjson`; debe tener acceso de lectura a `ghcr.io/nimitaco`). Entornos en `K8S/produccion/` y `K8S/preproduccion/`. Despliegue por ArgoCD;
 se considera completo con `sync == Synced` y `health == Healthy`.
 
 Dominio canónico de la web: `www.wardkitten.com` (la API sirve WASM + API same-origin);
