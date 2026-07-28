@@ -24,4 +24,4 @@ spec:
             - secretRef: { name: wardkitten-secrets }
       restartPolicy: Always
       imagePullSecrets:
-        - name: avanware.ghcr.io
+        - name: nimitaco.ghcr.io
