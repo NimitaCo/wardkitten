@@ -1,10 +1,11 @@
+using Es.Nimita.Infra.Mongo;
+using Es.Nimita.Infra.Mongo.Leasing;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Wardkitten.Domain.Billing;
 using Wardkitten.Domain.CheckIns;
 using Wardkitten.Domain.Identity;
 using Wardkitten.Domain.Incidents;
-using Wardkitten.Domain.Leasing;
 using Wardkitten.Domain.Notifications;
 using Wardkitten.Domain.StatusPages;
 using Wardkitten.Domain.Teams;

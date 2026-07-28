@@ -39,6 +39,10 @@ jobs:
           tags: |
             ghcr.io/nimitaco/wardkitten:${{ github.run_number }}
             ghcr.io/nimitaco/wardkitten:latest
+          # Credencial del feed NimitaCo como secreto de BuildKit (el Dockerfile la monta en el
+          # restore; con NIMITACO_NUGET_TOKEN sin crear, el Password queda vacío y se ignora).
+          secrets: |
+            nimitaco_nuget=Username=${{ github.actor }};Password=${{ secrets.NIMITACO_NUGET_TOKEN }}
 
       - name: Fijar imagen API en el manifiesto y desplegar (ArgoCD)
         run: |

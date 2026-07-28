@@ -1,4 +1,4 @@
-using Wardkitten.Application.Abstractions.Persistence;
+using Es.Nimita.Infra.Mongo.Leasing;
 using Wardkitten.Application.Evaluation;
 
 namespace Wardkitten.Worker;

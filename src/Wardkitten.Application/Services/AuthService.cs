@@ -1,3 +1,4 @@
+using Es.Nimita.Domain.Primitives;
 using Wardkitten.Application.Abstractions;
 using Wardkitten.Application.Abstractions.Persistence;
 using Wardkitten.Application.Common;
@@ -47,8 +48,10 @@ public sealed class AuthService
     public async Task<Result<AuthResult>> RegisterAsync(string email, string password, string displayName,
         string? timeZoneId, string? locale, CancellationToken ct = default)
     {
+        // La normalización para buscar/guardar sigue siendo trim + lowercase (idéntica a la de login):
+        // NO usar EmailAddress.Value aquí, para no romper cuentas antiguas con emails raros.
         email = email.Trim().ToLowerInvariant();
-        if (!email.Contains('@')) return Result<AuthResult>.Fail("Email no válido.");
+        if (!EmailAddress.IsValid(email)) return Result<AuthResult>.Fail("Email no válido.");
         if (password.Length < 8) return Result<AuthResult>.Fail("La contraseña debe tener al menos 8 caracteres.");
         if (await _users.GetByEmailAsync(email, ct) is not null)
             return Result<AuthResult>.Fail("Ya existe una cuenta con ese email.");
@@ -146,7 +149,10 @@ public sealed class AuthService
     {
         var user = await _users.GetByIdAsync(userId, ct);
         if (user is null) return Result<string>.Fail("Usuario no encontrado.");
-        user.Phone = phoneE164.Trim();
+        // Acepta E.164 internacional y el formato nacional español (9 dígitos), normalizando a E.164.
+        if (!PhoneNumber.TryParseSpanish(phoneE164, out var phone))
+            return Result<string>.Fail("Teléfono no válido: usa formato internacional (+34600111222) o nacional español.");
+        user.Phone = phone.Value;
         user.PhoneVerified = false;
         var code = SecureTokenGenerator.NumericCode();
         user.PhoneOtpHash = _tokens.HashRefreshToken(code);

@@ -1,3 +1,5 @@
+using Es.Nimita.Infra.Mongo;
+using Es.Nimita.Infra.Mongo.Leasing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -6,11 +8,19 @@ using Wardkitten.Application.Abstractions;
 using Wardkitten.Application.Abstractions.Persistence;
 using Wardkitten.Infrastructure.Mongo;
 using Wardkitten.Infrastructure.Mongo.Repositories;
+using Wardkitten.Infrastructure.Time;
 
 namespace Wardkitten.Infrastructure.DependencyInjection;
 
 public static class InfrastructureRegistration
 {
+    /// <summary>
+    /// Base de datos por defecto cuando la configuración no la indica. El <c>MongoSettings</c> de
+    /// Es.Nimita.Infra.Mongo defaultea a cadena vacía; Wardkitten conserva su default histórico
+    /// (es el nombre de la BBDD de producción). Lo protege MongoSettingsRegistrationTests.
+    /// </summary>
+    private const string DefaultDatabaseName = "Wardkitten";
+
     /// <summary>
     /// Registra MongoDB (cliente, contexto, repositorios) y servicios base de infraestructura.
     /// Conexión por <c>MONGOSETTINGS_CONNECTION</c> / <c>MONGOSETTINGS_DATABASENAME</c> (ver SECURITY.md).
@@ -20,10 +30,11 @@ public static class InfrastructureRegistration
         MongoDbConfigurator.Configure(); // SIEMPRE antes de construir el cliente/contexto
 
         var defaults = new MongoSettings();
+        var databaseName = config["MONGOSETTINGS_DATABASENAME"];
         var settings = new MongoSettings
         {
             Connection = config["MONGOSETTINGS_CONNECTION"] ?? config["ConnectionStrings:Mongo"] ?? defaults.Connection,
-            DatabaseName = config["MONGOSETTINGS_DATABASENAME"] ?? defaults.DatabaseName,
+            DatabaseName = string.IsNullOrWhiteSpace(databaseName) ? DefaultDatabaseName : databaseName,
         };
 
         services.AddSingleton(Options.Create(settings));
@@ -45,7 +56,11 @@ public static class InfrastructureRegistration
         services.AddSingleton<INotificationLogRepository, NotificationLogRepository>();
         services.AddSingleton<IStatusPageRepository, StatusPageRepository>();
         services.AddSingleton<ITeamRepository, TeamRepository>();
-        services.AddSingleton<ILeaseStore, MongoLeaseStore>();
+        // Lease del paquete Es.Nimita.Infra.Mongo, sobre la MISMA colección de siempre
+        // (MongoContext.Leases -> "leases") y con el reloj de Wardkitten adaptado a TimeProvider.
+        services.AddSingleton<ILeaseStore>(sp => new MongoLeaseStore(
+            sp.GetRequiredService<MongoContext>().Leases,
+            new ClockTimeProvider(sp.GetRequiredService<IClock>())));
 
         return services;
     }

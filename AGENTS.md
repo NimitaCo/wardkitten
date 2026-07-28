@@ -80,7 +80,9 @@ Web y worker corren en **Kubernetes (Linux)**; el desarrollo es en **Windows**. 
 - No incluyas en commits archivos generados ni dependencias precompiladas, ni **secretos**.
 - Evita parches provisionales («duct tape»): da soluciones definitivas.
 - Ejecuta `dotnet test` desde la raíz antes de abrir un PR.
-- No subas a `nuget.config` credenciales ni feeds privados: este repo es **autónomo** (solo nuget.org).
+- No subas **credenciales** a `nuget.config`. El único feed privado permitido es `nimitaco`
+  (Es.Nimita.*, ya declarado con *source mapping*); su credencial viaja SOLO por la variable de
+  entorno `NuGetPackageSourceCredentials_nimitaco` (ver `ToDo.md`).
 
 ## Librerías compartidas NimitaCo (Es.Nimita.*) — política TDD + DDD
 
@@ -98,25 +100,32 @@ Web y worker corren en **Kubernetes (Linux)**; el desarrollo es en **Windows**. 
 - Convenciones y glosario de toda la organización: repo `NimitaCo/Domain` →
   `docs/CONVENTIONS.md` y `docs/GLOSSARY.md`.
 
-### Estado en wardkitten
+### Estado en wardkitten: **adoptado por `PackageReference` 26.7.5** (2026-07-28)
 
-El `nuget.config` de este repo es **autónomo** (solo nuget.org), así que la adopción llega cuando
-el feed de NimitaCo publique los paquetes. En ese momento:
+`Es.Nimita.Domain.Primitives` (en `Wardkitten.Application`) y `Es.Nimita.Infra.Mongo` (en
+`Wardkitten.Infrastructure`) se consumen como paquetes NuGet del feed `nimitaco` declarado en
+`nuget.config` (sin credenciales en el repo: se leen de la variable de entorno
+`NuGetPackageSourceCredentials_nimitaco`; ver `ToDo.md` para las credenciales pendientes). Detalle:
 
-- (a) Sustituir `src/Wardkitten.Infrastructure/Mongo/MongoDbConfigurator.cs` y
-  `src/Wardkitten.Infrastructure/Mongo/MongoSettings.cs` por `Es.Nimita.Infra.Mongo` con
-  `MongoConventionOptions.Default` (mismo juego de convenciones: camelCase + IgnoreExtra +
-  IgnoreIfNull + enum como string + Decimal128).
-- (b) Sustituir los tipos locales de leasing — `Lease` (`src/Wardkitten.Domain/Leasing/Lease.cs`),
-  `ILeaseStore` (`src/Wardkitten.Application/Abstractions/Persistence/ILeaseStore.cs`) y
-  `MongoLeaseStore` (`src/Wardkitten.Infrastructure/Mongo/MongoLeaseStore.cs`) — por los de
-  `Es.Nimita.Infra.Mongo.Leasing` (el paquete los promovió precisamente desde este repo).
-- (c) Validar email y teléfono de `AuthService` con `EmailAddress`/`PhoneNumber` de
-  `Es.Nimita.Domain.Primitives` (hoy el email se valida con `Contains('@')` y el teléfono se
-  guarda sin validar).
+- (a) `MongoDbConfigurator` es un wrapper fino sobre
+  `MongoConventions.Register(MongoConventionOptions.Default)` — juego 1:1 con el histórico
+  (camelCase + IgnoreExtra + IgnoreIfNull + enum como string + Decimal128, fechas UTC nativas).
+  El `MongoSettings` local se sustituyó por el del paquete; su default de `DatabaseName` es
+  cadena vacía, así que el registro DI conserva el default histórico **"Wardkitten"**.
+  **Candado**: `MongoConventionsGuardTests` y `MongoSettingsRegistrationTests` protegen la forma
+  BSON y el nombre de BBDD de producción — si fallan, PARAR.
+- (b) El leasing local se sustituyó por `Es.Nimita.Infra.Mongo.Leasing`
+  (`Lease`/`ILeaseStore`/`MongoLeaseStore`; el paquete los promovió desde este repo, semántica
+  idéntica). Misma colección `leases` (vía `MongoContext.Leases`); el `MongoLeaseStore` del
+  paquete recibe `TimeProvider`, adaptado desde `IClock` con
+  `Wardkitten.Infrastructure.Time.ClockTimeProvider`.
+- (c) `AuthService` valida el email del REGISTRO con `EmailAddress` y el teléfono del OTP con
+  `PhoneNumber.TryParseSpanish` (normaliza a E.164). La normalización para buscar usuarios
+  existentes sigue siendo trim + lowercase, sin pasar por el value object, para no bloquear
+  logins de cuentas antiguas con emails raros.
 
 **NO vendorizar** las librerías en este repo (copiar sus fuentes aquí): solo NBill y oildiagnosis
-llevan copia vendored; wardkitten espera al feed y consume los paquetes NuGet.
+llevan copia vendored; wardkitten consume los paquetes NuGet del feed.
 
 ## Shell
 

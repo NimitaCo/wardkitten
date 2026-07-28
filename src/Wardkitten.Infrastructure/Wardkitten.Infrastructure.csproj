@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Anthropic" Version="12.39.0" />
+    <!-- Convenciones BSON, MongoSettings y leasing compartidos de NimitaCo (ver AGENTS.md). -->
+    <PackageReference Include="Es.Nimita.Infra.Mongo" Version="26.7.5" />
     <PackageReference Include="MongoDB.Driver" Version="3.10.0" />
     <!-- Integraciones externas (canales, pagos, seguridad). -->
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
@@ -17,9 +19,10 @@
     <!-- Pin de transitivas de MongoDB.Driver a versiones parcheadas (ver SECURITY.md). -->
     <!-- Snappier 1.3.1 corrige GHSA-pggp-6c3x-2xmx (DoS por bucle infinito en SnappyStream). -->
     <PackageReference Include="Snappier" Version="1.3.1" />
-    <!-- SharpCompress: GHSA-6c8g-7p36-r338 (zip-slip) sin fix upstream; no explotable aquí
-         (no usamos WriteToDirectory). Suprimido por ID en Directory.Build.props; ver tech-debt.md. -->
-    <PackageReference Include="SharpCompress" Version="0.50.1" />
+    <!-- SharpCompress: GHSA-6c8g-7p36-r338 (zip-slip) no explotable aquí (no usamos
+         WriteToDirectory); suprimido por ID en Directory.Build.props; ver tech-debt.md.
+         1.0.0 alineado con el pin de Es.Nimita.Infra.Mongo (evita NU1605 por downgrade). -->
+    <PackageReference Include="SharpCompress" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.10" />
