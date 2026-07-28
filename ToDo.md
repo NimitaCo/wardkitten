@@ -5,41 +5,52 @@
 ## Pendiente - acceso al feed NuGet de NimitaCo
 
 > Seccion anadida el 2026-07-27 al poner en marcha la publicacion de los paquetes
-> `Es.Nimita.*` desde `NimitaCo/Domain`. **Nada de esta seccion esta hecho todavia.**
+> `Es.Nimita.*` desde `NimitaCo/Domain`. Actualizada el 2026-07-28: la adopcion por
+> `PackageReference` ya esta hecha; quedan las **acciones humanas** de credenciales.
 
 Punto de partida ya resuelto: `nuget.config` declara el feed `nimitaco`
 (`https://nuget.pkg.github.com/NimitaCo/index.json`) con *package source mapping*
-limitado a `Es.Nimita.*`. Sin credenciales el feed queda anonimo y no se consulta,
-por lo que el repo compila con normalidad. Lo que falta:
+limitado a `Es.Nimita.*`. Sin credenciales el feed queda anonimo. **OJO: desde el
+2026-07-28 el repo referencia paquetes `Es.Nimita.*`, asi que el restore NECESITA la
+credencial** (verificado en local contra un feed de directorio con los .nupkg 26.7.5).
+
+Acciones humanas pendientes:
 
 - [ ] **Crear un PAT clasico con scope `read:packages`** en <https://github.com/settings/tokens>.
-      Sin el no se pueden descargar los paquetes. **La descarga nunca llego a verificarse**:
-      el unico intento devolvio `403 Forbidden` por falta de scope en el token.
+      Sin el no se pueden descargar los paquetes. **La descarga contra el feed real nunca llego
+      a verificarse**: el unico intento devolvio `403 Forbidden` por falta de scope en el token.
 - [ ] **Local** - definir la variable de entorno `NuGetPackageSourceCredentials_nimitaco`
       con el formato `Username=<usuario>;Password=<PAT>`. En PowerShell:
 
       [Environment]::SetEnvironmentVariable('NuGetPackageSourceCredentials_nimitaco','Username=<usuario>;Password=<PAT>','User')
 
 - [ ] **CI** - crear el secreto de organizacion `NIMITACO_NUGET_TOKEN`
-      (`gh secret set NIMITACO_NUGET_TOKEN --org NimitaCo --visibility all`, requiere org admin)
-      y **solo despues** anadir al job del workflow:
+      (`gh secret set NIMITACO_NUGET_TOKEN --org NimitaCo --visibility all`, requiere org admin).
+      Hasta que exista, el CI y los builds de imagen fallaran en el restore de `Es.Nimita.*`
+      (feed anonimo -> 401): es el estado esperado tras la adopcion.
 
-      env:
-        NuGetPackageSourceCredentials_nimitaco: Username=${{ github.actor }};Password=${{ secrets.NIMITACO_NUGET_TOKEN }}
+Hecho el 2026-07-28 (adopcion de los paquetes):
 
-      No anadir esa linea antes de que el secreto exista: si la variable esta definida pero
-      vacia, NuGet aborta el restore con
-      `Value cannot be null or empty string (Parameter 'password')`. Ya ocurrio una vez y
-      dejo en rojo el CI de cuatro repos.
-- [ ] **Nunca** declarar `<packageSourceCredentials>` en `nuget.config` apuntando a variables
-      de entorno: NuGet valida las credenciales **al parsear el fichero**, aunque el source no
-      llegue a consultarse nunca, asi que un valor vacio rompe el build entero.
-- [ ] **Docker** (`src/Wardkitten.Api/Dockerfile`, `src/Wardkitten.Worker/Dockerfile`) - estos Dockerfiles ejecutan
-      `dotnet restore`. Cuando el repo pase a `PackageReference`, la credencial debe
-      pasarse con `--mount=type=secret` de BuildKit, **nunca con `ARG`/`--build-arg`**,
-      que la dejaria grabada de forma permanente en las capas de la imagen.
-- [ ] Adoptar `Es.Nimita.Domain.Primitives` + `Es.Nimita.Infra.Mongo` cuando el feed
-      este verificado (hoy no hay `vendor/` ni referencias).
+- [x] **Workflows preparados y guardados** (2026-07-28) - `ci.yml` compone
+      `NuGetPackageSourceCredentials_nimitaco` en un paso condicionado por
+      `NIMITACO_TOKEN_PRESENT` (evaluado en el `env` del job: el contexto `secrets` no se
+      permite en el `if` de un paso). Sin el secreto creado NO se define la variable, evitando
+      el `Value cannot be null or empty string (Parameter 'password')` que ya dejo en rojo el
+      CI de cuatro repos. Sigue vigente: **nunca** declarar `<packageSourceCredentials>` en
+      `nuget.config` apuntando a variables de entorno (NuGet las valida al parsear el fichero).
+- [x] **Docker con secreto BuildKit** (2026-07-28) - los dos Dockerfiles montan la credencial
+      con `--mount=type=secret,id=nimitaco_nuget` alrededor del `dotnet publish` (que hace el
+      restore) y solo la exportan si el secreto trae `Password` no vacio. `build-api.yml` y
+      `build-worker.yml` la pasan via `secrets:` de `docker/build-push-action`. **Nunca
+      `ARG`/`--build-arg`**: quedaria grabada en las capas de la imagen.
+- [x] **Adoptados `Es.Nimita.Domain.Primitives` + `Es.Nimita.Infra.Mongo` 26.7.5 por
+      `PackageReference`** (2026-07-28) - sin `vendor/`. Sustituidos MongoDbConfigurator
+      (wrapper sobre `MongoConventions.Register(MongoConventionOptions.Default)`, juego 1:1 con
+      el historico), MongoSettings (conservando el default de BBDD "Wardkitten"), y el leasing
+      completo (`Lease`/`ILeaseStore`/`MongoLeaseStore` -> `Es.Nimita.Infra.Mongo.Leasing`,
+      misma coleccion `leases`). AuthService valida email con `EmailAddress` y el telefono del
+      OTP con `PhoneNumber.TryParseSpanish`. Candado de la forma BSON de produccion en
+      `MongoConventionsGuardTests`. SharpCompress alineado a 1.0.0 (pin del paquete).
 
 <!-- ==== FIN de lo anadido el 2026-07-27 . Lo de abajo ya existia ==== -->
 

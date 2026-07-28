@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Value objects del lenguaje común NimitaCo (email, teléfono...). Ver AGENTS.md. -->
+    <PackageReference Include="Es.Nimita.Domain.Primitives" Version="26.7.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.10" />

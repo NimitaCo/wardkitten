@@ -9,6 +9,11 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      # El contexto `secrets` no se permite en el `if` de un paso; se evalúa aquí (job env) y los
+      # pasos condicionan sobre la variable. Así, sin NIMITACO_NUGET_TOKEN creado, NO se define
+      # NuGetPackageSourceCredentials_nimitaco (una credencial vacía rompería el restore de NuGet).
+      NIMITACO_TOKEN_PRESENT: ${{ secrets.NIMITACO_NUGET_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -16,6 +21,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Configure NimitaCo feed credentials
+        if: env.NIMITACO_TOKEN_PRESENT == 'true'
+        run: echo "NuGetPackageSourceCredentials_nimitaco=Username=${{ github.actor }};Password=${{ secrets.NIMITACO_NUGET_TOKEN }}" >> "$GITHUB_ENV"
 
       - name: Restore
         run: dotnet restore wardkitten.slnx
