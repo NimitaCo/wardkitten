@@ -1,0 +1,50 @@
+# Despliegue en Synology Container Manager → Proyecto (mismo flujo que nimitaco/www).
+# No confundir con docker-compose.yml (entorno de desarrollo local).
+#
+# 1. Container Manager → Proyecto → Crear → elegir carpeta (p. ej. /volume1/docker/wardkitten)
+#    y pegar este archivo como docker-compose.
+# 2. Las imágenes son privadas; iniciar sesión antes por SSH:
+#      echo TU_PAT | sudo docker login ghcr.io -u TU_USUARIO --password-stdin
+#
+# La imagen `wardkitten` sirve API + web (Blazor WASM) en un solo contenedor;
+# `wardkitten-worker` es el motor de evaluación (sin puertos).
+#
+# MongoDB: servidor 10.210.0.100:2717, usuario `wardkitten`. La contraseña va
+# incrustada en MONGOSETTINGS_CONNECTION, definida UNA sola vez en el anchor de
+# abajo (la comparten API y worker): al rotarla, sustituir PASSWORD aquí y
+# recrear el proyecto. Caracteres reservados de URL (@ : / ? #) → URL-encodear.
+x-shared-env: &shared-env
+  MONGOSETTINGS_CONNECTION: "mongodb://wardkitten:PASSWORD@10.210.0.100:2717"
+  MONGOSETTINGS_DATABASENAME: "Wardkitten"
+  # Ajustar al dominio/puerto con el que se acceda realmente desde fuera.
+  PUBLIC_BASE_URL: "http://IP-DEL-NAS:9082"
+  CORS_ORIGINS: "http://IP-DEL-NAS:9082"
+  # Secretos compartidos API <-> worker: CAMBIAR antes de exponer el servicio.
+  JWT_SECRET: "CAMBIAR-secreto-jwt-largo-y-aleatorio-0123456789"
+  MAGICLINK_SECRET: "CAMBIAR-secreto-magiclink-0123456789"
+  INTERNAL_TOKEN: "CAMBIAR-token-interno"
+  # Canales y pagos (SMTP_*, TELEGRAM_BOT_TOKEN, STRIPE_*, TWILIO_*, FCM_*):
+  # añadir aquí las variables de K8S/produccion/wardkitten.yaml que se necesiten.
+
+services:
+  wardkitten:
+    image: ghcr.io/nimitaco/wardkitten:latest
+    container_name: wardkitten
+    restart: unless-stopped
+    ports:
+      # HTTP en un puerto alto libre del DSM (cambiar el lado izquierdo si está
+      # ocupado). Para HTTPS, publicar este puerto tras el proxy inverso del DSM.
+      - "9082:80"
+    environment:
+      <<: *shared-env
+
+  worker:
+    image: ghcr.io/nimitaco/wardkitten-worker:latest
+    container_name: wardkitten-worker
+    restart: unless-stopped
+    environment:
+      <<: *shared-env
+      POLLING_INTERVAL_SECONDS: "30"
+      API_INTERNAL_URL: "http://wardkitten:80"
+    depends_on:
+      - wardkitten
