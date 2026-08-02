@@ -25,8 +25,10 @@ secretos. Quedan documentados para retomarlos en el entorno adecuado.
 
 | Tema | Descripción | Bloqueo |
 |------|-------------|---------|
-| MAUI build firmado | El scaffold `Wardkitten.Mobile` reutiliza `Shared.UI` y vive en `wardkitten.mobile.slnx`. Para compilar/publicar: `dotnet workload install maui` + Android SDK/JDK, y **macOS + Xcode** para iOS, más assets de tienda y firma. | Workload + SDKs + cuentas de tienda (no instalables en este entorno) |
-| Push FCM (móvil) | `FcmTokenRegistrar` ya registra el token en la API (`POST /api/auth/push-tokens`), pero obtener el token del dispositivo requiere el SDK de Firebase por plataforma (p.ej. Plugin.Firebase). | Requiere proyecto Firebase + integración nativa |
+| Contratos duplicados a mano | Al pasar de MAUI a nativo, los DTO dejan de compartirse por referencia de proyecto. Hay tres copias: C# (`Shared.Contracts`), Kotlin (`mobile/android/core`) y Swift (`mobile/ios/WardkittenKit`). Nada impide que diverjan. Mitigación: generarlos desde el OpenAPI. | Decisión pendiente |
+| Targets de app iOS/watchOS | `mobile/ios/WardkittenKit` existe, pero los targets de aplicación hay que crearlos con el asistente de Xcode. | Requiere macOS + Xcode |
+| Assets y firma de tienda | Iconos, splash y material de firma para las cuatro apps. | Assets pendientes |
+| Push por plataforma | El endpoint `POST /api/auth/push-tokens` sigue vigente. Hay que obtener el token en cada app nativa: APNs en iOS/watchOS y FCM en Android/Wear OS. El `FcmTokenRegistrar` de MAUI se retiró con el proyecto. | Proyecto Firebase + certificados APNs |
 | Plantillas WhatsApp | Las plantillas de mensaje de WhatsApp deben aprobarse en **Meta Business** antes de usarse en prod. | Aprobación externa de Meta |
 | Secretos de producción | Los `K8S/**` usan placeholders (`REPLACE_ME`); cargar los secretos reales por canal seguro (sealed-secrets/ArgoCD), nunca en git. | Operativo (no es código) |
 

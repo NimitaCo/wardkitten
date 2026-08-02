@@ -1,35 +1,42 @@
 # Guía de publicación — Wardkitten (web + apps móviles)
 
-Esta guía explica, paso a paso, cómo publicar la **web** (Blazor WASM) y las **apps móviles**
-(.NET MAUI Blazor Hybrid: Android e iOS).
+Esta guía explica cómo publicar la **web** (Blazor WASM) y las **cuatro apps móviles nativas**:
+iOS, watchOS, Android y Wear OS.
 
-> **Supuesto de partida:** **no** tienes cuentas de Google Play ni de la App Store. Por eso esta guía
-> prioriza las vías de **prueba privada** (distribución directa y programas de testers) y deja la
-> publicación en tiendas como paso opcional posterior. Resumen rápido de qué se puede hacer sin cuenta:
+> **Punto de partida actual.** Las cuentas de desarrollador **ya existen**, a nombre de
+> **Nimita Consulting S.L.**:
 >
-> | Plataforma | Sin cuenta de tienda | Para distribuir a testers/tienda |
+> | Tienda | Estado | Identificador |
 > |---|---|---|
-> | **Web** | ✅ Total (es tu infraestructura: Docker + Kubernetes) | — |
-> | **Android** | ✅ APK firmado directo **o** Firebase App Distribution (gratis) | Google Play Console = **25 $ pago único** |
-> | **iOS** | ⚠️ Solo build de desarrollo en **tu propio** dispositivo (Xcode + Apple ID gratis, caduca a los 7 días) | **Apple Developer Program = 99 $/año** (obligatorio para TestFlight/ad-hoc) |
+> | Google Play | Cuenta de organización creada y pagada | ID `5859106165437175812` |
+> | App Store | Alta en revisión | Enrollment `U5KZN59GNR` |
 >
-> Es decir: **iOS para otros testers requiere sí o sí los 99 $/año de Apple.** No hay forma de
-> distribuir un build de iOS a terceros sin ese programa. Lo detallo en la sección 4.
+> Identificador base de las apps: **`es.nimita.wardkitten`** (sustituye al antiguo
+> `com.danwave.wardkitten`). **No se puede cambiar una vez publicada la app.**
+>
+> Al ser cuenta de **organización**, Google Play exime del test cerrado obligatorio de
+> 12 testers durante 14 días que sí se aplica a las cuentas personales nuevas.
 
 ---
 
-## 0. Estado actual del proyecto (qué falta antes de un release real)
+## 0. Estado actual del proyecto
 
 - **Web**: lista para producción. La **sirve la propia API** (Blazor WASM empaquetado en la imagen
   `wardkitten`, same-origin); no hay imagen `wardkitten-web` separada. Manifiestos K8s ya existen.
-- **Móvil** (`src/Wardkitten.Mobile`, solución aparte `wardkitten.mobile.slnx`): es un **scaffold** que
-  reutiliza `Wardkitten.Shared.UI`. **Antes de compilar** necesita: la *workload* de MAUI, los SDKs, y
-  unos **assets** (icono, splash, fuente) que el scaffold no incluye. Ver §2.
-- Pendientes funcionales del móvil (ver `tech-debt.md`): integración real del token **FCM** por
-  plataforma (push) y los assets/firma de tienda.
+- **Móvil**: cuatro apps nativas en `mobile/`. Se retiró la app MAUI; ver
+  [ADR](architecture/ADR-mobile-nativo.md).
+
+| App | Ubicación | Estado |
+|---|---|---|
+| Android | `mobile/android/app` | Esqueleto compilable |
+| Wear OS | `mobile/android/wear` | Esqueleto compilable, standalone |
+| iOS | `mobile/ios` | Paquete `WardkittenKit` listo; targets de app pendientes |
+| watchOS | `mobile/ios` | Pendiente |
+
+Pendientes en `tech-debt.md`: contratos duplicados a mano, push por plataforma (APNs y FCM),
+y assets e iconos de tienda.
 
 ---
-
 ## 1. WEB (Blazor WASM) — la más sencilla
 
 La web es **Blazor WASM servido por la propia API** (`UseBlazorFrameworkFiles`): un **único** despliegue
@@ -111,207 +118,129 @@ nativo cross-origin contra `api.wardkitten.com`).
 
 ---
 
-## 2. MÓVIL — preparación común (Android + iOS)
 
-### 2.1 Instalar herramientas
+## 2. MÓVIL — preparación común
 
-```bash
-# Workload de MAUI (descarga grande)
-dotnet workload install maui
+### 2.1 Herramientas
 
-# Android: necesita el Android SDK + un JDK (17+). Opciones:
-#  - Visual Studio 2022 / VS Code con la extensión .NET MAUI (instala SDK/JDK por ti), o
-#  - dotnet android sdk:  dotnet workload install android  + Android Studio para el SDK manager.
-# iOS: SOLO compila en macOS con Xcode instalado (no se puede compilar iOS en Windows/Linux).
-```
+| Herramienta | Para qué | Nota |
+|---|---|---|
+| **Android Studio** | Android y Wear OS | Incluye SDK y JDK |
+| **Xcode** | iOS y watchOS | Solo macOS. En Macs Intel, la última serie compatible es Xcode 26 |
 
-Comprueba que la workload está:
+### 2.2 Assets pendientes
 
-```bash
-dotnet workload list      # debe aparecer "maui" (o maui-android / maui-ios)
-```
-
-### 2.2 Assets que debes añadir antes de compilar
-
-El scaffold **no** trae icono/splash/fuente. Crea estos archivos y referéncialos en
-`src/Wardkitten.Mobile/Wardkitten.Mobile.csproj`:
-
-```
-src/Wardkitten.Mobile/Resources/AppIcon/appicon.svg        # icono base
-src/Wardkitten.Mobile/Resources/AppIcon/appiconfg.svg      # primer plano del icono
-src/Wardkitten.Mobile/Resources/Splash/splash.svg          # splash
-src/Wardkitten.Mobile/Resources/Fonts/OpenSans-Regular.ttf # fuente referenciada en MauiProgram
-```
-
-Y añade al `.csproj` (dentro de un `<ItemGroup>`):
-
-```xml
-<MauiIcon Include="Resources/AppIcon/appicon.svg" ForegroundFile="Resources/AppIcon/appiconfg.svg" Color="#0f172a" />
-<MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#0f172a" BaseSize="128,128" />
-<MauiFont Include="Resources/Fonts/*" />
-```
-
-> Si prefieres no añadir la fuente todavía, elimina la línea `.ConfigureFonts(...)` de `MauiProgram.cs`.
-
-### 2.3 Configuración de la app
-
-- **URL de la API**: en `src/Wardkitten.Mobile/MauiProgram.cs`, `apiBaseUrl` está fijado a
-  `https://api.wardkitten.com`. Cámbialo si tu API está en otro host.
-- **ApplicationId**: `com.danwave.wardkitten` (en el `.csproj`). Debe ser único y estable.
-- **Versión**: `ApplicationDisplayVersion` (1.0) y `ApplicationVersion` (entero incremental) en el `.csproj`.
+Ninguna de las cuatro apps trae icono ni splash. Hacen falta, con los tamaños propios de cada
+plataforma, antes de poder subir nada a las tiendas.
 
 ---
 
-## 3. ANDROID
+## 3. ANDROID y WEAR OS
 
-### 3.1 Crear el keystore de firma (una vez)
+### 3.1 Clave de subida (una sola vez)
 
-```bash
-keytool -genkeypair -v -keystore wardkitten.keystore \
-  -alias wardkitten -keyalg RSA -keysize 2048 -validity 10000
-# Guarda la contraseña y el .keystore en lugar seguro (NO en git).
-```
-
-### 3.2 Compilar el release firmado
-
-**APK** (un solo archivo, ideal para distribución directa / Firebase):
+Google usa **Play App Signing**: Google custodia la clave que firma la app que instalan los
+usuarios, y tú firmas lo que subes con una **clave de subida** propia.
 
 ```bash
-dotnet publish src/Wardkitten.Mobile -c Release -f net10.0-android \
-  -p:AndroidPackageFormat=apk \
-  -p:AndroidKeyStore=true \
-  -p:AndroidSigningKeyStore=$PWD/wardkitten.keystore \
-  -p:AndroidSigningKeyAlias=wardkitten \
-  -p:AndroidSigningStorePass=<storepass> \
-  -p:AndroidSigningKeyPass=<keypass>
-# Salida: src/Wardkitten.Mobile/bin/Release/net10.0-android/publish/com.danwave.wardkitten-Signed.apk
+"/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/keytool" \
+  -genkeypair -v \
+  -keystore ~/Documents/nimita-upload.keystore \
+  -alias nimita-upload \
+  -keyalg RSA -keysize 4096 -validity 10000 \
+  -dname "CN=Nimita Consulting S.L., O=Nimita Consulting S.L., L=San Sebastian de los Reyes, ST=Madrid, C=ES"
 ```
 
-**AAB** (Android App Bundle, formato para Google Play): igual pero `-p:AndroidPackageFormat=aab`.
+> ⚠️ El fichero **no está en ningún servidor y no se puede regenerar**. Copia de seguridad
+> obligatoria y contraseña en el gestor. Si se pierde, hay que pedir a Google un reseteo de la
+> clave de subida. `*.keystore` está bloqueado en `.gitignore`.
 
-### 3.3 Prueba privada SIN cuenta de Play
+Las credenciales se referencian desde un `keystore.properties` local, también ignorado por git.
 
-**Opción A — APK directo (lo más simple).** Envía el `.apk` a los testers (link, email, etc.). En el
-teléfono Android: ajustes → permitir "instalar apps de orígenes desconocidos" para tu navegador/gestor de
-archivos, y abrir el APK. O por cable:
+### 3.2 Compilar el bundle
 
 ```bash
-adb install -r com.danwave.wardkitten-Signed.apk
+cd mobile/android
+./gradlew :app:bundleRelease     # teléfono
+./gradlew :wear:bundleRelease    # reloj
 ```
 
-**Opción B — Firebase App Distribution (recomendada para varios testers, gratis, sin Play).**
+Play acepta **AAB**, no APK. Un único listado sirve a ambos form factors: Play entrega a cada
+dispositivo el módulo que le corresponde.
 
-1. Crea un proyecto en [Firebase](https://console.firebase.google.com) (gratis) y registra una app
-   **Android** con el package `com.danwave.wardkitten`. Copia su **App ID** (formato `1:123...:android:abc`).
-2. Instala el CLI y entra:
+### 3.3 Subir
 
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   ```
+Play Console → **Producción** o **Prueba interna** → subir el `.aab`.
 
-3. Sube el APK y repártelo a un grupo de testers (por email):
+La prueba interna admite hasta 100 testers por correo y está disponible en minutos, sin revisión.
+Es la vía natural para las primeras iteraciones.
 
-   ```bash
-   firebase appdistribution:distribute com.danwave.wardkitten-Signed.apk \
-     --app <FIREBASE_APP_ID> \
-     --groups "testers" \
-     --release-notes "Build de prueba Wardkitten"
-   ```
+### 3.4 Requisitos de ficha
 
-   Los testers reciben un email con un enlace para instalar. **No requiere cuenta de Google Play.**
-
-### 3.4 (Opcional, futuro) Google Play
-
-- Alta en **Google Play Console** (25 $, pago único).
-- Sube el **AAB** al *track* **Internal testing** (hasta 100 testers por email, sin revisión completa) o
-  **Closed testing**. Producción requiere la revisión de Google.
+- **Política de privacidad accesible por URL** — obligatoria, sin ella no se publica
+- **Formulario de Seguridad de los datos** — debe coincidir *exactamente* con lo que declare la
+  política de privacidad; una discrepancia es motivo de rechazo
+- **URL de eliminación de cuenta** si las apps permiten registro de usuarios
+- Capturas por form factor, incluido el reloj
 
 ---
 
-## 4. iOS
+## 4. iOS y watchOS
 
-> **Lo importante primero:** para distribuir a **otras** personas (TestFlight o ad-hoc) necesitas el
-> **Apple Developer Program (99 $/año)**. **No existe** una vía gratuita para repartir un build de iOS a
-> terceros. Lo único posible sin cuenta de pago es instalar la app en **tu propio** dispositivo.
+### 4.1 Requisito previo
 
-### 4.1 Sin cuenta de pago — solo en tu dispositivo (Apple ID gratis)
+El alta de Nimita en el Apple Developer Program debe estar **aprobada**. Sin membresía activa no
+hay certificados de distribución ni TestFlight.
 
-Requiere **macOS + Xcode**. Con un Apple ID normal (gratis), Xcode crea un "Personal Team":
+### 4.2 Certificados
 
-1. Abre el proyecto en Xcode (o compila con `dotnet` y despliega a un dispositivo conectado):
+Con la cuenta activa, lo más simple es dejar que Xcode gestione la firma:
+**Signing & Capabilities → Automatically manage signing**, eligiendo el equipo de Nimita.
 
-   ```bash
-   dotnet build src/Wardkitten.Mobile -t:Run -f net10.0-ios \
-     -p:RuntimeIdentifier=ios-arm64 -p:_DeviceName=<udid-del-dispositivo>
-   ```
+> ⚠️ **Exporta cada certificado como `.p12` en el momento de crearlo** y guárdalo en el gestor de
+> contraseñas. La clave privada vive en el Llavero y **no se puede recuperar después**. Es
+> imprescindible si vas a cambiar de máquina.
+>
+> Para varias máquinas conviviendo, considera `fastlane match`: guarda los certificados cifrados
+> en un repo git privado y los instala con un comando.
 
-2. En Xcode, selecciona tu Apple ID como *Signing Team* (Personal Team).
+### 4.3 Archivar y subir
 
-**Limitaciones del modo gratuito:** la app **caduca a los 7 días**, máximo ~3 apps por dispositivo, solo
-en dispositivos que controles físicamente, **sin push notifications** y **sin** distribución a otros.
-Sirve para probar tú, no para repartir.
+Xcode → **Product → Archive** → **Distribute App** → **App Store Connect**.
 
-### 4.2 Con Apple Developer Program (99 $/año) — TestFlight (pruebas privadas reales)
+La app de watchOS es **independiente** (`WKRunsIndependentlyOfCompanionApp`), así que aparece por
+separado en la App Store del reloj, pero se sube en el mismo archivo.
 
-1. Enrólate en el **Apple Developer Program**.
-2. En el **Apple Developer portal**: crea un **App ID** (`com.danwave.wardkitten`), un **certificado de
-   distribución** y un **perfil de aprovisionamiento** (App Store / TestFlight).
-3. En **App Store Connect**: crea la ficha de la app.
-4. Compila el archivo firmado en **macOS**:
+### 4.4 TestFlight
 
-   ```bash
-   dotnet publish src/Wardkitten.Mobile -c Release -f net10.0-ios \
-     -p:ArchiveOnBuild=true \
-     -p:CodesignKey="Apple Distribution: TU NOMBRE (TEAMID)" \
-     -p:CodesignProvision="Wardkitten AppStore"
-   # Genera un .ipa
-   ```
+Una vez procesado el build, App Store Connect → TestFlight. Hasta 100 testers internos sin
+revisión; los grupos externos pasan una revisión ligera.
 
-5. Sube el `.ipa` con **Transporter** (app de Apple) o `xcrun altool`/`notarytool`.
-6. En **TestFlight**: añade testers (internos = miembros del equipo, sin revisión; externos = hasta 10.000,
-   con una revisión ligera). Los testers instalan con la app **TestFlight**. Esto **sí** es prueba privada
-   distribuible — pero requiere el programa de pago.
+### 4.5 Requisitos de ficha
 
-### 4.3 Firebase App Distribution en iOS
-
-También distribuye iOS, **pero** el `.ipa` debe ir firmado **ad-hoc** con los **UDID** de los dispositivos
-registrados, y registrar dispositivos/crear perfiles ad-hoc requiere igualmente el **Apple Developer
-Program de pago**. Es decir: no evita el coste de Apple.
+- **Etiquetas de privacidad** (App Privacy), coherentes con la política publicada
+- Capturas por dispositivo, incluido Apple Watch
+- **Paid Applications Agreement** aceptado si va a haber compras o suscripciones
 
 ---
 
-## 5. (Opcional) Automatizar el móvil en CI
+## 5. Automatizar en CI
 
-Cuando tengas la firma resuelta, puedes añadir workflows de GitHub Actions:
+Pendiente. Cuando se aborde, lo razonable es:
 
-- **Android**: runner `ubuntu-latest`, `dotnet workload install maui-android`, publicar el APK/AAB con la
-  firma desde *secrets* (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASS`, `ANDROID_KEY_ALIAS`,
-  `ANDROID_KEY_PASS`), y subir a **Firebase App Distribution** con `FIREBASE_TOKEN` + `FIREBASE_APP_ID`.
-- **iOS**: runner `macos-latest` (incluye Xcode), `dotnet workload install maui-ios`, firma con los
-  certificados/perfiles importados desde *secrets*, y subida a TestFlight con `altool`/Fastlane.
-
-No se incluyen en el repo porque la firma depende de credenciales que aún no existen.
+- **Android**: Gradle en un runner Linux, con el keystore inyectado como secreto
+- **iOS**: runner macOS y una **App Store Connect API Key** (`.p8`), que es portable entre
+  máquinas, en lugar de certificados atados a un equipo concreto
 
 ---
 
-## 6. Checklist de "primera publicación de prueba"
+## 6. Checklist de primera publicación
 
-**Web**
-- [ ] CI **Build** (`GITHUB_TOKEN`) publica `ghcr.io/nimitaco/wardkitten` (imagen con WASM incluido).
-- [ ] Pull secret `nimitaco.ghcr.io` creado en el namespace (con acceso a `ghcr.io/nimitaco`), salvo paquete público.
-- [ ] Secretos reales sustituyendo los `REPLACE_ME`.
-- [ ] DNS `www.*`, `app.*` (redirige) y `api.*` + TLS (cert-manager).
-- [ ] `kubectl apply -f K8S/produccion/` (o ArgoCD synced/healthy).
-
-**Android (prueba privada, sin cuenta)**
-- [ ] `dotnet workload install maui` + Android SDK/JDK.
-- [ ] Assets (icono/splash/fuente) añadidos al `.csproj`.
-- [ ] `apiBaseUrl` correcto en `MauiProgram.cs`.
-- [ ] Keystore creado y APK firmado compilado.
-- [ ] Repartido por APK directo **o** Firebase App Distribution.
-
-**iOS (prueba en tu dispositivo, sin cuenta)**
-- [ ] macOS + Xcode.
-- [ ] Apple ID (gratis) como Personal Team; instalar en dispositivo (caduca 7 días).
-- [ ] Para repartir a otros: enrolarse en Apple Developer Program (99 $/año) → TestFlight.
+- [ ] Iconos y splash de las cuatro apps
+- [ ] Política de privacidad publicada y accesible por URL
+- [ ] Formulario de Seguridad de los datos de Play, coherente con la política
+- [ ] Etiquetas de privacidad de App Store, coherentes con la política
+- [ ] Clave de subida de Android generada, con copia y contraseña guardadas
+- [ ] Alta de Apple aprobada y certificados exportados como `.p12`
+- [ ] Push configurado: APNs en Apple, FCM en Google
+- [ ] Capturas por plataforma, relojes incluidos

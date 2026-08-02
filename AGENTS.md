@@ -20,7 +20,8 @@ src/Wardkitten.Shared.UI        # componentes Razor compartidos (web + móvil)
 src/Wardkitten.Api              # ASP.NET Core API + SignalR + hosting del WASM
 src/Wardkitten.Worker           # motor de evaluación (BackgroundService)
 src/Wardkitten.Web              # Blazor WebAssembly
-src/Wardkitten.Mobile           # .NET MAUI Blazor Hybrid (solución aparte: wardkitten.mobile.slnx)
+mobile/ios                      # Apps nativas iOS + watchOS (SwiftUI)
+mobile/android                  # Apps nativas Android + Wear OS (Kotlin/Compose)
 test/Wardkitten.Tests           # unit + integration
 ```
 
