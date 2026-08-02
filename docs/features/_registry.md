@@ -25,7 +25,11 @@ Tabla maestra de funcionalidades. Cada una tiene su código `FXX.YY` y, si proce
 | F07.02 | Recargas de créditos vía Stripe | implementada | — |
 | F08.01 | Web (dashboard, alta de watch, wallet) | implementada | — |
 | F08.02 | Estado en vivo (SignalR) | implementada (web por polling) | — |
-| F09 | App móvil (MAUI Blazor Hybrid) + push | scaffold | — |
+| F09.01 | App iOS nativa (SwiftUI) | scaffold | [ADR](../architecture/ADR-mobile-nativo.md) |
+| F09.02 | App watchOS nativa (SwiftUI, independiente) | pendiente | [ADR](../architecture/ADR-mobile-nativo.md) |
+| F09.03 | App Android nativa (Compose) | scaffold | [ADR](../architecture/ADR-mobile-nativo.md) |
+| F09.04 | App Wear OS nativa (Compose, standalone) | scaffold | [ADR](../architecture/ADR-mobile-nativo.md) |
+| ~~F09~~ | ~~App móvil (MAUI Blazor Hybrid)~~ | retirada | sustituida por F09.01–04 |
 | F10.01 | Streaks / gamificación | implementada | — |
 | F12.01 | Equipos (miembros, plan Team) | implementada | — |
 | F12.02 | Guardias on-call (rotación por turnos + overrides) | implementada | — |
