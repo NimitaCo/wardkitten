@@ -25,8 +25,9 @@ public enum CheckInSource
 }
 
 /// <summary>
-/// Señal de confirmación recibida para un watch. Se almacena en una colección <b>time-series</b>
-/// (clave temporal <see cref="ReceivedAtUtc"/>, meta <c>watchId</c>). Feature: F03.01.
+/// Señal de confirmación recibida para un watch. Feature: F03.01.
+/// Se almacena en una colección normal indexada por <c>watchId</c> + <see cref="ReceivedAtUtc"/>
+/// (antes era time-series, que obligaba a MongoDB 5.0+).
 /// </summary>
 public sealed class CheckIn : Entity
 {

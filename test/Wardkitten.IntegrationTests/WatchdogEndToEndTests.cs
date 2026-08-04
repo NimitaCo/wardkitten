@@ -19,7 +19,7 @@ namespace Wardkitten.IntegrationTests;
 /// <summary>
 /// Prueba de extremo a extremo del bucle watchdog contra un MongoDB real (EphemeralMongo, sin Docker):
 /// crear watch vencido → el motor abre incidente y alerta una vez → check-in → incidente resuelto.
-/// Ejercita índices, colección time-series, apertura idempotente de incidentes y dispatcher real.
+/// Ejercita índices, apertura idempotente de incidentes y dispatcher real.
 /// </summary>
 public class WatchdogEndToEndTests
 {

@@ -181,8 +181,16 @@ public sealed class PingProbeService
         return probe.IsActive(_clock.UtcNow) ? probe : null;
     }
 
-    /// <summary>Liga el banco a la vigilancia ya guardada y conserva su historial un rato antes del TTL.</summary>
-    public async Task BindAsync(PingProbe probe, string watchId, CancellationToken ct = default)
+    /// <summary>
+    /// Liga el banco a la vigilancia ya guardada y conserva su historial un rato antes del TTL.
+    /// </summary>
+    /// <remarks>
+    /// No renombrar a <c>BindAsync</c>: este servicio se inyecta como parámetro en endpoints Minimal API
+    /// y ASP.NET Core interpreta cualquier miembro llamado <c>BindAsync</c> como binding personalizado.
+    /// Al no tener la firma estática que exige ese patrón, el arranque falla con
+    /// "BindAsync method found on PingProbeService with incorrect format".
+    /// </remarks>
+    public async Task BindToWatchAsync(PingProbe probe, string watchId, CancellationToken ct = default)
     {
         probe.WatchId = watchId;
         probe.ExpiresAtUtc = _clock.UtcNow + PingProbe.DryRunHistoryGrace;

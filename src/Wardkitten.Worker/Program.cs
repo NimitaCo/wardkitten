@@ -17,7 +17,7 @@ builder.Services.AddHostedService<EvaluationWorker>();
 
 var host = builder.Build();
 
-// Crea índices y la colección time-series (idempotente). El worker es el segundo punto de creación.
+// Crea los índices (idempotente). El worker es el segundo punto de creación.
 try
 {
     await host.Services.InitializeWardkittenInfrastructureAsync();

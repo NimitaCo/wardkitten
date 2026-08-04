@@ -65,7 +65,7 @@ public static class InfrastructureRegistration
         return services;
     }
 
-    /// <summary>Crea colecciones especiales (time-series) e índices. Llamar en el arranque.</summary>
+    /// <summary>Crea los índices de Mongo. Llamar en el arranque.</summary>
     public static async Task InitializeWardkittenInfrastructureAsync(this IServiceProvider provider, CancellationToken ct = default)
     {
         var ctx = provider.GetRequiredService<MongoContext>();

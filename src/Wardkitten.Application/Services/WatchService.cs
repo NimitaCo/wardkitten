@@ -103,7 +103,7 @@ public sealed class WatchService
 
         await _watches.InsertAsync(watch, ct);
 
-        if (probe is not null) await _probes.BindAsync(probe, watch.Id, ct);
+        if (probe is not null) await _probes.BindToWatchAsync(probe, watch.Id, ct);
         else if (!string.IsNullOrEmpty(input.PingProbeId)) await _probes.DiscardAsync(input.PingProbeId!, userId, ct);
 
         await _events.WatchUpdatedAsync(watch, ct);
@@ -150,7 +150,7 @@ public sealed class WatchService
         if (scheduleChanged) watch.ScheduleNextFrom(_clock.UtcNow);
 
         await _watches.ReplaceAsync(watch, ct);
-        if (probe is not null) await _probes.BindAsync(probe, watch.Id, ct);
+        if (probe is not null) await _probes.BindToWatchAsync(probe, watch.Id, ct);
         await _events.WatchUpdatedAsync(watch, ct);
         return Result<Watch>.Ok(watch);
     }

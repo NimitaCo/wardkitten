@@ -80,7 +80,7 @@ builder.Services.AddMcpServer().WithHttpTransport().WithTools<WardkittenMcpTools
 
 var app = builder.Build();
 
-// Crea índices y la colección time-series (idempotente). No tumbar el arranque si Mongo no responde aún.
+// Crea los índices (idempotente). No tumbar el arranque si Mongo no responde aún.
 try
 {
     await app.Services.InitializeWardkittenInfrastructureAsync();

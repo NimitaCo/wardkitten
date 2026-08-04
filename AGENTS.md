@@ -148,7 +148,7 @@ llevan copia vendored; wardkitten consume los paquetes NuGet del feed.
 - Para colecciones grandes (CheckIns, NotificationLog) itera con cursor/`IAsyncEnumerable`; nunca
   `.ToList()` sobre colecciones de tamaño indeterminado (riesgo de `OutOfMemoryException`). Colecciones
   pequeñas (planes, rate cards) sí pueden cargarse enteras.
-- `CheckIn` es **colección time-series**; respeta su clave de tiempo (`receivedAt`).
+- `CheckIn` es una colección normal indexada por `watchId` + `receivedAtUtc` (antes time-series, que exigía MongoDB 5.0+).
 
 ## Concurrencia del worker
 

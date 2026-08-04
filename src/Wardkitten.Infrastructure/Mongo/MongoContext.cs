@@ -14,8 +14,8 @@ using Wardkitten.Domain.Watches;
 namespace Wardkitten.Infrastructure.Mongo;
 
 /// <summary>
-/// Acceso tipado a la base de datos. Centraliza las colecciones e <see cref="InitializeAsync"/> crea la
-/// colección time-series de check-ins y los índices (idempotente; seguro de llamar en cada arranque).
+/// Acceso tipado a la base de datos. Centraliza las colecciones e <see cref="InitializeAsync"/> crea los
+/// índices (idempotente; seguro de llamar en cada arranque).
 /// </summary>
 public sealed class MongoContext
 {
@@ -44,25 +44,7 @@ public sealed class MongoContext
 
     public async Task InitializeAsync(CancellationToken ct = default)
     {
-        await EnsureCheckInsTimeSeriesAsync(ct);
         await EnsureIndexesAsync(ct);
-    }
-
-    private async Task EnsureCheckInsTimeSeriesAsync(CancellationToken ct)
-    {
-        var names = await (await Database.ListCollectionNamesAsync(cancellationToken: ct)).ToListAsync(ct);
-        if (names.Contains(CollectionNames.CheckIns)) return;
-
-        await Database.CreateCollectionAsync(
-            CollectionNames.CheckIns,
-            new CreateCollectionOptions
-            {
-                TimeSeriesOptions = new TimeSeriesOptions(
-                    timeField: "receivedAtUtc",
-                    metaField: "watchId",
-                    granularity: TimeSeriesGranularity.Minutes),
-            },
-            ct);
     }
 
     private async Task EnsureIndexesAsync(CancellationToken ct)
@@ -94,6 +76,13 @@ public sealed class MongoContext
                     PartialFilterExpression = Builders<Watch>.Filter.Gt(w => w.PingToken, ""),
                 }),
         }, ct);
+
+        // La colección es normal (no time-series): este índice cubre la consulta de histórico por
+        // vigilancia (filtro watchId + orden descendente por fecha), que es lo que antes resolvía
+        // la clave temporal de la time-series. Mongo crea la colección al primer uso.
+        await CheckIns.Indexes.CreateOneAsync(new CreateIndexModel<CheckIn>(
+            Builders<CheckIn>.IndexKeys.Ascending(c => c.WatchId).Descending(c => c.ReceivedAtUtc),
+            new CreateIndexOptions { Name = "ix_checkins_watch_received" }), cancellationToken: ct);
 
         await PingProbes.Indexes.CreateManyAsync(new[]
         {
