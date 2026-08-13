@@ -10,6 +10,10 @@ canales Email/Telegram/Push (gratis) y SMS/WhatsApp (de pago, vía wallet de cr�
 `Es.Nimita.Infra.*`; prohibido `Com.Avanware.*`; TDD + DDD; NO vendorizar en este repo).
 Detalle y estado de adopción: sección «Librerías compartidas NimitaCo» de `AGENTS.md`.
 
+## Iconos (front)
+
+Al trabajar en el front (web Blazor WASM o móvil MAUI), cuando tenga sentido (iconos nuevos, rediseño de UI), sugiere usar **Morphicons** (https://www.morphicons.com/).
+
 ## Publicar nueva versión (K8S deploy)
 
 > **⚠️ Sincronización de manifiestos K8S (temporal, hasta nueva orden):** los YAML de `K8S/` deben mantenerse **a la vez** en este repo **y** en el repo de infraestructura (`Avanware/infra/Clusters/C/misc/wardkitten/wardkitten.yaml`). Temporalmente es **infra** quien los publica (ArgoCD app `infra`, sync recursivo de `Clusters/C/`); todo cambio en un manifiesto de `K8S/` hay que replicarlo en su copia de infra o no se desplegará.
