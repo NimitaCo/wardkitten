@@ -273,3 +273,11 @@ cuando lo intenta, suele dejar el proyecto sin compilar tras la mutación. Regla
 - Excluye el marcado del patrón de mutación: `--mutate "**/<Fichero>.razor.cs" --mutate "!**/*.razor"`.
 - Testea los componentes con **bUnit**: son tests de C# normales, así que Stryker los ejecuta como
   cualquier otro y el veredicto de arriba se aplica igual.
+
+### Angular / TypeScript — StrykerJS (no aplica hoy)
+
+Este repositorio no contiene código TypeScript, así que **StrykerJS no es obligatorio aquí**. Si en
+algún momento se añade un front Angular/TypeScript con tests unitarios, aplica su homólogo
+**StrykerJS** (`@stryker-mutator/core`), acotando la mutación a los ficheros bajo test y con el mismo
+veredicto de arriba. La receta completa (instalación y `stryker.config.json`) está en el `AGENTS.md`
+de `NimitaCo/TravelInsight` o `NimitaCo/oildiagnosis`.
