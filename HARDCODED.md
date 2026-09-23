@@ -17,7 +17,7 @@ Valores fijados en el Secret `wardkitten-secrets` del manifiesto de infra (`Avan
 
 | Clave | Valor | Origen |
 |---|---|---|
-| `MONGOSETTINGS_CONNECTION` | `mongodb://crm:e4B6Q2F!tKsnduJ5@10.200.0.10:2717,10.200.0.19:2717,10.200.0.68:2717,10.200.0.69:2717/?replicaSet=MongoReplica0` | Replica set de IntegraSystem (usuario `crm`). BBDD propia `Wardkitten` (en el ConfigMap `wardkitten-config`). |
+| `MONGOSETTINGS_CONNECTION` | `mongodb://crm:e4B6Q2F!tKsnduJ5@10.200.0.10:2717,10.200.0.19:2717,10.200.0.69:2717/?replicaSet=MongoReplica0` | Replica set de IntegraSystem (usuario `crm`). BBDD propia `Wardkitten` (en el ConfigMap `wardkitten-config`). |
 | `JWT_SECRET` | `60907af0735214f0693522453eaa45ae2469d054bd84488d4f01548434037f0b` | Aleatorio inventado (`openssl rand -hex 32`). |
 | `MAGICLINK_SECRET` | `e7f2316d4578af1548ce49e22346bb30634915c94d0a9b8512143b1d8f468cba` | Aleatorio inventado (`openssl rand -hex 32`). |
 | `INTERNAL_TOKEN` | `e726906a9825044f9479d28f121a1283c2af1d9bdace171e` | Aleatorio inventado (`openssl rand -hex 24`). Compartido worker↔API. |
