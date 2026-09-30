@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Endpoints/AuthEndpoints.cs": {
-    "mtime": 1782249547.5746632,
-    "seen": 1788373451.2474298,
-    "ast_hash": "950d856809f949b40d9e0a441be11b1e",
+    "mtime": 1790768405.7880967,
+    "seen": 1790768485.02162,
+    "ast_hash": "37e2ff65b5011dc7efd9a399f354b1f7",
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Endpoints/InternalEndpoints.cs": {
@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Endpoints/PublicEndpoints.cs": {
-    "mtime": 1788272625.340671,
-    "seen": 1788373451.2474315,
-    "ast_hash": "34f6d0b3ec173a82d25c2518433e5d83",
+    "mtime": 1790768405.789143,
+    "seen": 1790768485.0216236,
+    "ast_hash": "1ea211474ababf1d79d7a29702e4878f",
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Endpoints/StatusPageEndpoints.cs": {
@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Mapping/DtoMappings.cs": {
-    "mtime": 1788272625.341671,
-    "seen": 1788373451.2474337,
-    "ast_hash": "8f31e99de899c4d93534b93656157bf7",
+    "mtime": 1790768405.789143,
+    "seen": 1790768485.0216272,
+    "ast_hash": "6c82c44493aa846810af23ee9441203a",
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Mcp/WardkittenMcpTools.cs": {
@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Program.cs": {
-    "mtime": 1788272625.341671,
-    "seen": 1788373451.2474344,
-    "ast_hash": "1dd36c718e8452af3d50232c5ab03450",
+    "mtime": 1790768405.789143,
+    "seen": 1790768485.0216284,
+    "ast_hash": "b117a905947ad57ca980a1311ba27f8e",
     "semantic_hash": ""
   },
   "src/Wardkitten.Api/Properties/launchSettings.json": {
@@ -186,9 +186,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Abstractions/Persistence/IIdentityRepositories.cs": {
-    "mtime": 1782249547.575662,
-    "seen": 1788373451.2474399,
-    "ast_hash": "35c628104e620bd783103f1f93844382",
+    "mtime": 1790768405.789143,
+    "seen": 1790768485.0216353,
+    "ast_hash": "0271ac4f001210644db3e31bb872bb01",
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Abstractions/Persistence/INotificationLogRepository.cs": {
@@ -234,9 +234,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/DependencyInjection/ApplicationRegistration.cs": {
-    "mtime": 1788272625.341671,
-    "seen": 1788373451.2474437,
-    "ast_hash": "dc67c28dcb6c44e895870f5a814d9024",
+    "mtime": 1790768405.789143,
+    "seen": 1790768485.021641,
+    "ast_hash": "929ed5e46f1d2427f7959f0ed669f0c6",
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Evaluation/EvaluationEngine.cs": {
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Notifications/NotificationDispatcher.cs": {
-    "mtime": 1782249547.577662,
-    "seen": 1788373451.247447,
-    "ast_hash": "7060f4b8a08e6db28d8442233d6b1b7c",
+    "mtime": 1790768405.7901447,
+    "seen": 1790768485.0216463,
+    "ast_hash": "bdda61faa5fc932408e93a664fc0387f",
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/RealTime/IWatchEventPublisher.cs": {
@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Security/ISecurityServices.cs": {
-    "mtime": 1782249547.577662,
-    "seen": 1788373451.247448,
-    "ast_hash": "cdf4883dc7f15c8a3c381e864c73f069",
+    "mtime": 1790768405.7901447,
+    "seen": 1790768485.0216477,
+    "ast_hash": "c62a046cf26458569363a33556bcd7c3",
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Services/AuthService.cs": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Services/WatchService.cs": {
-    "mtime": 1788272625.3426714,
-    "seen": 1788373451.2474523,
-    "ast_hash": "fc05f185204010db7e167639059c6e2c",
+    "mtime": 1790768405.791149,
+    "seen": 1790768485.0216548,
+    "ast_hash": "52b7189dbbd21c02af44fb48177d1222",
     "semantic_hash": ""
   },
   "src/Wardkitten.Application/Services/WatchTemplateCatalog.cs": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Domain/Identity/User.cs": {
-    "mtime": 1782249547.5796623,
-    "seen": 1788373451.247458,
-    "ast_hash": "a73feb99ee99ce0f13f9f8fb660759bc",
+    "mtime": 1790768405.791149,
+    "seen": 1790768485.021663,
+    "ast_hash": "62b5db38254ff10f2090c1eebca06e1e",
     "semantic_hash": ""
   },
   "src/Wardkitten.Domain/Incidents/EscalationPolicy.cs": {
@@ -528,9 +528,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Infrastructure/DependencyInjection/IntegrationsRegistration.cs": {
-    "mtime": 1782900778.5753593,
-    "seen": 1788373451.2474675,
-    "ast_hash": "f2860401850bcd99af3f1adb3999b707",
+    "mtime": 1790768405.791149,
+    "seen": 1790768485.0216744,
+    "ast_hash": "1f02142c022ef86162e37f15d1dd8224",
     "semantic_hash": ""
   },
   "src/Wardkitten.Infrastructure/Mongo/CollectionNames.cs": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Infrastructure/Mongo/MongoContext.cs": {
-    "mtime": 1788272625.3446634,
-    "seen": 1788373451.2474685,
-    "ast_hash": "bf515c3898c3e31120b0ab5b06a1808c",
+    "mtime": 1790768405.791149,
+    "seen": 1790768485.0216758,
+    "ast_hash": "cbdc215ea1ae08d5e5c401a30455e531",
     "semantic_hash": ""
   },
   "src/Wardkitten.Infrastructure/Mongo/MongoDbConfigurator.cs": {
@@ -558,9 +558,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Infrastructure/Mongo/Repositories/IdentityRepositories.cs": {
-    "mtime": 1782249547.5816703,
-    "seen": 1788373451.2474701,
-    "ast_hash": "f6b3091fc929e473fa757b5eeef75e96",
+    "mtime": 1790768405.7921488,
+    "seen": 1790768485.0216777,
+    "ast_hash": "73b5130c463bbdaa98ba60f285942eeb",
     "semantic_hash": ""
   },
   "src/Wardkitten.Infrastructure/Mongo/Repositories/MongoRepository.cs": {
@@ -654,9 +654,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.Contracts/AuthContracts.cs": {
-    "mtime": 1782249547.5846698,
-    "seen": 1788373451.2474773,
-    "ast_hash": "8cff966710cbb057125bfd6ba6646ee7",
+    "mtime": 1790768405.7921488,
+    "seen": 1790768485.0216882,
+    "ast_hash": "d56e7614725ec8ab6133e4b4fe2b3dd0",
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.Contracts/BillingContracts.cs": {
@@ -696,9 +696,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.UI/Auth/ClientAuthService.cs": {
-    "mtime": 1782249547.5856698,
-    "seen": 1788373451.2474804,
-    "ast_hash": "2e13f737d9d4ec78d514f33145c783bf",
+    "mtime": 1790768405.7921488,
+    "seen": 1790768485.0216942,
+    "ast_hash": "e390a9a1c6ff0e60e596ad01e6ec9426",
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.UI/Auth/ITokenStore.cs": {
@@ -744,21 +744,21 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.UI/Services/WardkittenApiClient.cs": {
-    "mtime": 1788272625.345671,
-    "seen": 1788373451.247486,
-    "ast_hash": "e7ff3751d09528b84cc6e51f10c2492c",
+    "mtime": 1790768405.793148,
+    "seen": 1790768485.021701,
+    "ast_hash": "c32845174a0766ea50628288cb975204",
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.UI/Wardkitten.Shared.UI.csproj": {
-    "mtime": 1788272625.345671,
-    "seen": 1788373451.2474868,
-    "ast_hash": "e26c9090e2bfa8e90ad9a61290e119d8",
+    "mtime": 1790768405.793148,
+    "seen": 1790768485.0217016,
+    "ast_hash": "14dd2287d245e6f117f36f4965e502d3",
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.UI/_Imports.razor": {
-    "mtime": 1782249547.5856698,
-    "seen": 1788373451.247487,
-    "ast_hash": "3186692eda3a680b5cb2ac232fb58ffd",
+    "mtime": 1790768405.793148,
+    "seen": 1790768485.0217023,
+    "ast_hash": "a2eeed319c27c16be819f30b1aa3b48e",
     "semantic_hash": ""
   },
   "src/Wardkitten.Shared.UI/wwwroot/exampleJsInterop.js": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Pages/Home.razor": {
-    "mtime": 1788272625.345671,
-    "seen": 1788373451.247489,
-    "ast_hash": "9bca37b1e166d4337797855f65765297",
+    "mtime": 1790768405.7941475,
+    "seen": 1790768485.021708,
+    "ast_hash": "c3cc71c3d47ce5f999d1b4700b09542b",
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Pages/Incidents.razor": {
@@ -804,9 +804,9 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Pages/Register.razor": {
-    "mtime": 1782249547.5876622,
-    "seen": 1788373451.247491,
-    "ast_hash": "53e72e7e4f1f2c2a10dd68f84f07c3f2",
+    "mtime": 1790768405.795147,
+    "seen": 1790768485.0217109,
+    "ast_hash": "60b01b9258f91c06eb543f49d3d887f4",
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Pages/StatusPages.razor": {
@@ -840,15 +840,15 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Pages/WatchEdit.razor": {
-    "mtime": 1788272625.345671,
-    "seen": 1788373451.2474933,
-    "ast_hash": "8bed787147b5719aee1934f9eb617986",
+    "mtime": 1790768405.795147,
+    "seen": 1790768485.021715,
+    "ast_hash": "202ec2e3a2e0807288d7a927579274e2",
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Program.cs": {
-    "mtime": 1782249547.5876622,
-    "seen": 1788373451.247494,
-    "ast_hash": "6f549a77150ca42b3fbf625e4a1644d3",
+    "mtime": 1790768405.795147,
+    "seen": 1790768485.0217166,
+    "ast_hash": "f0f2d43122527be12dabc89ba898eb7b",
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Properties/launchSettings.json": {
@@ -864,15 +864,15 @@
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/Wardkitten.Web.csproj": {
-    "mtime": 1788272625.345671,
-    "seen": 1788373451.2474954,
-    "ast_hash": "a37054304a43136324d67a4e6c35ab6b",
+    "mtime": 1790768405.795147,
+    "seen": 1790768485.0217185,
+    "ast_hash": "1238959e687f3e7b607deb05c46350fd",
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/_Imports.razor": {
-    "mtime": 1788272625.346671,
-    "seen": 1788373451.247496,
-    "ast_hash": "96456070de681dbc92e3f44764d656cb",
+    "mtime": 1790768405.7961469,
+    "seen": 1790768485.0217192,
+    "ast_hash": "50127db918ee949f8c9fc004503bd3c5",
     "semantic_hash": ""
   },
   "src/Wardkitten.Web/wwwroot/appsettings.Production.json": {
@@ -936,9 +936,9 @@
     "semantic_hash": ""
   },
   "test/Wardkitten.IntegrationTests/Wardkitten.IntegrationTests.csproj": {
-    "mtime": 1788272625.3476634,
-    "seen": 1788373451.2475014,
-    "ast_hash": "ab2267b04cabef2c429f7ed4a4ee7781",
+    "mtime": 1790768405.7961469,
+    "seen": 1790768485.0217273,
+    "ast_hash": "6bcde08dec6e92d05218b81c624ada92",
     "semantic_hash": ""
   },
   "test/Wardkitten.IntegrationTests/WatchdogEndToEndTests.cs": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": ""
   },
   "wardkitten.slnx": {
-    "mtime": 1782249547.59067,
-    "seen": 1788373451.2475092,
-    "ast_hash": "5798702df8cae9cb30ec7103e506524d",
+    "mtime": 1790768405.7991483,
+    "seen": 1790768485.0217428,
+    "ast_hash": "0a0769527474146028e39b58f47c9464",
     "semantic_hash": ""
   },
   ".github/workflows/build-api.yml": {
@@ -1050,15 +1050,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788272625.3336642,
-    "seen": 1788373451.2475114,
-    "ast_hash": "c1fffc3fab53fb32114f28901a81025f",
+    "mtime": 1790768405.7850976,
+    "seen": 1790768485.0217457,
+    "ast_hash": "a0f1ed1d81dc7e8bac8591dda79ca80b",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1788272625.3336642,
-    "seen": 1788373451.2475119,
-    "ast_hash": "dcfe090c98895d5f31482192ca881fb4",
+    "mtime": 1790768405.7850976,
+    "seen": 1790768485.0217462,
+    "ast_hash": "59e88c13a22cef570c9b05c5443e5ff9",
     "semantic_hash": ""
   },
   "DOCUMENTATION-DIRECTIVES.md": {
@@ -1068,15 +1068,15 @@
     "semantic_hash": ""
   },
   "HARDCODED.md": {
-    "mtime": 1782900963.5818973,
-    "seen": 1788373451.2475128,
-    "ast_hash": "7487cf7214af1d6c6f61e561b21af94e",
+    "mtime": 1790768405.7860973,
+    "seen": 1790768485.021747,
+    "ast_hash": "11c2bc73c6586235ef577dbde48f480c",
     "semantic_hash": ""
   },
   "K8S/preproduccion/wardkitten.yaml": {
-    "mtime": 1788272625.3346713,
-    "seen": 1788373451.247513,
-    "ast_hash": "ec20cb72901eaa7bbfc46b750a23a86f",
+    "mtime": 1790768405.7860973,
+    "seen": 1790768485.0217478,
+    "ast_hash": "02bdff0b46c0d9dd42d6550b1765b429",
     "semantic_hash": ""
   },
   "K8S/preproduccion/worker.yaml": {
@@ -1086,9 +1086,9 @@
     "semantic_hash": ""
   },
   "K8S/produccion/wardkitten.yaml": {
-    "mtime": 1788272625.3346713,
-    "seen": 1788373451.247514,
-    "ast_hash": "9c32b78fa81e9ab0e95afee4017b9de5",
+    "mtime": 1790768405.7860973,
+    "seen": 1790768485.0217493,
+    "ast_hash": "cbdbaf800727bd28299ed5077af07a63",
     "semantic_hash": ""
   },
   "K8S/produccion/worker.yaml": {
@@ -1110,9 +1110,9 @@
     "semantic_hash": ""
   },
   "SECURITY.md": {
-    "mtime": 1788272625.3346713,
-    "seen": 1788373451.247516,
-    "ast_hash": "52221f9272327a0c50c750f6e1bc57bf",
+    "mtime": 1790768405.7860973,
+    "seen": 1790768485.021752,
+    "ast_hash": "790a70af36a5546cfaef514dd008d0f3",
     "semantic_hash": ""
   },
   "ToDo.md": {
@@ -1122,9 +1122,9 @@
     "semantic_hash": ""
   },
   "compose.synology.yml": {
-    "mtime": 1788272625.3356712,
-    "seen": 1788373451.2475169,
-    "ast_hash": "174985d8a815c149df4aa80430b88165",
+    "mtime": 1790768405.7860973,
+    "seen": 1790768485.021753,
+    "ast_hash": "6e8d0866f81c2b9832733296f8d7093a",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -1152,15 +1152,15 @@
     "semantic_hash": ""
   },
   "docs/features/F02-watches/overview.md": {
-    "mtime": 1788272625.3356712,
-    "seen": 1788373451.2475193,
-    "ast_hash": "51fc1f5c63e793513753d8f2de8e5987",
+    "mtime": 1790768405.7870975,
+    "seen": 1790768485.021757,
+    "ast_hash": "be25e820b3fea5aced1915fa58e67f8c",
     "semantic_hash": ""
   },
   "docs/features/F03-checkins/overview.md": {
-    "mtime": 1788272625.336671,
-    "seen": 1788373451.2475197,
-    "ast_hash": "a889bc92e446755e3b8d9dac0a4eaa6b",
+    "mtime": 1790768405.7880967,
+    "seen": 1790768485.0217574,
+    "ast_hash": "d8c0998102845629d0cd4a0b8260bf23",
     "semantic_hash": ""
   },
   "docs/features/F04-evaluation/overview.md": {
@@ -1182,9 +1182,9 @@
     "semantic_hash": ""
   },
   "docs/features/_registry.md": {
-    "mtime": 1788272625.336671,
-    "seen": 1788373451.2475219,
-    "ast_hash": "5ed3f46915ae0fbb1b386132ac81ece9",
+    "mtime": 1790768405.7880967,
+    "seen": 1790768485.0217605,
+    "ast_hash": "415f939aa2f3cdd6c000147e1812e524",
     "semantic_hash": ""
   },
   "docs/nswag-operationids-estables.md": {
@@ -1239,6 +1239,204 @@
     "mtime": 1782249547.5886624,
     "seen": 1788373451.247526,
     "ast_hash": "00a1aa7fe978d43e2b47b2b481e38b94",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Api/Endpoints/OnboardingEndpoints.cs": {
+    "mtime": 1790768405.7880967,
+    "seen": 1790768485.021623,
+    "ast_hash": "c2c12678b6d285e3d20dd958466680c5",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Application/Notifications/ChannelBindingRules.cs": {
+    "mtime": 1790768405.7901447,
+    "seen": 1790768485.0216422,
+    "ast_hash": "ebc50dde3f19c351353f3ca09dcaf3a0",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Application/Notifications/ChannelDestinations.cs": {
+    "mtime": 1790768405.7901447,
+    "seen": 1790768485.0216427,
+    "ast_hash": "a8b54b04bf07e9ceddf0b57547ee82f2",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Application/Services/ChannelTestService.cs": {
+    "mtime": 1790768405.7901447,
+    "seen": 1790768485.0216494,
+    "ast_hash": "cf1a83e37911bebcecbc266fb6747c24",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Application/Services/OnboardingService.cs": {
+    "mtime": 1790768405.7901447,
+    "seen": 1790768485.0216513,
+    "ast_hash": "37c8320eac51f14ffab4892aee8b969d",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Application/Services/TelegramLinkService.cs": {
+    "mtime": 1790768405.791149,
+    "seen": 1790768485.0216534,
+    "ast_hash": "a28baf68b732c681fea1d3134d790161",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Shared.Contracts/OnboardingContracts.cs": {
+    "mtime": 1790768405.7921488,
+    "seen": 1790768485.0216897,
+    "ast_hash": "00ad5eacd920aa6ca435575d3a5f6aa6",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Shared.UI/Auth/BrowserLocale.cs": {
+    "mtime": 1790768405.7921488,
+    "seen": 1790768485.0216937,
+    "ast_hash": "ff73879ba552f19756793a7f26a5ac79",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Shared.UI/Components/PingTestBench.razor": {
+    "mtime": 1790768405.793148,
+    "seen": 1790768485.021697,
+    "ast_hash": "8f7803b021e8bae62410128c5ad9aadb",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Shared.UI/Components/PingTestBench.razor.cs": {
+    "mtime": 1790768405.793148,
+    "seen": 1790768485.0216975,
+    "ast_hash": "bf654a92ae9378c643f8072c8749a77e",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Layout/OnboardingLayout.razor": {
+    "mtime": 1790768405.793148,
+    "seen": 1790768485.0217047,
+    "ast_hash": "3383cf53eed60a63ec19e9f81d913fa5",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Onboarding/ChannelTestButton.razor": {
+    "mtime": 1790768405.7941475,
+    "seen": 1790768485.0217052,
+    "ast_hash": "4bf1a8ff8eb286922d3031d749874817",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Onboarding/IntervalPresets.cs": {
+    "mtime": 1790768405.7941475,
+    "seen": 1790768485.0217056,
+    "ast_hash": "6da93fde9cb1a1cce32b218ba10fa0b7",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Onboarding/OnboardingProgress.cs": {
+    "mtime": 1790768405.7941475,
+    "seen": 1790768485.0217066,
+    "ast_hash": "5085256dc2b62bed97890db7893da760",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Onboarding/StepActions.razor": {
+    "mtime": 1790768405.7941475,
+    "seen": 1790768485.0217068,
+    "ast_hash": "fc8d3b9cc10738c3f5d204da4acc33f6",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Onboarding/TimeZoneOptions.cs": {
+    "mtime": 1790768405.7941475,
+    "seen": 1790768485.0217073,
+    "ast_hash": "2469c070ae6dc1979cc97fefab7e3682",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Pages/Welcome.razor": {
+    "mtime": 1790768405.795147,
+    "seen": 1790768485.0217154,
+    "ast_hash": "65798fbf9404dc53515eaaa10f338c58",
+    "semantic_hash": ""
+  },
+  "src/Wardkitten.Web/Pages/Welcome.razor.cs": {
+    "mtime": 1790768405.795147,
+    "seen": 1790768485.0217159,
+    "ast_hash": "cf87493c9aefb0ca978fbc075483534f",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.IntegrationTests/OnboardingApiTests.cs": {
+    "mtime": 1790768405.7961469,
+    "seen": 1790768485.021726,
+    "ast_hash": "676bbff1d57f54487d4372ae02069352",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Tests/Application/ChannelBindingRulesTests.cs": {
+    "mtime": 1790768405.7971475,
+    "seen": 1790768485.021729,
+    "ast_hash": "5e01878b9a7d8c4df038f0eac461f42d",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Tests/Application/ChannelTestServiceTests.cs": {
+    "mtime": 1790768405.7971475,
+    "seen": 1790768485.0217295,
+    "ast_hash": "5d3942cbd532e08584303bfd9288fa29",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Tests/Application/OnboardingServiceTests.cs": {
+    "mtime": 1790768405.7971475,
+    "seen": 1790768485.021731,
+    "ast_hash": "d04afbf2ff1a5bf2be519a20e199fbb5",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Tests/Application/TelegramLinkServiceTests.cs": {
+    "mtime": 1790768405.7971475,
+    "seen": 1790768485.0217314,
+    "ast_hash": "8bfbfbb5ad0a21ce7ae5eec0fecda181",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Tests/Application/WatchServiceDefaultBindingsTests.cs": {
+    "mtime": 1790768405.7971475,
+    "seen": 1790768485.0217323,
+    "ast_hash": "71340ad3829a4f5640a3bba3edab950c",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/FakeApi.cs": {
+    "mtime": 1790768405.7981467,
+    "seen": 1790768485.0217392,
+    "ast_hash": "69d2d46b072b2d0924a81dbd55b3a7e3",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/OnboardingHelpersTests.cs": {
+    "mtime": 1790768405.7981467,
+    "seen": 1790768485.0217397,
+    "ast_hash": "7bed72567dd84bcbf6ddbe789f663483",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/OnboardingPagesTests.cs": {
+    "mtime": 1790768405.7981467,
+    "seen": 1790768485.0217402,
+    "ast_hash": "372669705f67a5a4732a3b31bcf49820",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/PingTestBenchTests.cs": {
+    "mtime": 1790768405.7981467,
+    "seen": 1790768485.021741,
+    "ast_hash": "9324e2586726c0aaace8b560425da5da",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/Wardkitten.Web.Tests.csproj": {
+    "mtime": 1790768405.7981467,
+    "seen": 1790768485.0217414,
+    "ast_hash": "28b16f1fec04fff2048b316a11fdcee1",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/WebTestBase.cs": {
+    "mtime": 1790768449.9027815,
+    "seen": 1790768485.0217419,
+    "ast_hash": "de72c8f2b164b5b3643a96113e99ab65",
+    "semantic_hash": ""
+  },
+  "test/Wardkitten.Web.Tests/WelcomeTests.cs": {
+    "mtime": 1790768405.7991483,
+    "seen": 1790768485.0217423,
+    "ast_hash": "e2d431922685ac290dbc18cabc7f7ca8",
+    "semantic_hash": ""
+  },
+  "docs/features/F01-onboarding/overview.md": {
+    "mtime": 1790768405.7870975,
+    "seen": 1790768485.0217562,
+    "ast_hash": "2a926045edf943d9a5a0191aaa5824cc",
+    "semantic_hash": ""
+  },
+  "docs/features/F05-canales/overview.md": {
+    "mtime": 1790768405.7880967,
+    "seen": 1790768485.0217586,
+    "ast_hash": "df239603023386f74edd1507d083d138",
     "semantic_hash": ""
   }
 }
