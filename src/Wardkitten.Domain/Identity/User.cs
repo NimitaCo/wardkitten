@@ -38,13 +38,13 @@ public sealed class User : Entity
     public string? PhoneOtpHash { get; set; }
     public DateTime? PhoneOtpExpiresUtc { get; set; }
 
-    // Vinculación de Telegram (F05.04): código de un solo uso (hasheado) que el usuario envía al bot con
+    // Vinculación de Telegram (F05.05): código de un solo uso (hasheado) que el usuario envía al bot con
     // /start <código>. Al recibirlo por el webhook se guarda el chat en TelegramChatId y se borra.
     public string? TelegramLinkCodeHash { get; set; }
     public DateTime? TelegramLinkExpiresUtc { get; set; }
 
     /// <summary>
-    /// Canales por defecto (F02.04): los watches nuevos que no traen bindings propios nacen con una copia
+    /// Canales por defecto (F02.05): los watches nuevos que no traen bindings propios nacen con una copia
     /// de estos. Vacío = solo Email. Se configuran en el asistente de bienvenida (F01.04).
     /// </summary>
     public List<ChannelBinding> DefaultChannelBindings { get; set; } = new();

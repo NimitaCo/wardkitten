@@ -1,4 +1,4 @@
-// Feature: F02.04 — canales por defecto del usuario
+// Feature: F02.05 — canales por defecto del usuario
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;

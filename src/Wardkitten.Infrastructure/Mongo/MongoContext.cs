@@ -52,6 +52,11 @@ public sealed class MongoContext
         await Users.Indexes.CreateOneAsync(new CreateIndexModel<User>(
             Builders<User>.IndexKeys.Ascending(u => u.Email),
             new CreateIndexOptions { Unique = true, Name = "ux_users_email" }), cancellationToken: ct);
+        // Búsqueda del código de vinculación de Telegram (F05.05). Disperso: solo lo tienen los usuarios con
+        // una vinculación pendiente (IgnoreIfNull no persiste el campo cuando es null).
+        await Users.Indexes.CreateOneAsync(new CreateIndexModel<User>(
+            Builders<User>.IndexKeys.Ascending(u => u.TelegramLinkCodeHash),
+            new CreateIndexOptions { Sparse = true, Name = "ix_users_telegramlink" }), cancellationToken: ct);
 
         await RefreshTokens.Indexes.CreateManyAsync(new[]
         {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Wardkitten.Application.Billing;
 using Wardkitten.Application.Notifications;
 using Wardkitten.Application.Security;
+using Wardkitten.Application.Services;
 using Wardkitten.Infrastructure.Billing;
 using Wardkitten.Infrastructure.Notifications;
 using Wardkitten.Infrastructure.Security;
@@ -49,6 +50,12 @@ public static class IntegrationsRegistration
             o.FromName = config["SMTP_FROM_NAME"] ?? "Wardkitten";
         });
         services.Configure<TelegramOptions>(o => o.BotToken = config["TELEGRAM_BOT_TOKEN"] ?? string.Empty);
+        // Vinculación por deep link (F05.05): usuario del bot para t.me y secreto del webhook /telegram/webhook.
+        services.Configure<TelegramLinkOptions>(o =>
+        {
+            o.BotUsername = config["TELEGRAM_BOT_USERNAME"] ?? string.Empty;
+            o.WebhookSecret = config["TELEGRAM_WEBHOOK_SECRET"] ?? string.Empty;
+        });
         services.Configure<PushOptions>(o => o.ServiceAccountJson = config["FCM_SERVICE_ACCOUNT_JSON"]);
         services.Configure<TwilioOptions>(o =>
         {

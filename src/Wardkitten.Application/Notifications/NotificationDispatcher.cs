@@ -278,20 +278,7 @@ public sealed class NotificationDispatcher : INotificationDispatcher
     }
 
     private static string? ResolveDestination(ChannelBinding binding, User user)
-    {
-        if (!string.IsNullOrWhiteSpace(binding.DestinationOverride))
-            return binding.DestinationOverride;
-
-        return binding.ChannelType switch
-        {
-            ChannelType.Email => user.Email,
-            ChannelType.Telegram => user.TelegramChatId,
-            ChannelType.Push => user.PushTokens.FirstOrDefault(),
-            ChannelType.Sms => user.Phone,
-            ChannelType.WhatsApp => user.Phone,
-            _ => null,
-        };
-    }
+        => ChannelDestinations.Resolve(binding, user);
 
     private static TimeZoneInfo SafeTimeZone(string id)
     {

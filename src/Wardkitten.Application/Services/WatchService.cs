@@ -28,7 +28,7 @@ public sealed record WatchInput(
 /// <summary>
 /// Alta/edición/borrado de watches con validación de schedule y aplicación de los límites del plan
 /// (siempre en servidor). Genera el pingToken inadivinable para watches de tipo Ping. Feature: F02
-/// (F02.04: sin bindings propios hereda los canales por defecto del usuario).
+/// (F02.05: sin bindings propios hereda los canales por defecto del usuario).
 /// </summary>
 public sealed class WatchService
 {
@@ -195,7 +195,7 @@ public sealed class WatchService
     }
 
     /// <summary>
-    /// Canales de un watch que no trae los suyos: copia de los canales por defecto del usuario (F02.04) o,
+    /// Canales de un watch que no trae los suyos: copia de los canales por defecto del usuario (F02.05) o,
     /// si no tiene, solo Email. Se copia cada binding para que editar el watch no toque los defaults.
     /// </summary>
     private static List<ChannelBinding> DefaultBindingsFor(Domain.Identity.User user)
