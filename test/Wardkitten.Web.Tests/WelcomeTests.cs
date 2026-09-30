@@ -70,6 +70,32 @@ public class WelcomeTests : WebTestBase
     }
 
     [Fact]
+    public void EmptyStateResponse_IsReportedAsAnError()
+    {
+        Api.On("GET /api/onboarding/state", _ => FakeApi.Respond(System.Text.Json.JsonDocument.Parse("null").RootElement));
+        var cut = Render<Welcome>();
+        cut.Find(".alert-danger").TextContent.ShouldBe("No se ha podido cargar tu cuenta.");
+    }
+
+    [Fact]
+    public void Load_TellsTheLayoutWhereWeAre()
+    {
+        var progress = new OnboardingProgress();
+        var changes = 0;
+        progress.Changed += () => changes++;
+        RenderWizard(progress: progress);
+        changes.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Load_PaidChannels_OnlyTheSavedOnes()
+    {
+        var cut = RenderWizard(State(phoneVerified: true, defaults: new List<ChannelBinding> { new() { ChannelType = ChannelType.Sms } }));
+        cut.Instance.UseSms.ShouldBeTrue();
+        cut.Instance.UseWhatsApp.ShouldBeFalse();
+    }
+
+    [Fact]
     public void Load_RestoresSavedDefaultChannels()
     {
         var cut = RenderWizard(State(telegramLinked: true, phoneVerified: true, defaults: new List<ChannelBinding>
@@ -107,9 +133,10 @@ public class WelcomeTests : WebTestBase
     [Fact]
     public async Task ContinueProfile_SavesAndMovesOn()
     {
-        Api.On("PUT /api/onboarding/profile", new { });
         var progress = new OnboardingProgress();
         var cut = RenderWizard(progress: progress);
+        var busyWhileSaving = false;
+        Api.On("PUT /api/onboarding/profile", _ => { busyWhileSaving = cut.Instance.Busy; return FakeApi.Respond(new { }); });
         cut.Instance.DisplayName = "Ana García";
         cut.Instance.Locale = "en";
 
@@ -120,6 +147,7 @@ public class WelcomeTests : WebTestBase
         sent.TimeZoneId.ShouldBe("Europe/Madrid");
         sent.Locale.ShouldBe("en");
         cut.Instance.Step.ShouldBe(Step.Channels);
+        busyWhileSaving.ShouldBeTrue();
         cut.Instance.Busy.ShouldBeFalse();
         progress.Current.ShouldBe(1);
     }
@@ -216,10 +244,12 @@ public class WelcomeTests : WebTestBase
     [Fact]
     public async Task ContinueChannels_SavesTheDefaults_AndMovesOn()
     {
-        var saved = new List<ChannelBinding> { new() { ChannelType = ChannelType.Email }, new() { ChannelType = ChannelType.Slack, DestinationOverride = "https://hooks.slack.com/x" } };
-        Api.On("PUT /api/onboarding/channels", saved);
+        // El servidor devuelve lo que de verdad guardó: eso es lo que se resume al final.
+        var saved = new List<ChannelBinding> { new() { ChannelType = ChannelType.Slack, DestinationOverride = "https://hooks.slack.com/x" } };
         Api.On("POST /api/ping-tests", Draft());
         var cut = RenderWizard();
+        var busyWhileSaving = false;
+        Api.On("PUT /api/onboarding/channels", _ => { busyWhileSaving = cut.Instance.Busy; return FakeApi.Respond(saved); });
         cut.Instance.Urls[ChannelType.Slack] = "https://hooks.slack.com/x";
 
         await Do(cut, w => w.ContinueChannelsAsync());
@@ -227,7 +257,9 @@ public class WelcomeTests : WebTestBase
         Api.LastBody<UpdateChannelsRequest>("PUT /api/onboarding/channels")!.Bindings.Select(b => b.ChannelType)
             .ShouldBe(new[] { ChannelType.Email, ChannelType.Slack });
         cut.Instance.Step.ShouldBe(Step.FirstWatch);
-        cut.Instance.ChannelSummary.ShouldBe(new[] { "Email", "Slack" });
+        busyWhileSaving.ShouldBeTrue();
+        cut.Instance.Busy.ShouldBeFalse();
+        cut.Instance.ChannelSummary.ShouldBe(new[] { "Slack" });
     }
 
     [Fact]
@@ -309,6 +341,45 @@ public class WelcomeTests : WebTestBase
         var calls = Api.Count("GET /api/auth/telegram/status");
         await Task.Delay(100);
         Api.Count("GET /api/auth/telegram/status").ShouldBe(calls);   // deja de consultar al vincular
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Telegram_Polling_StopsOnUnlinkOrWhenLeaving(bool unlink)
+    {
+        Api.On("POST /api/auth/telegram/link-code", new TelegramLinkCodeDto("abc", "https://t.me/B?start=abc", DateTime.UtcNow.AddMinutes(15)));
+        Api.On("GET /api/auth/telegram/status", new TelegramStatusDto(false));
+        Api.On("POST /api/auth/telegram/unlink", null, HttpStatusCode.NoContent);
+        var cut = RenderWizard(telegramPoll: TimeSpan.FromMilliseconds(10));
+        await Do(cut, w => w.StartTelegramLinkAsync());
+        await Eventually(() => Api.Count("GET /api/auth/telegram/status") > 0);
+
+        if (unlink) await Do(cut, w => w.UnlinkTelegramAsync());
+        else cut.Instance.Dispose();
+        await Task.Delay(50);
+        var calls = Api.Count("GET /api/auth/telegram/status");
+        await Task.Delay(100);
+
+        Api.Count("GET /api/auth/telegram/status").ShouldBe(calls);
+    }
+
+    [Fact]
+    public async Task Telegram_NewCode_ReplacesThePreviousPolling()
+    {
+        Api.On("POST /api/auth/telegram/link-code", new TelegramLinkCodeDto("abc", "https://t.me/B?start=abc", DateTime.UtcNow.AddMinutes(15)));
+        Api.On("GET /api/auth/telegram/status", new TelegramStatusDto(false));
+        var cut = RenderWizard(telegramPoll: TimeSpan.FromMilliseconds(40));
+        await Do(cut, w => w.StartTelegramLinkAsync());
+        await Do(cut, w => w.StartTelegramLinkAsync());
+        await Do(cut, w => w.StartTelegramLinkAsync());
+
+        await Task.Delay(300);
+        cut.Instance.Dispose();
+        var calls = Api.Count("GET /api/auth/telegram/status");
+
+        // Un solo bucle vivo: unas 7 consultas en 300 ms, no unas 21.
+        calls.ShouldBeLessThan(12);
     }
 
     [Fact]
@@ -581,6 +652,31 @@ public class WelcomeTests : WebTestBase
     }
 
     [Fact]
+    public async Task FirstWatch_ManualAfterRehearsingAPing_DoesNotReuseTheProbe()
+    {
+        Api.On("POST /api/ping-tests", Draft());
+        Api.On("DELETE /api/ping-tests/probe-1", null, HttpStatusCode.NoContent);
+        var cut = RenderWizard();
+        cut.Instance.GoTo(Step.FirstWatch);
+        cut.Render();
+        cut.WaitForAssertion(() => cut.Instance.Bench!.ProbeId.ShouldBe("probe-1"));
+        cut.FindAll("input[type=radio]")[1].Change(true);
+        cut.Instance.WatchName = "Regar";
+        var busyWhileSaving = false;
+        Api.On("POST /api/watches", _ =>
+        {
+            busyWhileSaving = cut.Instance.Busy;
+            return FakeApi.Respond(CreatedWatch(WatchType.Manual, null), HttpStatusCode.Created);
+        });
+
+        await Do(cut, w => w.CreateWatchAsync());
+
+        Api.LastBody<WatchRequest>("POST /api/watches")!.PingProbeId.ShouldBeNull();
+        Api.Calls.ShouldNotContain(c => c.Key == "GET /api/watches/w1/checkins");
+        busyWhileSaving.ShouldBeTrue();
+    }
+
+    [Fact]
     public async Task FirstWatch_CreateFailure_IsShown()
     {
         Api.On("POST /api/ping-tests", Draft());
@@ -621,14 +717,23 @@ public class WelcomeTests : WebTestBase
     [Fact]
     public async Task Finish_CompletesAndGoesToTheDashboard()
     {
-        Api.On("POST /api/onboarding/complete", null, HttpStatusCode.NoContent);
+        Services.GetRequiredService<NavigationManager>().NavigateTo("/welcome");
         var cut = RenderWizard();
         cut.Instance.GoTo(Step.Done);
         cut.Render();
 
+        var busyWhileSaving = false;
+        Api.On("POST /api/onboarding/complete", _ =>
+        {
+            busyWhileSaving = cut.Instance.Busy;
+            return FakeApi.Respond(null, HttpStatusCode.NoContent);
+        });
+
         cut.FindAll("button").Single(b => b.TextContent == "Ir al panel").Click();
 
         cut.WaitForAssertion(() => Services.GetRequiredService<NavigationManager>().Uri.ShouldBe("http://localhost/"));
+        busyWhileSaving.ShouldBeTrue();
+        cut.Instance.Busy.ShouldBeFalse();
         Api.Count("POST /api/onboarding/complete").ShouldBe(1);
         await Task.CompletedTask;
     }
@@ -637,6 +742,7 @@ public class WelcomeTests : WebTestBase
     public async Task Finish_Failure_StaysAndShowsTheError()
     {
         Api.Fail("POST /api/onboarding/complete", "Usuario no encontrado.", HttpStatusCode.NotFound);
+        Services.GetRequiredService<NavigationManager>().NavigateTo("/welcome");
         var cut = RenderWizard();
         cut.Instance.GoTo(Step.Done);
 
@@ -644,7 +750,7 @@ public class WelcomeTests : WebTestBase
         cut.Render();
 
         cut.Find(".alert-danger").TextContent.ShouldBe("Usuario no encontrado.");
-        Services.GetRequiredService<NavigationManager>().Uri.ShouldBe("http://localhost/");   // no navegó (sigue en la raíz de bUnit)
+        Services.GetRequiredService<NavigationManager>().Uri.ShouldBe("http://localhost/welcome");   // no navegó
         cut.Instance.Busy.ShouldBeFalse();
     }
 

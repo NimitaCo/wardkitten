@@ -56,6 +56,10 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
     internal bool Busy { get; private set; }
     internal bool Copied { get; private set; }
     internal string? Error { get; private set; }
+    internal DateTime LastHistoryRefreshUtc { get; private set; } = DateTime.MinValue;
+
+    /// <summary>Cuánto dura el «¡Copiada!» del botón de copiar.</summary>
+    internal TimeSpan CopiedFeedback { get; set; } = TimeSpan.FromSeconds(2);
 
     private string? _watchId;
     private string? _savedToken;
@@ -63,7 +67,6 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
     private string? _savedTokenParam;
     private bool _paramsApplied;
     private bool _historyPending;
-    private DateTime _lastHistoryRefreshUtc = DateTime.MinValue;
     private CancellationTokenSource? _pollCts;
 
     /// <summary>Banco en curso: el padre lo manda como <c>PingProbeId</c> al guardar para adoptar la URL.</summary>
@@ -158,7 +161,7 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
     internal async Task RefreshHistoryAsync()
     {
         if (string.IsNullOrEmpty(_watchId)) return;
-        _lastHistoryRefreshUtc = DateTime.UtcNow;
+        LastHistoryRefreshUtc = DateTime.UtcNow;
         var r = await Api.GetCheckInsAsync(_watchId);
         if (!r.Ok || r.Value is null) return;
         Hits = r.Value.Select(c => new PingTestHitDto(c.ReceivedAtUtc, c.Kind, c.Source, true, null, null, null, null)).ToList();
@@ -189,7 +192,7 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
     /// <see cref="HistoryPollInterval"/>. El tic es el intervalo rápido para que una prueba recién abierta
     /// empiece a refrescarse enseguida.
     /// </summary>
-    internal bool IsPollDue(DateTime nowUtc) => Test is not null || nowUtc - _lastHistoryRefreshUtc >= HistoryPollInterval;
+    internal bool IsPollDue(DateTime nowUtc) => Test is not null || nowUtc - LastHistoryRefreshUtc >= HistoryPollInterval;
 
     private async Task PollLoopAsync(CancellationToken ct)
     {
@@ -210,9 +213,8 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
         try
         {
             await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
-            Copied = true;
-            StateHasChanged();
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            Copied = true;   // se pinta al ceder el hilo en la espera (lo invoca un evento de la UI)
+            await Task.Delay(CopiedFeedback);
             Copied = false;
         }
         catch (Exception ex) when (ex is JSException or InvalidOperationException or TaskCanceledException)

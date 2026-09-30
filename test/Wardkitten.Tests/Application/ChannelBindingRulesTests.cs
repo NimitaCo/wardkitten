@@ -129,5 +129,6 @@ public class ChannelBindingRulesTests
         ChannelDestinations.Resolve(new ChannelBinding { ChannelType = ChannelType.Sms }, user).ShouldBe("+34600111222");
         ChannelDestinations.Resolve(new ChannelBinding { ChannelType = ChannelType.WhatsApp }, user).ShouldBe("+34600111222");
         ChannelDestinations.Resolve(new ChannelBinding { ChannelType = ChannelType.Slack }, user).ShouldBeNull();
+        ChannelDestinations.Resolve(new ChannelBinding { ChannelType = ChannelType.Push }, new User()).ShouldBeNull();
     }
 }

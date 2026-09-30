@@ -27,6 +27,8 @@ public class PingTestBenchTests : WebTestBase
         var cut = Render<PingTestBench>(p => p.Add(x => x.WaitingText, "Esperando la primera llamada…"));
 
         cut.WaitForAssertion(() => cut.Find("input[aria-label='URL de ping']").GetAttribute("value").ShouldBe(Url));
+        cut.Find("h2").TextContent.ShouldBe("🧪 Comprobar que llegan las solicitudes");
+        cut.Find("small.text-muted").TextContent.ShouldBe("Llama a esta URL desde tu sistema y verás aquí cada solicitud.");
         cut.Markup.ShouldContain($"curl -fsS {Url}");
         cut.Markup.ShouldContain("Esperando la primera llamada…");
         cut.Markup.ShouldContain("no cuentan");
@@ -51,6 +53,8 @@ public class PingTestBenchTests : WebTestBase
 
         Api.Count("POST /api/ping-tests").ShouldBe(0);
         cut.Markup.ShouldContain("Todavía no ha llegado ninguna solicitud.");
+        cut.FindAll("input[aria-label='URL de ping']").ShouldBeEmpty();   // sin prueba ni URL guardada no hay URL
+        cut.Instance.PingUrl.ShouldBeNull();
         cut.Find("button").TextContent.Trim().ShouldBe("Obtener URL de prueba");
 
         cut.Find("button").Click();
@@ -145,6 +149,7 @@ public class PingTestBenchTests : WebTestBase
 
         cut.WaitForAssertion(() => cut.Markup.ShouldContain("Prueba en curso hasta las"));
         Api.LastBody<StartPingTestRequest>("POST /api/ping-tests")!.WatchId.ShouldBe("w1");
+        cut.Instance.PingUrl.ShouldBe(Url);   // manda la URL del banco, no la reconstruida
 
         cut.Instance.Apply(running with { TestModeUntilUtc = null });
         cut.Render();
@@ -296,6 +301,204 @@ public class PingTestBenchTests : WebTestBase
         cut.FindAll("button").Single(b => b.TextContent == "Copiar").Click();
 
         cut.WaitForAssertion(() => cut.Find(".alert-danger").TextContent.ShouldContain("cópiala a mano"));
+    }
+
+    [Fact]
+    public void ParentReRender_WithTheSameParameters_KeepsTheInternalState()
+    {
+        Api.On("GET /api/watches/w1/checkins", Array.Empty<CheckInDto>());
+        var cut = Render<PingTestBench>(p => p.Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "tok"));
+        Api.Count("GET /api/watches/w1/checkins").ShouldBe(1);
+
+        cut.Render(p => p.Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "tok"));
+
+        Api.Count("GET /api/watches/w1/checkins").ShouldBe(1);   // no se recarga si nada cambió
+    }
+
+    [Fact]
+    public async Task ParentReRender_AfterAttaching_DoesNotForgetTheCreatedWatch()
+    {
+        Api.On("POST /api/ping-tests", Draft());
+        Api.On("GET /api/watches/w9/checkins", Array.Empty<CheckInDto>());
+        var cut = Render<PingTestBench>();
+        cut.WaitForAssertion(() => cut.Instance.ProbeId.ShouldBe("probe-1"));
+        await cut.InvokeAsync(() => cut.Instance.AttachToWatchAsync("w9", "tok123"));
+
+        cut.Render();   // el asistente se repinta con los mismos parámetros (ninguno)
+
+        cut.Instance.PingUrl.ShouldBe($"{BaseUrl}p/tok123");
+        Api.Count("POST /api/ping-tests").ShouldBe(1);   // no reserva otra URL
+    }
+
+    [Fact]
+    public void NewSavedWatchParameters_AreApplied()
+    {
+        Api.On("GET /api/watches/w1/checkins", Array.Empty<CheckInDto>());
+        Api.On("GET /api/watches/w2/checkins", Array.Empty<CheckInDto>());
+        var cut = Render<PingTestBench>(p => p.Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "t1"));
+
+        cut.Render(p => p.Add(x => x.WatchId, "w2").Add(x => x.SavedPingToken, "t1"));
+        Api.Count("GET /api/watches/w2/checkins").ShouldBe(1);
+
+        cut.Render(p => p.Add(x => x.WatchId, "w2").Add(x => x.SavedPingToken, "t2"));
+        cut.Instance.PingUrl.ShouldBe($"{BaseUrl}p/t2");
+        Api.Count("GET /api/watches/w2/checkins").ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task ManualWatchBeingEdited_HasNoRealHistoryToLoad()
+    {
+        Api.On("POST /api/ping-tests", Draft());
+        Api.On("DELETE /api/ping-tests/probe-1", null, HttpStatusCode.NoContent);
+        var cut = Render<PingTestBench>(p => p.Add(x => x.WatchId, "w1").Add(x => x.AutoStart, false));
+
+        (await cut.InvokeAsync(() => cut.Instance.PollOnceAsync())).ShouldBeFalse();
+        await cut.InvokeAsync(() => cut.Instance.StartTestAsync());
+        await cut.InvokeAsync(() => cut.Instance.StopTestAsync());
+
+        Api.Calls.ShouldNotContain(c => c.Key == "GET /api/watches/w1/checkins");
+        Api.LastBody<StartPingTestRequest>("POST /api/ping-tests")!.WatchId.ShouldBe("w1");
+    }
+
+    [Fact]
+    public async Task RefreshHistory_WithoutAWatch_DoesNothing()
+    {
+        var cut = Render<PingTestBench>(p => p.Add(x => x.AutoStart, false));
+        await cut.InvokeAsync(() => cut.Instance.RefreshHistoryAsync());
+        Api.Calls.ShouldBeEmpty();
+        cut.Instance.LastHistoryRefreshUtc.ShouldBe(DateTime.MinValue);
+    }
+
+    [Fact]
+    public async Task History_KeepsWhatItHad_WhenTheReloadFails()
+    {
+        var at = DateTime.UtcNow.AddMinutes(-3);
+        Api.On("GET /api/watches/w1/checkins", new[] { new CheckInDto("c1", "Success", "Ping", at, null) });
+        var cut = Render<PingTestBench>(p => p.Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "t"));
+        cut.Instance.LastHit.ShouldBe(at);
+
+        Api.Fail("GET /api/watches/w1/checkins", "boom", HttpStatusCode.InternalServerError);
+        (await cut.InvokeAsync(() => cut.Instance.PollOnceAsync())).ShouldBeTrue();
+
+        cut.Instance.Hits.ShouldHaveSingleItem();
+        cut.Instance.LastHit.ShouldBe(at);
+    }
+
+    [Fact]
+    public async Task EmptyHistory_HasNoLastHit()
+    {
+        Api.On("GET /api/watches/w1/checkins", Array.Empty<CheckInDto>());
+        var cut = Render<PingTestBench>(p => p.Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "t"));
+        (await cut.InvokeAsync(() => cut.Instance.PollOnceAsync())).ShouldBeTrue();
+        cut.Instance.LastHit.ShouldBeNull();
+        cut.Instance.Hits.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void LastHit_PrefersTheNewestListedHit_ElseTheProbeCounter()
+    {
+        var cut = Render<PingTestBench>(p => p.Add(x => x.AutoStart, false));
+        var listed = DateTime.UtcNow.AddSeconds(-5);
+        var counter = DateTime.UtcNow.AddMinutes(-1);
+
+        cut.Instance.Apply(Draft(Hit(listed)) with { LastHitAtUtc = counter });
+        cut.Instance.LastHit.ShouldBe(listed);
+
+        cut.Instance.Apply(Draft() with { LastHitAtUtc = counter });
+        cut.Instance.LastHit.ShouldBe(counter);
+    }
+
+    [Fact]
+    public async Task NullResponses_AreTreatedAsNoProbe()
+    {
+        Api.On("POST /api/ping-tests", _ => FakeApi.Respond(System.Text.Json.JsonDocument.Parse("null").RootElement));
+        var cut = Render<PingTestBench>();
+        cut.Instance.ProbeId.ShouldBeNull();
+
+        Api.On("POST /api/ping-tests", Draft());
+        Api.On("GET /api/ping-tests/probe-1", _ => FakeApi.Respond(System.Text.Json.JsonDocument.Parse("null").RootElement));
+        await cut.InvokeAsync(() => cut.Instance.StartTestAsync());
+        cut.Instance.ProbeId.ShouldBe("probe-1");
+        (await cut.InvokeAsync(() => cut.Instance.PollOnceAsync())).ShouldBeTrue();
+        cut.Instance.ProbeId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Busy_WhileStartingOrStopping()
+    {
+        var cut = Render<PingTestBench>(p => p.Add(x => x.AutoStart, false));
+        var busyOnStart = false;
+        var busyOnStop = false;
+        Api.On("POST /api/ping-tests", _ => { busyOnStart = cut.Instance.Busy; return FakeApi.Respond(Draft()); });
+        Api.On("DELETE /api/ping-tests/probe-1", _ => { busyOnStop = cut.Instance.Busy; return FakeApi.Respond(null, HttpStatusCode.NoContent); });
+
+        await cut.InvokeAsync(() => cut.Instance.StartTestAsync());
+        busyOnStart.ShouldBeTrue();
+        cut.Instance.Busy.ShouldBeFalse();
+
+        await cut.InvokeAsync(() => cut.Instance.StopTestAsync());
+        busyOnStop.ShouldBeTrue();
+        cut.Instance.Busy.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsPollDue_ExactlyAtTheHistoryInterval()
+    {
+        Api.On("GET /api/watches/w1/checkins", Array.Empty<CheckInDto>());
+        var cut = Render<PingTestBench>(p => p
+            .Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "t")
+            .Add(x => x.HistoryPollInterval, TimeSpan.FromSeconds(15)));
+        var last = cut.Instance.LastHistoryRefreshUtc;
+        last.ShouldNotBe(DateTime.MinValue);
+
+        cut.Instance.IsPollDue(last.AddSeconds(15)).ShouldBeTrue();
+        cut.Instance.IsPollDue(last.AddSeconds(15).AddTicks(-1)).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task HistoryPolling_IsThrottled_EvenWithAFastTick()
+    {
+        Api.On("GET /api/watches/w1/checkins", Array.Empty<CheckInDto>());
+        Render<PingTestBench>(p => p
+            .Add(x => x.WatchId, "w1").Add(x => x.SavedPingToken, "t")
+            .Add(x => x.TestPollInterval, TimeSpan.FromMilliseconds(5))
+            .Add(x => x.HistoryPollInterval, TimeSpan.FromMinutes(5)));
+
+        await Task.Delay(150);
+
+        Api.Count("GET /api/watches/w1/checkins").ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task Dispose_StopsPolling()
+    {
+        Api.On("POST /api/ping-tests", Draft());
+        Api.On("GET /api/ping-tests/probe-1", Draft());
+        Api.On("DELETE /api/ping-tests/probe-1", null, HttpStatusCode.NoContent);
+        var cut = Render<PingTestBench>(p => p.Add(x => x.TestPollInterval, TimeSpan.FromMilliseconds(5)));
+        await Eventually(() => Api.Count("GET /api/ping-tests/probe-1") > 0);
+
+        await cut.Instance.DisposeAsync();
+        await Task.Delay(30);
+        var calls = Api.Count("GET /api/ping-tests/probe-1");
+        await Task.Delay(100);
+
+        Api.Count("GET /api/ping-tests/probe-1").ShouldBe(calls);
+    }
+
+    [Fact]
+    public void Copied_FeedbackGoesAway()
+    {
+        Api.On("POST /api/ping-tests", Draft());
+        JSInterop.SetupVoid("navigator.clipboard.writeText", Url).SetVoidResult();
+        var cut = Render<PingTestBench>();
+        cut.WaitForAssertion(() => cut.Instance.ProbeId.ShouldBe("probe-1"));
+        cut.Instance.CopiedFeedback = TimeSpan.FromMilliseconds(30);
+
+        cut.FindAll("button").Single(b => b.TextContent == "Copiar").Click();
+
+        cut.WaitForAssertion(() => cut.FindAll("button").ShouldContain(b => b.TextContent == "Copiar"));
+        cut.Instance.Copied.ShouldBeFalse();
     }
 
     [Theory]

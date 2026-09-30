@@ -86,6 +86,7 @@ public class OnboardingPagesTests : WebTestBase
 
         cut.WaitForAssertion(() => welcome.Instance.Step.ShouldBe(Welcome.WizardStep.Profile));
         cut.Find(".wk-step-current").TextContent.ShouldContain("Tu perfil");
+        cut.WaitForAssertion(() => cut.FindAll("#wk-name").Count.ShouldBe(1));   // la página se repinta en el paso pedido
     }
 
     // ---- Aviso en el panel ----

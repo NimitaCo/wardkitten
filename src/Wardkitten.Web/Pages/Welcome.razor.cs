@@ -258,8 +258,7 @@ public partial class Welcome : ComponentBase, IDisposable
         UseTelegram = true;
         TelegramLink = null;
         TelegramMessage = "✅ Telegram vinculado.";
-        _telegramPoll?.Cancel();
-        return true;
+        return true;   // el bucle de consulta termina al recibir true
     }
 
     private async Task PollTelegramAsync(CancellationToken ct)

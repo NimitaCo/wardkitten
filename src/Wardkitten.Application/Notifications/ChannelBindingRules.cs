@@ -54,7 +54,7 @@ public static class ChannelBindingRules
         if (string.IsNullOrWhiteSpace(value)) return false;
         if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri)) return false;
         if (uri.Scheme != Uri.UriSchemeHttps || string.IsNullOrEmpty(uri.Host)) return false;
-        if (uri.IsLoopback || uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase)) return false;
+        if (uri.IsLoopback) return false;   // incluye «localhost» y 127.0.0.0/8
         return !IPAddress.TryParse(uri.Host.Trim('[', ']'), out var ip) || !IsPrivate(ip);
     }
 

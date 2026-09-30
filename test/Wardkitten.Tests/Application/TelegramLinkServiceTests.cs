@@ -105,6 +105,14 @@ public class TelegramLinkServiceTests
         (await h.Service.CreateLinkCodeAsync("nope")).Error.ShouldBe("Usuario no encontrado.");
     }
 
+    [Fact]
+    public void Options_DefaultToDisabled()
+    {
+        var options = new TelegramLinkOptions();
+        options.BotUsername.ShouldBeEmpty();
+        options.WebhookSecret.ShouldBeEmpty();
+    }
+
     // ---- Estado y desvinculación ----
 
     [Fact]
@@ -160,7 +168,7 @@ public class TelegramLinkServiceTests
         var h = Build();
         PendingCode(h, "abcdefghjkmn", Now.AddMinutes(10));
 
-        var outcome = await h.Service.HandleMessageAsync(987654321, "  /start ABCDEFGHJKMN  ");
+        var outcome = await h.Service.HandleMessageAsync(987654321, "  /start   ABCDEFGHJKMN  ");
 
         outcome.ShouldBe(TelegramUpdateOutcome.Linked);
         h.User.TelegramChatId.ShouldBe("987654321");
