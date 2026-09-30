@@ -1,0 +1,331 @@
+@page "/welcome"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@layout OnboardingLayout
+@* Feature: F01.04 — asistente de bienvenida. Lógica en Welcome.razor.cs. *@
+
+<PageTitle>Bienvenida · Wardkitten</PageTitle>
+
+@if (Loading)
+{
+    <p class="text-center text-muted py-5">Cargando…</p>
+}
+else if (State is null)
+{
+    <div class="alert alert-danger">@Error</div>
+}
+else
+{
+    <div class="wk-wizard-card card shadow-sm">
+        <div class="card-body p-4">
+            @switch (Step)
+            {
+                case WizardStep.Profile:
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h1 class="h4 mb-0">👋 Hola, cuéntanos un poco de ti</h1>
+                        <span class="badge wk-badge-essential">Esencial</span>
+                    </div>
+                    <p class="text-muted">Tres datos y en un minuto tendrás a Wardkitten vigilando por ti.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="wk-name">Nombre</label>
+                        <input id="wk-name" class="form-control" @bind="DisplayName" maxlength="80" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="wk-tz">Zona horaria</label>
+                        <select id="wk-tz" class="form-select" @bind="TimeZoneId">
+                            @foreach (var tz in TimeZones)
+                            {
+                                <option value="@tz.Id">@tz.Label</option>
+                            }
+                        </select>
+                        <div class="form-text">Los horarios de tus monitores se interpretan en esta zona horaria.</div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="wk-locale">Idioma</label>
+                        <select id="wk-locale" class="form-select" @bind="Locale">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <StepActions Busy="Busy" Error="@Error"
+                                 OnContinue="ContinueProfileAsync"
+                                 OnSkip="SkipStep"
+                                 SkipConsequence="Mantendremos los datos con los que creaste la cuenta." />
+                    break;
+
+                case WizardStep.Channels:
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h1 class="h4 mb-0">🔔 ¿Cómo te avisamos?</h1>
+                        <span class="badge wk-badge-essential">Esencial</span>
+                    </div>
+                    <p class="text-muted">
+                        Si una tarea no llega a tiempo, te avisaremos por los canales que marques. Serán los de
+                        todos tus monitores nuevos (luego puedes cambiarlos en cada uno).
+                    </p>
+
+                    @* Email: siempre disponible *@
+                    <div class="wk-channel-card @(UseEmail ? "wk-channel-on" : null)">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <label class="form-check mb-0">
+                                <input type="checkbox" class="form-check-input" @bind="UseEmail" />
+                                <span class="fw-semibold">✉️ Email</span>
+                                <span class="text-muted small ms-1">@State.Email</span>
+                            </label>
+                            @if (EmailVerified)
+                            {
+                                <span class="badge text-bg-success">Verificado</span>
+                            }
+                        </div>
+                        @if (!EmailVerified)
+                        {
+                            <p class="small text-muted mb-2 mt-1">
+                                Sin verificar seguirás recibiendo alertas, pero te recomendamos comprobar que llegan.
+                            </p>
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <button type="button" class="btn btn-sm btn-outline-primary" @onclick="SendEmailCodeAsync">
+                                    @(EmailCodeSent ? "Reenviar código" : "Verificar")
+                                </button>
+                                @if (EmailCodeSent)
+                                {
+                                    <input class="form-control form-control-sm wk-code-input" placeholder="Código" @bind="EmailCode" inputmode="numeric" />
+                                    <button type="button" class="btn btn-sm btn-primary" @onclick="VerifyEmailAsync">Comprobar</button>
+                                }
+                            </div>
+                        }
+                        <ChannelTestButton Type="ChannelType.Email" Results="TestResults" OnTest="TestChannelAsync" />
+                        @if (EmailMessage is not null)
+                        {
+                            <p class="small mt-2 mb-0">@EmailMessage</p>
+                        }
+                    </div>
+
+                    @* Telegram: vinculación por deep link *@
+                    <div class="wk-channel-card @(UseTelegram ? "wk-channel-on" : null)">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <label class="form-check mb-0">
+                                <input type="checkbox" class="form-check-input" @bind="UseTelegram" disabled="@(!TelegramLinked)" />
+                                <span class="fw-semibold">✈️ Telegram</span>
+                                <span class="text-muted small ms-1">gratis, al instante</span>
+                            </label>
+                            @if (TelegramLinked)
+                            {
+                                <span class="badge text-bg-success">Vinculado</span>
+                            }
+                        </div>
+                        @if (!TelegramAvailable)
+                        {
+                            <p class="small text-muted mb-0 mt-1">Telegram no está disponible todavía.</p>
+                        }
+                        else if (TelegramLinked)
+                        {
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <ChannelTestButton Type="ChannelType.Telegram" Results="TestResults" OnTest="TestChannelAsync" Inline="true" />
+                                <button type="button" class="btn btn-sm btn-link text-muted" @onclick="UnlinkTelegramAsync">Desvincular</button>
+                            </div>
+                        }
+                        else if (TelegramLink is not null)
+                        {
+                            <div class="mt-2">
+                                <a class="btn btn-sm btn-primary" href="@TelegramLink.DeepLink" target="_blank" rel="noopener">Abrir Telegram</a>
+                                <p class="small mt-2 mb-1">Abre Telegram y pulsa <strong>Start</strong>. Si lo abres en otro dispositivo, envía al bot:</p>
+                                <code class="wk-link-code">/start @TelegramLink.Code</code>
+                                <p class="small text-muted mt-2 mb-0">
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    Esperando a que pulses Start… (el código caduca en 15 minutos)
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" @onclick="StartTelegramLinkAsync">Vincular</button>
+                        }
+                        @if (TelegramMessage is not null)
+                        {
+                            <p class="small mt-2 mb-0">@TelegramMessage</p>
+                        }
+                    </div>
+
+                    @* Integraciones salientes por URL *@
+                    <div class="wk-channel-card">
+                        <div class="fw-semibold mb-1">🔗 Slack, Discord, Teams o webhook</div>
+                        <p class="small text-muted mb-2">Pega la URL de un webhook entrante (https) y te avisaremos allí.</p>
+                        @foreach (var type in UrlChannels)
+                        {
+                            var t = type;
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text wk-url-label">@ChannelLabel(t)</span>
+                                <input class="form-control" placeholder="@UrlPlaceholder(t)" value="@Urls[t]"
+                                       @onchange="e => Urls[t] = e.Value?.ToString() ?? string.Empty" />
+                                <button type="button" class="btn btn-outline-secondary" disabled="@string.IsNullOrWhiteSpace(Urls[t])"
+                                        @onclick="() => TestChannelAsync(t)">Enviar prueba</button>
+                            </div>
+                            @if (TestResults.TryGetValue(t, out var res))
+                            {
+                                <p class="small mb-2 @(res.Success ? "text-success" : "text-danger")">@res.Message</p>
+                            }
+                        }
+                    </div>
+
+                    @* Teléfono: SMS / WhatsApp (de pago) *@
+                    <div class="wk-channel-card">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div class="fw-semibold">📱 SMS y WhatsApp <span class="badge text-bg-light border">💳 de pago</span></div>
+                            @if (PhoneVerified)
+                            {
+                                <span class="badge text-bg-success">Verificado</span>
+                            }
+                        </div>
+                        <p class="small text-muted mb-2 mt-1">
+                            Cada mensaje se cobra con créditos de tu saldo. Si no verificas tu teléfono, SMS y WhatsApp no
+                            estarán disponibles (puedes hacerlo más adelante).
+                        </p>
+                        @if (PhoneVerified)
+                        {
+                            <p class="small mb-2">Teléfono: <strong>@Phone</strong></p>
+                            <label class="form-check form-check-inline"><input type="checkbox" class="form-check-input" @bind="UseSms" /> SMS</label>
+                            <label class="form-check form-check-inline"><input type="checkbox" class="form-check-input" @bind="UseWhatsApp" /> WhatsApp</label>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <input class="form-control form-control-sm wk-phone-input" type="tel" placeholder="+34 600 111 222" @bind="Phone" />
+                                <button type="button" class="btn btn-sm btn-outline-primary" @onclick="SendPhoneCodeAsync">
+                                    @(PhoneCodeSent ? "Reenviar SMS" : "Enviar código")
+                                </button>
+                                @if (PhoneCodeSent)
+                                {
+                                    <input class="form-control form-control-sm wk-code-input" placeholder="Código" @bind="PhoneCode" inputmode="numeric" />
+                                    <button type="button" class="btn btn-sm btn-primary" @onclick="VerifyPhoneAsync">Comprobar</button>
+                                }
+                            </div>
+                        }
+                        @if (PhoneMessage is not null)
+                        {
+                            <p class="small mt-2 mb-0">@PhoneMessage</p>
+                        }
+                    </div>
+
+                    <StepActions Busy="Busy" Error="@Error"
+                                 OnContinue="ContinueChannelsAsync"
+                                 OnSkip="SkipStep"
+                                 SkipConsequence="Los monitores nuevos avisarán solo por email." />
+                    break;
+
+                case WizardStep.FirstWatch:
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h1 class="h4 mb-0">🐾 Tu primer monitor</h1>
+                        <span class="badge wk-badge-optional">Opcional</span>
+                    </div>
+                    <p class="text-muted">Algo que deba pasar cada cierto tiempo: una copia de seguridad, un cron, regar las plantas…</p>
+
+                    @if (CreatedWatch is null)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label" for="wk-watch-name">Nombre</label>
+                            <input id="wk-watch-name" class="form-control" @bind="WatchName" placeholder="Copia de seguridad nocturna" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label d-block">Tipo</label>
+                            <div class="wk-type-options">
+                                <label class="wk-type-option @(WatchType == WatchType.Ping ? "wk-type-on" : null)">
+                                    <input type="radio" name="wk-type" class="form-check-input" checked="@(WatchType == WatchType.Ping)"
+                                           @onchange="() => WatchType = WatchType.Ping" />
+                                    <span class="fw-semibold">🔗 Ping</span>
+                                    <span class="small text-muted d-block">Un programa o script llama a una URL cuando termina.</span>
+                                </label>
+                                <label class="wk-type-option @(WatchType == WatchType.Manual ? "wk-type-on" : null)">
+                                    <input type="radio" name="wk-type" class="form-check-input" checked="@(WatchType == WatchType.Manual)"
+                                           @onchange="() => WatchType = WatchType.Manual" />
+                                    <span class="fw-semibold">✋ Manual</span>
+                                    <span class="small text-muted d-block">Lo confirmas tú desde el panel, el móvil o el aviso.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-7">
+                                <label class="form-label" for="wk-interval">¿Cada cuánto debe ocurrir?</label>
+                                <select id="wk-interval" class="form-select" @bind="IntervalSeconds">
+                                    @foreach (var p in Presets)
+                                    {
+                                        <option value="@p.Seconds">@p.Label</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-5">
+                                <label class="form-label" for="wk-grace">Margen de retraso (min)</label>
+                                <input id="wk-grace" type="number" min="0" class="form-control" @bind="GraceMinutes" />
+                            </div>
+                            <div class="col-12 form-text mt-0">Si pasa ese tiempo más el margen sin noticias, te avisamos.</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">
+                            @if (CreatedWatch.Type == WatchType.Ping)
+                            {
+                                <text>✅ Monitor creado. Las próximas llamadas a esta URL contarán como check-ins.</text>
+                            }
+                            else
+                            {
+                                <text>✅ Monitor «@CreatedWatch.Name» creado. Confírmalo desde el panel cada vez que lo hagas.</text>
+                            }
+                        </div>
+                    }
+
+                    @if (WatchType == WatchType.Ping)
+                    {
+                        <PingTestBench @ref="Bench"
+                                       HistoryOpen="true"
+                                       Title="🧪 Tu URL de ping"
+                                       Subtitle="Pruébala ya: cada llamada aparecerá aquí al momento."
+                                       WaitingText="Esperando la primera llamada… abre la URL en tu navegador o llámala desde tu aplicación." />
+                    }
+
+                    @if (CreatedWatch is null)
+                    {
+                        <StepActions Busy="Busy" Error="@Error"
+                                     ContinueText="Crear monitor"
+                                     OnContinue="CreateWatchAsync"
+                                     OnSkip="SkipStep"
+                                     SkipConsequence="Podrás crearlo después desde Nuevo o Plantillas." />
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" class="btn btn-primary" @onclick="SkipStep">Continuar</button>
+                        </div>
+                    }
+                    break;
+
+                default:
+                    <h1 class="h4 mb-3">🎉 ¡Listo!</h1>
+                    <ul class="list-unstyled wk-summary">
+                        <li>
+                            <span class="me-1">🔔</span> Te avisaremos por: <strong>@string.Join(", ", ChannelSummary)</strong>
+                        </li>
+                        <li>
+                            <span class="me-1">🐾</span>
+                            @if (CreatedWatch is not null)
+                            {
+                                <text>Tu primer monitor: <strong>@CreatedWatch.Name</strong></text>
+                            }
+                            else
+                            {
+                                <text>Aún no tienes monitores: créalos desde <strong>Nuevo</strong> o <strong>Plantillas</strong>.</text>
+                            }
+                        </li>
+                    </ul>
+                    @if (Error is not null)
+                    {
+                        <div class="alert alert-danger py-2">@Error</div>
+                    }
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" @onclick="FinishAsync" disabled="@Busy">Ir al panel</button>
+                    </div>
+                    break;
+            }
+        </div>
+    </div>
+}

@@ -12,6 +12,18 @@
     <a class="btn btn-primary" href="watches/new">+ Nueva</a>
 </div>
 
+@if (_me is { OnboardingCompleted: false })
+{
+    @* Asistente de bienvenida pendiente (F01.04). Descartar cuenta como «saltado». *@
+    <div class="alert wk-onboarding-banner d-flex flex-wrap align-items-center justify-content-between gap-2" role="status">
+        <span>✨ Termina de configurar tu cuenta: cómo avisarte y tu primer monitor.</span>
+        <span class="d-flex gap-2">
+            <a class="btn btn-sm btn-primary" href="welcome">Continuar</a>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="DismissOnboardingAsync" aria-label="Descartar">Descartar</button>
+        </span>
+    </div>
+}
+
 @if (_loading)
 {
     <p>Cargando…</p>
@@ -21,7 +33,10 @@ else if (_watches.Count == 0)
     <div class="text-center text-muted py-5">
         <img src="wardkitten-logo.svg" alt="Wardkitten" width="64" height="64" class="mb-2 opacity-75" />
         <p>Aún no vigilas nada. Crea tu primera tarea y Wardkitten te avisará si se te pasa.</p>
-        <a class="btn btn-primary" href="watches/new">Crear vigilancia</a>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="btn btn-primary" href="welcome">Configurar paso a paso</a>
+            <a class="btn btn-outline-primary" href="watches/new">Crear monitor</a>
+        </div>
     </div>
 }
 else
@@ -80,11 +95,14 @@ else
 
 @code {
     private List<WatchDto> _watches = new();
+    private UserDto? _me;
     private bool _loading = true;
     private CancellationTokenSource? _cts;
 
     protected override async Task OnInitializedAsync()
     {
+        var me = await Api.GetMeAsync();
+        if (me.Ok) _me = me.Value;
         await LoadAsync();
         Live.OnChanged += HandleChanged;
         await Live.StartAsync();           // tiempo real (SignalR); polling como fallback
@@ -117,6 +135,12 @@ else
             }
         }
         catch (OperationCanceledException) { /* navegación */ }
+    }
+
+    private async Task DismissOnboardingAsync()
+    {
+        var r = await Api.SkipOnboardingAsync();
+        if (r.Ok && _me is not null) _me = _me with { OnboardingCompleted = true };
     }
 
     private async Task CheckInAsync(WatchDto w) { await Api.CheckInAsync(w.Id); await LoadAsync(); }

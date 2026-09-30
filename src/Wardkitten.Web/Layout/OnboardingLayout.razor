@@ -1,0 +1,76 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject WardkittenApiClient Api
+@inject NavigationManager Nav
+@* Feature: F01.04 — layout del asistente de bienvenida: sin navbar, cabecera de marca, stepper y «Saltar todo». *@
+
+<div class="wk-onboarding d-flex flex-column min-vh-100">
+    <header class="wk-onboarding-header">
+        <div class="container wk-onboarding-container">
+            <div class="d-flex align-items-center gap-2 text-white fw-bold fs-5 mb-3">
+                <img src="wardkitten-logo.svg" alt="" height="36" width="36" />
+                Wardkitten
+            </div>
+            <ol class="wk-stepper" aria-label="Progreso">
+                @for (var i = 0; i < OnboardingProgress.StepTitles.Count; i++)
+                {
+                    var index = i;
+                    var state = index < _progress.Current ? "done" : index == _progress.Current ? "current" : "todo";
+                    <li class="wk-step wk-step-@state" aria-current="@(state == "current" ? "step" : null)">
+                        @if (_progress.CanGoTo(index))
+                        {
+                            <button type="button" class="wk-step-button" @onclick="() => _progress.RequestStepAsync(index)">
+                                <span class="wk-step-dot">@(state == "done" ? "✓" : (index + 1).ToString())</span>
+                                <span class="wk-step-title">@OnboardingProgress.StepTitles[index]</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="wk-step-button">
+                                <span class="wk-step-dot">@(state == "done" ? "✓" : (index + 1).ToString())</span>
+                                <span class="wk-step-title">@OnboardingProgress.StepTitles[index]</span>
+                            </span>
+                        }
+                    </li>
+                }
+            </ol>
+        </div>
+    </header>
+
+    <main class="container wk-onboarding-container py-4 flex-grow-1">
+        <CascadingValue Value="_progress" IsFixed="true">
+            @Body
+        </CascadingValue>
+    </main>
+
+    <footer class="text-center py-3">
+        <button type="button" class="btn btn-link wk-skip-all" @onclick="SkipAllAsync" disabled="@_busy">Saltar todo e ir al panel</button>
+        @if (_error is not null)
+        {
+            <div class="small text-danger">@_error</div>
+        }
+    </footer>
+</div>
+
+@code {
+    private readonly OnboardingProgress _progress = new();
+    private bool _busy;
+    private string? _error;
+
+    protected override void OnInitialized() => _progress.Changed += OnProgressChanged;
+
+    private void OnProgressChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>Cierra el asistente (cuenta como «saltado») y lleva al panel.</summary>
+    private async Task SkipAllAsync()
+    {
+        _busy = true;
+        _error = null;
+        var r = await Api.SkipOnboardingAsync();
+        _busy = false;
+        if (r.Ok) Nav.NavigateTo("/");
+        else _error = r.Error;
+    }
+
+    public void Dispose() => _progress.Changed -= OnProgressChanged;
+}
