@@ -27,7 +27,8 @@ public sealed record WatchInput(
 
 /// <summary>
 /// Alta/edición/borrado de watches con validación de schedule y aplicación de los límites del plan
-/// (siempre en servidor). Genera el pingToken inadivinable para watches de tipo Ping. Feature: F02.
+/// (siempre en servidor). Genera el pingToken inadivinable para watches de tipo Ping. Feature: F02
+/// (F02.04: sin bindings propios hereda los canales por defecto del usuario).
 /// </summary>
 public sealed class WatchService
 {
@@ -90,7 +91,7 @@ public sealed class WatchService
             Type = input.Type,
             Schedule = schedule,
             Tolerance = input.Tolerance,
-            ChannelBindings = input.ChannelBindings.Count > 0 ? input.ChannelBindings : DefaultBindings(),
+            ChannelBindings = input.ChannelBindings.Count > 0 ? input.ChannelBindings : DefaultBindingsFor(user),
             Severity = input.Severity,
             Tags = input.Tags ?? new List<string>(),
             ProjectId = input.ProjectId,
@@ -193,6 +194,22 @@ public sealed class WatchService
         return Result.Ok();
     }
 
-    private static List<ChannelBinding> DefaultBindings()
-        => new() { new ChannelBinding { ChannelType = ChannelType.Email, Enabled = true, Order = 0 } };
+    /// <summary>
+    /// Canales de un watch que no trae los suyos: copia de los canales por defecto del usuario (F02.04) o,
+    /// si no tiene, solo Email. Se copia cada binding para que editar el watch no toque los defaults.
+    /// </summary>
+    private static List<ChannelBinding> DefaultBindingsFor(Domain.Identity.User user)
+        => user.DefaultChannelBindings.Count > 0
+            ? user.DefaultChannelBindings.Select(Copy).ToList()
+            : new() { new ChannelBinding { ChannelType = ChannelType.Email, Enabled = true, Order = 0 } };
+
+    private static ChannelBinding Copy(ChannelBinding b) => new()
+    {
+        ChannelType = b.ChannelType,
+        Enabled = b.Enabled,
+        DestinationOverride = b.DestinationOverride,
+        Order = b.Order,
+        EscalationDelaySeconds = b.EscalationDelaySeconds,
+        QuietHours = b.QuietHours is null ? null : new QuietHours { StartMinute = b.QuietHours.StartMinute, EndMinute = b.QuietHours.EndMinute },
+    };
 }

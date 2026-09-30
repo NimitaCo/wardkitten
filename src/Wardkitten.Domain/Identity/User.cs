@@ -1,5 +1,6 @@
 using Wardkitten.Domain.Billing;
 using Wardkitten.Domain.Common;
+using Wardkitten.Domain.Watches;
 
 namespace Wardkitten.Domain.Identity;
 
@@ -36,6 +37,22 @@ public sealed class User : Entity
     public DateTime? EmailVerificationExpiresUtc { get; set; }
     public string? PhoneOtpHash { get; set; }
     public DateTime? PhoneOtpExpiresUtc { get; set; }
+
+    // Vinculación de Telegram (F05.04): código de un solo uso (hasheado) que el usuario envía al bot con
+    // /start <código>. Al recibirlo por el webhook se guarda el chat en TelegramChatId y se borra.
+    public string? TelegramLinkCodeHash { get; set; }
+    public DateTime? TelegramLinkExpiresUtc { get; set; }
+
+    /// <summary>
+    /// Canales por defecto (F02.04): los watches nuevos que no traen bindings propios nacen con una copia
+    /// de estos. Vacío = solo Email. Se configuran en el asistente de bienvenida (F01.04).
+    /// </summary>
+    public List<ChannelBinding> DefaultChannelBindings { get; set; } = new();
+
+    /// <summary>Cuándo terminó (o saltó) el asistente de bienvenida. Null = aún no lo ha cerrado (F01.04).</summary>
+    public DateTime? OnboardingCompletedAtUtc { get; set; }
+
+    public bool TelegramLinked => !string.IsNullOrWhiteSpace(TelegramChatId);
 
     public bool IsInRole(string role) => Roles.Contains(role);
 }
