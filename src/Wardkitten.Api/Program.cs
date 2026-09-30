@@ -112,6 +112,7 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "wardkitten-api" })).WithTags("Health");
 
 app.MapAuthEndpoints();
+app.MapOnboardingEndpoints();
 app.MapWatchEndpoints();
 app.MapTemplateEndpoints();
 app.MapStatusPageEndpoints();

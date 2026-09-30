@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Wardkitten.Application.Notifications;
 using Wardkitten.Application.Services;
 using Wardkitten.Domain.CheckIns;
@@ -7,7 +8,7 @@ namespace Wardkitten.Api.Endpoints;
 
 /// <summary>
 /// Endpoints públicos (sin sesión) con defensa propia: ping (token inadivinable), magic links (firmados)
-/// y webhook de Stripe (firma verificada). Ver SECURITY.md §3.
+/// y webhooks de Stripe (firma verificada) y Telegram (cabecera secreta). Ver SECURITY.md §3.
 /// </summary>
 public static class PublicEndpoints
 {
@@ -46,6 +47,9 @@ public static class PublicEndpoints
             }
         }).WithTags("Magic").RequireRateLimiting("ping");
 
+        // ---- Webhook del bot de Telegram (vinculación /start <código>, F05.05) ----
+        app.MapPost("/telegram/webhook", HandleTelegramWebhookAsync).WithTags("Webhooks").RequireRateLimiting("ping");
+
         // ---- Webhook de Stripe ----
         app.MapPost("/webhooks/stripe", async (HttpRequest request, StripeWebhookProcessor processor, CancellationToken ct) =>
         {
@@ -55,6 +59,37 @@ public static class PublicEndpoints
             var ok = await processor.ProcessAsync(json, signature, ct);
             return ok ? Results.Ok() : Results.BadRequest();
         }).WithTags("Webhooks");
+    }
+
+    /// <summary>
+    /// Webhook del bot de Telegram (F05.05). Telegram firma cada llamada con la cabecera
+    /// <c>X-Telegram-Bot-Api-Secret-Token</c> (el secreto pasado a <c>setWebhook</c>); sin ella no se procesa nada.
+    /// Responde 200 a todo update válido aunque se ignore, para que Telegram no lo reintente.
+    /// </summary>
+    internal static async Task<IResult> HandleTelegramWebhookAsync(HttpRequest request, TelegramLinkService telegram, CancellationToken ct)
+    {
+        if (!telegram.IsValidWebhookSecret(request.Headers["X-Telegram-Bot-Api-Secret-Token"].ToString()))
+            return Results.Unauthorized();
+
+        JsonDocument doc;
+        try { doc = await JsonDocument.ParseAsync(request.Body, cancellationToken: ct); }
+        catch (JsonException) { return Results.BadRequest(); }
+
+        using (doc)
+        {
+            if (doc.RootElement.ValueKind == JsonValueKind.Object
+                && doc.RootElement.TryGetProperty("message", out var message)
+                && message.ValueKind == JsonValueKind.Object
+                && message.TryGetProperty("chat", out var chat)
+                && chat.ValueKind == JsonValueKind.Object
+                && chat.TryGetProperty("id", out var id)
+                && id.TryGetInt64(out var chatId))
+            {
+                var text = message.TryGetProperty("text", out var t) && t.ValueKind == JsonValueKind.String ? t.GetString() : null;
+                await telegram.HandleMessageAsync(chatId, text, ct);
+            }
+        }
+        return Results.Ok();
     }
 
     private static async Task<IResult> HandlePingAsync(string token, CheckInKind kind, CheckInService svc, HttpContext http, CancellationToken ct)

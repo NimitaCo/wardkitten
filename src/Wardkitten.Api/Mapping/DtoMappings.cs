@@ -12,7 +12,12 @@ public static class DtoMappings
 {
     public static UserDto ToDto(this User u) => new(
         u.Id, u.Email, u.DisplayName, u.TimeZoneId, u.Locale, u.Plan.ToString(),
-        u.EmailVerified, u.PhoneVerified, u.Phone, u.Roles);
+        u.EmailVerified, u.PhoneVerified, u.Phone, u.Roles, u.TelegramLinked, u.OnboardingCompletedAtUtc is not null);
+
+    public static OnboardingStateDto ToDto(this OnboardingState s, bool telegramAvailable) => new(
+        s.Completed, s.User.Email, s.User.DisplayName, s.User.TimeZoneId, s.User.Locale,
+        s.User.EmailVerified, s.User.Phone, s.User.PhoneVerified, s.User.TelegramLinked, telegramAvailable,
+        s.User.DefaultChannelBindings, s.WatchCount, s.User.Plan.ToString(), s.Limits.MaxWatches, s.Limits.MinIntervalSeconds);
 
     public static WatchDto ToDto(this Watch w) => new(
         w.Id, w.Name, w.Description, w.Type, w.Schedule, w.Tolerance, w.ChannelBindings,

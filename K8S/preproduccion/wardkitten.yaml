@@ -21,6 +21,8 @@ data:
   SMTP_PORT: "587"
   SMTP_FROM: "noreply@wardkitten.com"
   SMTP_FROM_NAME: "Wardkitten (pre)"
+  # Usuario del bot de Telegram (sin @) para el deep link de vinculación t.me/<bot>?start=<código> (F05.05).
+  TELEGRAM_BOT_USERNAME: ""
 
 ---
 # PLACEHOLDERS: valores reales fuera de git (ver SECURITY.md).
@@ -39,6 +41,7 @@ stringData:
   SMTP_USER: ""
   SMTP_PASSWORD: ""
   TELEGRAM_BOT_TOKEN: ""
+  TELEGRAM_WEBHOOK_SECRET: ""        # cabecera X-Telegram-Bot-Api-Secret-Token de /telegram/webhook (F05.05)
   FCM_SERVICE_ACCOUNT_JSON: ""
   TWILIO_ACCOUNT_SID: ""
   TWILIO_AUTH_TOKEN: ""

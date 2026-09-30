@@ -18,7 +18,9 @@ public sealed record UserDto(
     bool EmailVerified,
     bool PhoneVerified,
     string? Phone,
-    IReadOnlyList<string> Roles);
+    IReadOnlyList<string> Roles,
+    bool TelegramLinked,
+    bool OnboardingCompleted);
 
 public sealed record VerifyCodeRequest(string Code);
 

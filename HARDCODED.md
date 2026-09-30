@@ -26,4 +26,4 @@ Valores fijados en el Secret `wardkitten-secrets` del manifiesto de infra (`Avan
 
 Los **price IDs** (`STRIPE_PRICE_PRO/TEAM/CREDIT`), `STRIPE_CREDIT_CENTS` y `STRIPE_AUTOMATIC_TAX` NO son secretos: van en el `ConfigMap wardkitten-config` (visibles en cliente de todos modos).
 
-**Pendientes (vacíos a propósito, canales deshabilitados):** `SMTP_*`, `TELEGRAM_BOT_TOKEN`, `FCM_SERVICE_ACCOUNT_JSON`, `TWILIO_*`. No bloquean el arranque; cada canal queda inactivo hasta que se rellene con credenciales reales.
+**Pendientes (vacíos a propósito, canales deshabilitados):** `SMTP_*`, `TELEGRAM_BOT_TOKEN` (+ `TELEGRAM_BOT_USERNAME` en el ConfigMap y `TELEGRAM_WEBHOOK_SECRET`, F05.05), `FCM_SERVICE_ACCOUNT_JSON`, `TWILIO_*`. No bloquean el arranque; cada canal queda inactivo hasta que se rellene con credenciales reales.
