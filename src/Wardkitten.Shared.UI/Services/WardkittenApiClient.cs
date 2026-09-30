@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using Wardkitten.Domain.Watches;
 using Wardkitten.Shared.Contracts;
 
 namespace Wardkitten.Shared.UI.Services;
@@ -23,6 +24,19 @@ public sealed class WardkittenApiClient
     public Task<ApiResult> SendPhoneOtpAsync(string phone) => PostAsync("/api/auth/phone/send-otp", new PhoneOtpRequest(phone));
     public Task<ApiResult> VerifyPhoneAsync(string code) => PostAsync("/api/auth/phone/verify", new VerifyCodeRequest(code));
     public Task<ApiResult> RegisterPushTokenAsync(string token) => PostAsync("/api/auth/push-tokens", new PushTokenRequest(token));
+
+    // ---- Vinculación de Telegram (F05.05) ----
+    public Task<ApiResult<TelegramLinkCodeDto>> CreateTelegramLinkCodeAsync() => PostAsync<TelegramLinkCodeDto>("/api/auth/telegram/link-code", new { });
+    public Task<ApiResult<TelegramStatusDto>> GetTelegramStatusAsync() => GetAsync<TelegramStatusDto>("/api/auth/telegram/status");
+    public Task<ApiResult> UnlinkTelegramAsync() => PostAsync("/api/auth/telegram/unlink", new { });
+
+    // ---- Asistente de bienvenida (F01.04), canales por defecto (F02.05) y prueba de canal (F05.06) ----
+    public Task<ApiResult<OnboardingStateDto>> GetOnboardingStateAsync() => GetAsync<OnboardingStateDto>("/api/onboarding/state");
+    public Task<ApiResult<UserDto>> UpdateProfileAsync(UpdateProfileRequest req) => PutAsync<UserDto>("/api/onboarding/profile", req);
+    public Task<ApiResult<List<ChannelBinding>>> UpdateDefaultChannelsAsync(UpdateChannelsRequest req) => PutAsync<List<ChannelBinding>>("/api/onboarding/channels", req);
+    public Task<ApiResult<ChannelTestResultDto>> TestChannelAsync(ChannelTestRequest req) => PostAsync<ChannelTestResultDto>("/api/onboarding/channels/test", req);
+    public Task<ApiResult> CompleteOnboardingAsync() => PostAsync("/api/onboarding/complete", new { });
+    public Task<ApiResult> SkipOnboardingAsync() => PostAsync("/api/onboarding/skip", new { });
 
     // ---- Watches ----
     public Task<ApiResult<List<WatchDto>>> GetWatchesAsync() => GetAsync<List<WatchDto>>("/api/watches");

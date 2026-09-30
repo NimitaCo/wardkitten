@@ -23,7 +23,7 @@ x-shared-env: &shared-env
   JWT_SECRET: "CAMBIAR-secreto-jwt-largo-y-aleatorio-0123456789"
   MAGICLINK_SECRET: "CAMBIAR-secreto-magiclink-0123456789"
   INTERNAL_TOKEN: "CAMBIAR-token-interno"
-  # Canales y pagos (SMTP_*, TELEGRAM_BOT_TOKEN, STRIPE_*, TWILIO_*, FCM_*):
+  # Canales y pagos (SMTP_*, TELEGRAM_BOT_TOKEN/_USERNAME/_WEBHOOK_SECRET, STRIPE_*, TWILIO_*, FCM_*):
   # añadir aquí las variables de K8S/produccion/wardkitten.yaml que se necesiten.
 
 services:

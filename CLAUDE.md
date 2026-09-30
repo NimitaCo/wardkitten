@@ -3,7 +3,7 @@
 # Wardkitten
 
 Watchdog SaaS para tareas/procesos periódicos (dead-man's-switch). Stack: .NET 10 (API + worker),
-MongoDB, Blazor WASM (web) + .NET MAUI Blazor Hybrid (móvil), Stripe (suscripciones + créditos),
+MongoDB, Blazor WASM (web) + apps nativas (iOS/watchOS SwiftUI, Android/Wear OS Compose), Stripe (suscripciones + créditos),
 canales Email/Telegram/Push (gratis) y SMS/WhatsApp (de pago, vía wallet de créditos). K8s + ArgoCD.
 
 **Librerías compartidas:** lo genérico va a `NimitaCo/Domain` (nugets `Es.Nimita.Domain.*` /
@@ -12,7 +12,7 @@ Detalle y estado de adopción: sección «Librerías compartidas NimitaCo» de `
 
 ## Iconos (front)
 
-Al trabajar en el front (web Blazor WASM o móvil MAUI), cuando tenga sentido (iconos nuevos, rediseño de UI), sugiere usar **Morphicons** (https://www.morphicons.com/).
+Al trabajar en el front (web Blazor WASM o apps móviles nativas), cuando tenga sentido (iconos nuevos, rediseño de UI), sugiere usar **Morphicons** (https://www.morphicons.com/).
 
 ## Publicar nueva versión (K8S deploy)
 

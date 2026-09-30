@@ -10,6 +10,8 @@ indica: autor, fecha, motivo, condición de retirada y ubicación (`archivo:lín
 |---|----------|-------|-------|--------|-----------------------|-----------|
 | 1 | Secretos del despliegue de pruebas (cluster C) hardcodeados en el manifiesto: `MONGOSETTINGS_CONNECTION`, `JWT_SECRET`, `MAGICLINK_SECRET`, `INTERNAL_TOKEN` | Claude (dan) | 2026-06-25 | Despliegue rápido en entorno de pruebas sin gestor de secretos (sin sealed-secrets/vault); convención de la casa (igual que IntegraSystem) | Sustituir por secretos reales gestionados (sealed-secrets o vault) antes de producción | `Avanware/infra` → `Clusters/C/misc/wardkitten/wardkitten.yaml` (Secret `wardkitten-secrets`) |
 | 2 | Claves **LIVE** de Stripe hardcodeadas en el manifiesto: `STRIPE_SECRET_KEY` (`sk_live_…`), `STRIPE_WEBHOOK_SECRET` (`whsec_…`) | Claude (dan) | 2026-07-01 | ArgoCD es dueño del Secret (un `kubectl patch` se revierte en el siguiente sync); se decide no usar sealed-secrets por ahora ni rotar. Advertido: la clave live queda en el historial de git y estuvo expuesta en chat | Migrar a **sealed-secrets/external-secrets** y **rotar** ambas claves en Stripe | `Avanware/infra` → `Clusters/C/misc/wardkitten/wardkitten.yaml` (Secret `wardkitten-secrets`) |
+| 3 | Catálogo de periodicidades del asistente de bienvenida (5/15/30 min, 1/6/12 h, día, semana) | Claude (dan) | 2026-09-30 | El asistente ofrece periodicidades en lenguaje humano en vez de «cada N segundos»; se filtran por el mínimo del plan | Si se quieren periodicidades configurables por plan o por idioma, moverlas a configuración/`PlanCatalog` | `src/Wardkitten.Web/Onboarding/IntervalPresets.cs` (`IntervalPresets.All`) |
+| 4 | Vida del código de vinculación de Telegram: 15 minutos | Claude (dan) | 2026-09-30 | Tiempo suficiente para abrir Telegram y pulsar Start; mismo orden de magnitud que los códigos de verificación | Hacerlo configurable si soporte detecta caducidades frecuentes | `src/Wardkitten.Application/Services/TelegramLinkService.cs` (`CodeLifetime`) |
 
 ## Detalle de los secretos hardcodeados (entorno de PRUEBAS)
 
@@ -26,4 +28,4 @@ Valores fijados en el Secret `wardkitten-secrets` del manifiesto de infra (`Avan
 
 Los **price IDs** (`STRIPE_PRICE_PRO/TEAM/CREDIT`), `STRIPE_CREDIT_CENTS` y `STRIPE_AUTOMATIC_TAX` NO son secretos: van en el `ConfigMap wardkitten-config` (visibles en cliente de todos modos).
 
-**Pendientes (vacíos a propósito, canales deshabilitados):** `SMTP_*`, `TELEGRAM_BOT_TOKEN`, `FCM_SERVICE_ACCOUNT_JSON`, `TWILIO_*`. No bloquean el arranque; cada canal queda inactivo hasta que se rellene con credenciales reales.
+**Pendientes (vacíos a propósito, canales deshabilitados):** `SMTP_*`, `TELEGRAM_BOT_TOKEN` (+ `TELEGRAM_BOT_USERNAME` en el ConfigMap y `TELEGRAM_WEBHOOK_SECRET`, F05.05), `FCM_SERVICE_ACCOUNT_JSON`, `TWILIO_*`. No bloquean el arranque; cada canal queda inactivo hasta que se rellene con credenciales reales.

@@ -149,3 +149,213 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+/* ---------- Asistente de bienvenida (F01.04): OnboardingLayout + Welcome ---------- */
+.wk-onboarding {
+    background: #f4f6fb;
+}
+
+.wk-onboarding-header {
+    background: var(--wk-gradient-dark);
+    padding: 1.25rem 0 1rem;
+}
+
+.wk-onboarding-container {
+    max-width: 760px;
+}
+
+.wk-stepper {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: .5rem;
+}
+
+.wk-step {
+    flex: 1 1 0;
+    position: relative;
+}
+
+    .wk-step::after {
+        content: "";
+        position: absolute;
+        top: 1rem;
+        left: calc(50% + 1.25rem);
+        right: calc(-50% + 1.25rem);
+        height: 2px;
+        background: rgba(255, 255, 255, .25);
+    }
+
+    .wk-step:last-child::after {
+        display: none;
+    }
+
+.wk-step-done::after {
+    background: var(--wk-teal);
+}
+
+.wk-step-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, .6);
+    font-size: .8rem;
+    text-align: center;
+}
+
+button.wk-step-button:hover .wk-step-title {
+    text-decoration: underline;
+}
+
+.wk-step-dot {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, .35);
+    font-weight: 700;
+    color: rgba(255, 255, 255, .8);
+    background: transparent;
+    z-index: 1;
+}
+
+.wk-step-current .wk-step-button,
+.wk-step-done .wk-step-button {
+    color: #fff;
+}
+
+.wk-step-current .wk-step-dot {
+    background: #fff;
+    color: var(--wk-dark);
+    border-color: #fff;
+    box-shadow: 0 0 0 .25rem rgba(33, 213, 196, .45);
+}
+
+.wk-step-done .wk-step-dot {
+    background: var(--wk-gradient);
+    border-color: transparent;
+    color: #fff;
+}
+
+.wk-wizard-card {
+    border: 0;
+    border-radius: 1rem;
+}
+
+.wk-badge-essential {
+    background: var(--wk-gradient);
+    color: #fff;
+}
+
+.wk-badge-optional {
+    background: #e9ecf5;
+    color: var(--wk-dark-2);
+}
+
+.wk-channel-card {
+    border: 1px solid #dfe3ee;
+    border-radius: .75rem;
+    padding: .9rem 1rem;
+    margin-bottom: .75rem;
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.wk-channel-on {
+    border-color: var(--wk-blue);
+    box-shadow: 0 0 0 .15rem rgba(62, 129, 229, .15);
+}
+
+.wk-code-input {
+    max-width: 8rem;
+}
+
+.wk-phone-input {
+    max-width: 14rem;
+}
+
+.wk-url-label {
+    min-width: 8.5rem;
+}
+
+.wk-link-code {
+    display: inline-block;
+    padding: .25rem .5rem;
+    border-radius: .375rem;
+    background: #f1f3f9;
+    color: var(--wk-dark);
+    font-size: .95rem;
+    user-select: all;
+}
+
+.wk-type-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: .75rem;
+}
+
+.wk-type-option {
+    display: block;
+    border: 1px solid #dfe3ee;
+    border-radius: .75rem;
+    padding: .75rem 1rem;
+    cursor: pointer;
+}
+
+    .wk-type-option .form-check-input {
+        margin-right: .4rem;
+    }
+
+.wk-type-on {
+    border-color: var(--wk-blue);
+    box-shadow: 0 0 0 .15rem rgba(62, 129, 229, .15);
+}
+
+.wk-step-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eef0f6;
+}
+
+.wk-step-skip {
+    max-width: 60%;
+}
+
+.wk-summary li {
+    padding: .35rem 0;
+}
+
+.wk-skip-all {
+    color: #6c757d;
+}
+
+.wk-onboarding-banner {
+    background: linear-gradient(135deg, rgba(62, 129, 229, .12) 0%, rgba(33, 213, 196, .12) 100%);
+    border: 1px solid rgba(62, 129, 229, .35);
+    color: var(--wk-dark);
+}
+
+@media (max-width: 575.98px) {
+    .wk-step-title {
+        display: none;
+    }
+
+    .wk-step-current .wk-step-title {
+        display: block;
+    }
+
+    .wk-step-skip {
+        max-width: 100%;
+    }
+}

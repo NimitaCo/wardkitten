@@ -1,0 +1,26 @@
+@* Feature: F05.06 — botón «Enviar prueba» de un canal y su resultado. *@
+<span class="@(Inline ? "d-inline-flex align-items-center" : "d-flex align-items-center mt-2")">
+    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="TestAsync" disabled="@_busy">
+        @(_busy ? "Enviando…" : "Enviar prueba")
+    </button>
+    @if (Results.TryGetValue(Type, out var result))
+    {
+        <span class="small ms-2 @(result.Success ? "text-success" : "text-danger")">@result.Message</span>
+    }
+</span>
+
+@code {
+    [Parameter, EditorRequired] public ChannelType Type { get; set; }
+    [Parameter, EditorRequired] public IReadOnlyDictionary<ChannelType, ChannelTestResultDto> Results { get; set; } = default!;
+    [Parameter] public EventCallback<ChannelType> OnTest { get; set; }
+    [Parameter] public bool Inline { get; set; }
+
+    private bool _busy;
+
+    private async Task TestAsync()
+    {
+        _busy = true;
+        try { await OnTest.InvokeAsync(Type); }
+        finally { _busy = false; }
+    }
+}

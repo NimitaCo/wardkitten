@@ -46,7 +46,7 @@
         var tz = TimeZoneInfo.Local.Id;
         var result = await Auth.RegisterAsync(_email, _password, _name, tz);
         _busy = false;
-        if (result.Ok) Nav.NavigateTo("/");
+        if (result.Ok) Nav.NavigateTo("/welcome");   // asistente de bienvenida (F01.04)
         else _error = result.Error;
     }
 }

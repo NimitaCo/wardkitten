@@ -32,3 +32,30 @@ Si no se confirma dentro de `deadline + tolerancia`, se abre un incidente y se a
 
 ## Dependencias
 F03 (check-ins), F04 (evaluación), F05 (canales), F06 (wallet para metered).
+
+---
+
+# F02.05 — Canales por defecto del usuario
+
+## Metadata
+- Estado: implementada
+- Módulo: F02
+
+## Descripción
+Cada usuario tiene una lista de canales por defecto (`User.defaultChannelBindings`). Un watch que se crea
+**sin bindings propios** nace con una **copia** de ellos (editar el watch no toca los defaults); si el usuario
+no tiene, avisa solo por Email, como siempre. La pantalla de alta (`WatchEdit`) también parte de ellos.
+Se configuran en el asistente de bienvenida ([F01.04](../F01-onboarding/overview.md)).
+
+## Endpoints
+- `PUT /api/onboarding/channels` (`{ bindings }`); lectura en `GET /api/onboarding/state`.
+
+## Reglas de negocio (`ChannelBindingRules`)
+Solo se guarda un canal que ya puede entregar:
+- Email: siempre (verificado o no).
+- SMS/WhatsApp: teléfono verificado por OTP (SECURITY.md §2).
+- Telegram: cuenta vinculada ([F05.05](../F05-canales/overview.md)). Desvincular lo quita de los defaults.
+- Push: al menos un dispositivo registrado.
+- Webhook/Slack/Discord/Teams: URL absoluta `https` que no apunte a loopback ni a rangos privados
+  (10/8, 172.16/12, 192.168/16, 169.254/16, 100.64/10, 0/8, ULA/link-local IPv6). No se resuelve DNS.
+- Se descartan duplicados exactos (tipo + destino) y se renumera el orden.

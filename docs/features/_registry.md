@@ -8,17 +8,21 @@ Tabla maestra de funcionalidades. Cada una tiene su código `FXX.YY` y, si proce
 | F01.01 | Registro y cuenta de usuario | implementada | — |
 | F01.02 | Login + refresh tokens rotatorios | implementada | — |
 | F01.03 | Verificación de email y teléfono (OTP) | implementada | — |
+| F01.04 | Asistente de bienvenida (onboarding `/welcome`) | implementada | [F01-onboarding](F01-onboarding/overview.md) |
 | F02.01 | Watch (tarea vigilada) | implementada | [F02-watches](F02-watches/overview.md) |
 | F02.02 | Schedule timezone-aware (interval/cron/calendar) | implementada | [F02-watches](F02-watches/overview.md) |
 | F02.03 | Channel bindings apilables por tarea | implementada | [F02-watches](F02-watches/overview.md) |
+| F02.05 | Canales por defecto del usuario (heredados por los watches nuevos) | implementada | [F02-watches](F02-watches/overview.md) |
 | F03.01 | Check-in por ping HTTP (start/success/fail) | implementada | — |
 | F03.02 | Check-in manual (app/magic link) | implementada | — |
-| F03.03 | Banco de pruebas de la URL de ping (dry-run en alta/edición) | implementada | [F03-checkins](F03-checkins/overview.md) |
+| F03.03 | Banco de pruebas de la URL de ping (dry-run en alta/edición; componente `PingTestBench`) | implementada | [F03-checkins](F03-checkins/overview.md) |
 | F04.01 | Incidentes con idempotencia de alertas | implementada | [F04-evaluation](F04-evaluation/overview.md) |
 | F04.02 | Escalado por bindings / políticas | implementada | [F04-evaluation](F04-evaluation/overview.md) |
 | F04.03 | Motor de evaluación + leader election | implementada | [F04-evaluation](F04-evaluation/overview.md) |
 | F05.01 | Canales Email/Telegram/Push/SMS/WhatsApp | implementada | — |
 | F05.03 | ACK/Hecho/Snooze por magic link firmado | implementada | — |
+| F05.05 | Vinculación de Telegram por deep link (`/start <código>` + webhook) | implementada | [F05-canales](F05-canales/overview.md) |
+| F05.06 | Envío de prueba por un canal («Enviar prueba») | implementada | [F05-canales](F05-canales/overview.md) |
 | F06.01 | Wallet de créditos (cobro metered) | implementada | [F06-wallet](F06-wallet/overview.md) |
 | F06.02 | Movimientos de créditos (asientos) | implementada | [F06-wallet](F06-wallet/overview.md) |
 | F07.01 | Suscripciones Stripe (Free/Pro/Team) | implementada | — |

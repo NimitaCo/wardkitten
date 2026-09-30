@@ -1,74 +1,74 @@
-# Graph Report - wardkitten  (2026-09-02)
+# Graph Report - wardkitten  (2026-09-30)
 
 ## Corpus Check
-- 192 files · ~50,981 words
+- 225 files · ~70,584 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1970 nodes · 4142 edges · 138 communities (124 shown, 7 thin omitted)
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 376 edges (avg confidence: 0.82)
+- 2599 nodes · 5883 edges · 168 communities (153 shown, 6 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 469 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `588059f1`
+- Built from commit: `9f8722aa`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- MongoRepository
-- CheckIn
+- CancellationToken
+- .HandlePingAsync
 - Watch
 - MongoContext
 - PingProbe
 - .ReplaceAsync
 - StatusPage
 - OnCallSchedule
-- IClock
+- HmacMagicLinkService
 - Instrucciones para agentes — Wardkitten
 - WardkittenApiClient
 - ChannelType
-- .AddWardkittenInfrastructure
-- .GetByIdAsync
+- .Build
+- PingProbeService
 - Wardkitten.Domain.Watches
 - NotificationLog
 - Wardkitten.Application.Abstractions.Persistence
 - NotificationResult
 - WatchEdit.razor
-- .CreateAsync
 - Result
+- TeamService
 - User
 - Incident
-- INotificationChannel
+- NotificationMessage
 - TwilioChannelBase
 - WatchStatus
 - Home.razor
 - SampleDocument
-- WatchdogEndToEndTests.cs
-- WardkittenMcpTools
+- Wardkitten.Application.RealTime
+- Severity
 - .AddWardkittenIntegrations
-- .ChargeForMessageAsync
-- AuthContracts.cs
+- IWalletRepository
+- UserDto
 - http
 - Wardkitten.Domain.Identity
 - .ToDtoAsync
-- .ToDto
+- PingTestStateDto
 - CreditTransaction
 - Subscription
-- Severity
+- Welcome
 - Wardkitten.Application.Services
 - Wardkitten.Infrastructure
-- wardkitten.slnx
+- Wardkitten.Shared.UI
 - http
 - PlanLimits
-- BillingService
+- .GetByIdAsync
 - Wallet
 - EmailOptions
-- Wardkitten.Domain.Common
-- NotificationMessage
+- SubscriptionStatus
+- WelcomeTests
 - CancellationToken
 - EvaluationWorker
 - F04 — Motor de evaluación e incidentes
-- Wardkitten.Web/_Imports.razor
+- Wardkitten.Domain.CheckIns
 - wardkitten/MainActivity.kt
 - StatusPages.razor
 - Teams.razor
@@ -79,30 +79,30 @@
 - ITokenStore
 - JwtAuthStateProvider
 - Guía de publicación — Wardkitten (web + apps móviles)
-- WatchTemplateCatalog
-- ICreditTransactionRepository
+- ChannelBinding
+- .Build
 - App.razor
 - Wardkitten.IntegrationTests.csproj
 - Wallet.razor
 - StripeWebhookProcessor
-- List
-- Wardkitten.Shared.UI.Auth
+- .ToDto
+- .Build
 - .AddWardkittenClient
 - WatchStatus
 - Wardkitten.Tests
 - StripePaymentGateway
-- IWatchEventPublisher
-- IncidentService
-- ChannelType
+- IWatchRepository
+- PingTestBenchTests
+- PingTestBench
 - StripeOptions
 - HttpWatchEventPublisher
-- StatusContracts.cs
+- .MapStatusPageEndpoints
 - MainLayout.razor
 - Política de seguridad — Wardkitten
-- IChannelRateRepository
-- .AddWardkittenApplication
-- WatchStatus
-- BillingContracts.cs
+- .AddWardkittenInfrastructure
+- IAckLinkBuilder
+- .Wizard_Profile_Channels_Test_FirstPingMonitor_AndComplete
+- CancellationToken
 - .SendAsync
 - Apps móviles nativas
 - F02.01 — Watch (tarea vigilada)
@@ -114,163 +114,191 @@
 - Login.razor
 - Register.razor
 - Templates.razor
-- ChannelBinding
-- ScheduleKind
+- Task
+- FakeApi
 - Wardkitten.Worker
-- 🐾 Wardkitten
+- .Build
 - F14 — Endpoints MCP (Model Context Protocol)
 - Directivas de documentación — Wardkitten
 - SignalRWatchEventPublisher
 - StatusView.razor
 - IPaymentGateway
 - MaintenanceWindow
-- Wardkitten.Api.RealTime
+- OnboardingHelpersTests
 - ADR · Apps móviles nativas en lugar de MAUI
 - Futura mejora — NSwag: operationIds estables
-- 1. WEB (Blazor WASM) — la más sencilla
+- OnboardingPagesTests
 - 4. iOS y watchOS
-- .WithConfiguration_UsesConfiguredValues
+- TelegramLinkCodeDto
 - Wardkitten.Application
-- QuietHours
+- EscalationPolicy
 - UserRepository
-- ScheduleTests
+- IUserRepository
 - ToDo — Wardkitten
 - C4 — Diagrama de contexto
 - Tech debt — Wardkitten
 - ClaimsPrincipal
 - Wardkitten
 - ChargeOutcome
-- Wardkitten.Tests.Domain
+- TelegramLinkService
 - Hardcodeos activos en Wardkitten
-- Wardkitten.Domain
-- CreditLots.cs
+- .CreateAsync
+- Wardkitten.Domain.Billing
 - RedirectToLogin.razor
 - Package.swift
+- OnboardingService
+- AlertDelivery
+- OnboardingProgress
+- RefreshToken
+- CheckIn
+- MongoRepository
+- Task
+- .Hace_IsHumanReadable
+- PingTestModeTests
+- .ProbeDuringCreation_DoesNotCount_AndItsUrlBecomesTheRealOne
+- OnboardingLayout.razor
+- F05.05 — Vinculación de Telegram por deep link
+- Wardkitten.Web.Tests
+- F01.04 — Asistente de bienvenida (onboarding)
+- IClock
+- .Load
+- F05.06 — Envío de prueba por un canal
+- CheckInSource
+- .Current
+- Welcome.razor
+- _registry.md
+- CreditTransactionType
+- F02.05 — Canales por defecto del usuario
+- TelegramUpdateOutcome
+- WizardStep
+- .Main
+- PingResolution
+- ChannelTestButton.razor
 
 ## God Nodes (most connected - your core abstractions)
-1. `Watch` - 84 edges
-2. `Incident` - 56 edges
-3. `WardkittenApiClient` - 53 edges
-4. `Wardkitten.Domain.Watches` - 52 edges
-5. `User` - 51 edges
-6. `ApiResult` - 51 edges
-7. `MongoContext` - 39 edges
-8. `Wardkitten.Application.Abstractions.Persistence` - 36 edges
-9. `Result` - 36 edges
-10. `PingProbe` - 34 edges
+1. `Welcome` - 91 edges
+2. `PingTestBench` - 86 edges
+3. `Watch` - 85 edges
+4. `Wardkitten.Domain.Watches` - 69 edges
+5. `WardkittenApiClient` - 65 edges
+6. `ApiResult` - 60 edges
+7. `User` - 59 edges
+8. `Incident` - 56 edges
+9. `WelcomeTests` - 51 edges
+10. `Result` - 46 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `SignalRWatchEventPublisher` --references--> `WatchHub`  [EXTRACTED]
-  NimitaCo/wardkitten/src/Wardkitten.Api/RealTime/SignalRWatchEventPublisher.cs → NimitaCo/wardkitten/src/Wardkitten.Api/RealTime/WatchHub.cs
-- `SignalRWatchEventPublisher` --implements--> `IWatchEventPublisher`  [EXTRACTED]
-  NimitaCo/wardkitten/src/Wardkitten.Api/RealTime/SignalRWatchEventPublisher.cs → NimitaCo/wardkitten/src/Wardkitten.Application/RealTime/IWatchEventPublisher.cs
-- `EvaluationEngine` --references--> `IClock`  [EXTRACTED]
-  NimitaCo/wardkitten/src/Wardkitten.Application/Evaluation/EvaluationEngine.cs → NimitaCo/wardkitten/src/Wardkitten.Application/Abstractions/IClock.cs
-- `NotificationDispatcher` --references--> `IClock`  [EXTRACTED]
-  NimitaCo/wardkitten/src/Wardkitten.Application/Notifications/NotificationDispatcher.cs → NimitaCo/wardkitten/src/Wardkitten.Application/Abstractions/IClock.cs
-- `AuthService` --references--> `IClock`  [EXTRACTED]
-  NimitaCo/wardkitten/src/Wardkitten.Application/Services/AuthService.cs → NimitaCo/wardkitten/src/Wardkitten.Application/Abstractions/IClock.cs
+- `ApiFactory` --references--> `Program`  [EXTRACTED]
+  test/Wardkitten.IntegrationTests/OnboardingApiTests.cs → src/Wardkitten.Api/Program.cs
+- `TestClock` --implements--> `IClock`  [EXTRACTED]
+  test/Wardkitten.Tests/TestClock.cs → src/Wardkitten.Application/Abstractions/IClock.cs
+- `Harness` --references--> `ISubscriptionRepository`  [EXTRACTED]
+  test/Wardkitten.Tests/Application/AuthServiceTests.cs → src/Wardkitten.Application/Abstractions/Persistence/IBillingRepositories.cs
+- `Harness` --references--> `IWalletRepository`  [EXTRACTED]
+  test/Wardkitten.Tests/Application/AuthServiceTests.cs → src/Wardkitten.Application/Abstractions/Persistence/IBillingRepositories.cs
+- `Harness` --references--> `IUserRepository`  [EXTRACTED]
+  test/Wardkitten.Tests/Application/AuthServiceTests.cs → src/Wardkitten.Application/Abstractions/Persistence/IIdentityRepositories.cs
 
 ## Import Cycles
 - None detected.
 
-## Communities (138 total, 7 thin omitted)
+## Communities (168 total, 6 thin omitted)
 
-### Community 0 - "MongoRepository"
-Cohesion: 0.05
-Nodes (46): FilterDefinition, CancellationToken, DateTime, IAsyncEnumerable, IReadOnlyList, Task, ICheckInRepository, IEscalationPolicyRepository (+38 more)
+### Community 0 - "CancellationToken"
+Cohesion: 0.18
+Nodes (7): CancellationToken, DateTime, IAsyncEnumerable, IReadOnlyList, Task, ICheckInRepository, IPingProbeRepository
 
-### Community 1 - "CheckIn"
-Cohesion: 0.06
-Nodes (41): HttpRequest, IMongoRunner, IResult, ServiceProvider, CancellationToken, HttpContext, IEndpointRouteBuilder, Task (+33 more)
+### Community 1 - ".HandlePingAsync"
+Cohesion: 0.22
+Nodes (10): HttpRequest, IResult, CancellationToken, HttpContext, Task, PublicEndpoints, CheckInKind, Fail (+2 more)
 
 ### Community 2 - "Watch"
 Cohesion: 0.07
-Nodes (29): DateTime, List, Watch, BestStreak, ChannelBindings, ConsecutiveMisses, CurrentIncidentId, CurrentStreak (+21 more)
+Nodes (30): DateTime, List, Watch, BestStreak, ChannelBindings, ConsecutiveMisses, CurrentIncidentId, CurrentStreak (+22 more)
 
 ### Community 3 - "MongoContext"
-Cohesion: 0.06
-Nodes (35): IMongoDatabase, IServiceProvider, Lease, DateTime, RefreshToken, CreatedByIp, ExpiresAtUtc, ReplacedByTokenHash (+27 more)
+Cohesion: 0.09
+Nodes (23): IMongoDatabase, Lease, CancellationToken, IMongoCollection, Task, Team, MongoContext, ChannelRates (+15 more)
 
 ### Community 4 - "PingProbe"
-Cohesion: 0.08
-Nodes (25): DateTime, List, TimeSpan, PingProbe, ExpiresAtUtc, HitCount, Hits, LastHitAtUtc (+17 more)
+Cohesion: 0.10
+Nodes (19): DateTime, List, TimeSpan, PingProbe, ExpiresAtUtc, HitCount, Hits, LastHitAtUtc (+11 more)
 
 ### Community 5 - ".ReplaceAsync"
-Cohesion: 0.14
-Nodes (15): HttpContext, IEndpointRouteBuilder, AuthEndpoints, CancellationToken, Task, DateTime, AccessToken, ITokenService (+7 more)
+Cohesion: 0.16
+Nodes (13): HttpContext, IEndpointRouteBuilder, AuthEndpoints, DateTime, AccessToken, ITokenService, CancellationToken, Task (+5 more)
 
 ### Community 6 - "StatusPage"
-Cohesion: 0.10
-Nodes (25): GeneratedRegex, Regex, IEndpointRouteBuilder, StatusPageEndpoints, CancellationToken, IReadOnlyList, Task, IStatusPageRepository (+17 more)
+Cohesion: 0.17
+Nodes (15): CancellationToken, IReadOnlyList, Task, IStatusPageRepository, List, StatusPage, IsPublic, Slug (+7 more)
 
 ### Community 7 - "OnCallSchedule"
 Cohesion: 0.07
-Nodes (27): CancellationToken, IReadOnlyList, Task, DateTime, List, OnCallOverride, EndUtc, StartUtc (+19 more)
+Nodes (29): CancellationToken, IReadOnlyList, Task, ITeamRepository, DateTime, List, OnCallOverride, EndUtc (+21 more)
 
-### Community 8 - "IClock"
-Cohesion: 0.09
-Nodes (22): Wardkitten.Tests, DateTimeOffset, DateTime, IClock, UtcNow, SystemClock, UtcNow, IMagicLinkValidator (+14 more)
+### Community 8 - "HmacMagicLinkService"
+Cohesion: 0.18
+Nodes (8): IMagicLinkValidator, MagicLinkData, DateTime, DateTimeExtensions, HmacMagicLinkService, MagicLinkOptions, Secret, TtlMinutes
 
 ### Community 9 - "Instrucciones para agentes — Wardkitten"
-Cohesion: 0.06
-Nodes (32): Autorización, Bloqueos de MongoDB (CPU alta / COLLSCAN), Concurrencia del worker, Despliegue Linux vs. desarrollo Windows, Documentación, Estado en wardkitten: **adoptado por `PackageReference` 26.7.5** (2026-07-28), Estructura del repositorio, Hardcodeos y tech-debt (+24 more)
+Cohesion: 0.05
+Nodes (37): Angular / TypeScript — StrykerJS (no aplica hoy), Autorización, Blazor — Stryker.NET sobre el code-behind, tests con bUnit, Bloqueos de MongoDB (CPU alta / COLLSCAN), C# — Stryker.NET, Concurrencia del worker, Despliegue Linux vs. desarrollo Windows, Documentación (+29 more)
 
 ### Community 10 - "WardkittenApiClient"
-Cohesion: 0.19
-Nodes (8): HttpClient, VerifyCodeRequest, ApiResult, HttpResponseMessage, JsonElement, Task, WardkittenApiClient, BaseAddress
+Cohesion: 0.14
+Nodes (9): VerifyCodeRequest, WatchDto, ApiResult, HttpClient, HttpResponseMessage, JsonElement, Task, WardkittenApiClient (+1 more)
 
 ### Community 11 - "ChannelType"
-Cohesion: 0.10
-Nodes (24): IReadOnlyDictionary, IAckLinkBuilder, CancellationToken, ChannelBinding, DateTime, ILogger, Task, TimeZoneInfo (+16 more)
-
-### Community 12 - ".AddWardkittenInfrastructure"
-Cohesion: 0.14
-Nodes (21): Harness, IMongoClient, ISubscriptionRepository, IWalletRepository, IRefreshTokenRepository, IUserRepository, IRepository, ITeamRepository (+13 more)
-
-### Community 13 - ".GetByIdAsync"
 Cohesion: 0.17
-Nodes (13): IEndpointRouteBuilder, InternalEndpoints, CancellationToken, IReadOnlyList, Task, CancellationToken, DateTime, IReadOnlyList (+5 more)
+Nodes (13): CancellationToken, IReadOnlyList, Task, INotificationLogRepository, CancellationToken, ChannelBinding, DateTime, ILogger (+5 more)
+
+### Community 12 - ".Build"
+Cohesion: 0.35
+Nodes (9): CancellationToken, DateTime, Fact, InlineData, Task, Theory, User, AuthServiceTests (+1 more)
+
+### Community 13 - "PingProbeService"
+Cohesion: 0.24
+Nodes (9): IEndpointRouteBuilder, CancellationToken, DateTime, IReadOnlyList, Task, TimeSpan, PingActivity, PingProbeService (+1 more)
 
 ### Community 14 - "Wardkitten.Domain.Watches"
-Cohesion: 0.17
-Nodes (8): Wardkitten.Worker, Wardkitten.Domain.Incidents, Wardkitten.Application.Evaluation, Wardkitten.Application.Notifications, Wardkitten.Domain.Watches, Wardkitten.Infrastructure.Notifications, Wardkitten.Application.RealTime, System.Net.Http.Json
+Cohesion: 0.13
+Nodes (7): Wardkitten.Domain.Incidents, Wardkitten.Application.Notifications, Wardkitten.Domain.Notifications, Wardkitten.Domain.Watches, Wardkitten.Infrastructure.Notifications, Wardkitten.Tests.Domain, System.Net.Http.Json
 
 ### Community 15 - "NotificationLog"
-Cohesion: 0.11
-Nodes (22): CancellationToken, IReadOnlyList, Task, INotificationLogRepository, DateTime, NotificationLog, Channel, CreditsCharged (+14 more)
+Cohesion: 0.12
+Nodes (18): DateTime, NotificationLog, Channel, CreditsCharged, Destination, Error, IncidentId, Kind (+10 more)
 
 ### Community 16 - "Wardkitten.Application.Abstractions.Persistence"
-Cohesion: 0.20
-Nodes (7): Wardkitten.Domain.Teams, Wardkitten.Application.Abstractions, Wardkitten.Application.Common, Wardkitten.Infrastructure.Mongo.Repositories, Wardkitten.Domain.StatusPages, Wardkitten.Application.Abstractions.Persistence, Wardkitten.Domain.Billing
+Cohesion: 0.19
+Nodes (6): Wardkitten.Application.Abstractions, Wardkitten.Application.Common, Wardkitten.Infrastructure.Mongo.Repositories, Wardkitten.Application.Abstractions.Persistence, DateTime, TelegramLinkCode
 
 ### Community 17 - "NotificationResult"
-Cohesion: 0.14
-Nodes (16): FirebaseApp, NotificationResult, Error, ProviderMessageId, Success, CancellationToken, Task, PushChannel (+8 more)
+Cohesion: 0.12
+Nodes (20): NotificationResult, Error, ProviderMessageId, Success, CancellationToken, Task, CancellationToken, IHttpClientFactory (+12 more)
 
 ### Community 18 - "WatchEdit.razor"
-Cohesion: 0.08
-Nodes (24): PingTestHitDto, route:/watches/{Id}/edit, route:/watches/new, Apply, BuildBindings, CopyAsync, DisposeAsync, Hace (+16 more)
+Cohesion: 0.15
+Nodes (12): route:/watches/{Id}/edit, route:/watches/new, ApplyBindings, BuildBindings, OnInitializedAsync, ChannelBinding, NavigationManager, PageTitle (+4 more)
 
-### Community 19 - ".CreateAsync"
-Cohesion: 0.18
-Nodes (14): IEndpointRouteBuilder, WatchEndpoints, SecureTokenGenerator, CancellationToken, ChannelBinding, IReadOnlyList, List, Task (+6 more)
+### Community 19 - "Result"
+Cohesion: 0.13
+Nodes (18): IEndpointRouteBuilder, WatchEndpoints, Result, CancellationToken, Task, CancellationToken, IReadOnlyList, Task (+10 more)
 
-### Community 20 - "Result"
-Cohesion: 0.27
-Nodes (9): IEndpointRouteBuilder, Result, CancellationToken, DateTime, IReadOnlyList, List, Task, Team (+1 more)
+### Community 20 - "TeamService"
+Cohesion: 0.31
+Nodes (8): IEndpointRouteBuilder, CancellationToken, DateTime, IReadOnlyList, List, Task, Team, TeamService
 
 ### Community 21 - "User"
-Cohesion: 0.08
-Nodes (23): DateTime, List, Plan, Roles, User, DisplayName, Email, EmailVerificationCodeHash (+15 more)
+Cohesion: 0.07
+Nodes (28): DateTime, List, Plan, Roles, User, DefaultChannelBindings, DisplayName, Email (+20 more)
 
 ### Community 22 - "Incident"
-Cohesion: 0.09
-Nodes (22): DateTime, List, Severity, Incident, AcknowledgedAtUtc, AcknowledgedBy, CurrentEscalationStep, Deliveries (+14 more)
+Cohesion: 0.08
+Nodes (25): CancellationToken, Task, NoopWatchEventPublisher, DateTime, List, Severity, Incident, AcknowledgedAtUtc (+17 more)
 
-### Community 23 - "INotificationChannel"
-Cohesion: 0.10
-Nodes (20): CancellationToken, IEnumerable, Task, CancellationToken, Task, INotificationChannel, Channel, IsMetered (+12 more)
+### Community 23 - "NotificationMessage"
+Cohesion: 0.07
+Nodes (31): ConcurrentQueue, IWebHostBuilder, CancellationToken, IEnumerable, Task, CancellationToken, IReadOnlyList, Severity (+23 more)
 
 ### Community 24 - "TwilioChannelBase"
 Cohesion: 0.11
@@ -282,30 +310,30 @@ Nodes (16): Codable, Foundation, Identifiable, WatchStatus, WardkittenApi, Watch
 
 ### Community 26 - "Home.razor"
 Cohesion: 0.10
-Nodes (19): CriticalityBadge, route:/, CheckInAsync, DeleteAsync, Dispose, FormatDue, HandleChanged, LoadAsync (+11 more)
+Nodes (20): CriticalityBadge, route:/, CheckInAsync, DeleteAsync, DismissOnboardingAsync, Dispose, FormatDue, HandleChanged (+12 more)
 
 ### Community 27 - "SampleDocument"
-Cohesion: 0.12
-Nodes (16): SampleDocument, SampleState, MongoDbConfigurator, DateTime, Fact, MongoConventionsGuardTests, SampleDocument, BalanceCredits (+8 more)
+Cohesion: 0.09
+Nodes (21): Wardkitten.Tests.Infrastructure, IOptions, MongoSettings, SampleDocument, SampleState, MongoDbConfigurator, DateTime, Fact (+13 more)
 
-### Community 28 - "WatchdogEndToEndTests.cs"
-Cohesion: 0.13
-Nodes (10): Wardkitten.Application.DependencyInjection, Wardkitten.Infrastructure.Time, Wardkitten.IntegrationTests, Wardkitten.Api.Mcp, Wardkitten.Tests.Infrastructure, Wardkitten.Infrastructure.Mongo, Wardkitten.Infrastructure.DependencyInjection, Program (+2 more)
+### Community 28 - "Wardkitten.Application.RealTime"
+Cohesion: 0.19
+Nodes (8): Wardkitten.Application.DependencyInjection, Wardkitten.Worker, Wardkitten.IntegrationTests, Wardkitten.Api.Mcp, Wardkitten.Application.Evaluation, Wardkitten.Application.RealTime, Wardkitten.Infrastructure.DependencyInjection, Program
 
-### Community 29 - "WardkittenMcpTools"
-Cohesion: 0.45
-Nodes (7): IHttpContextAccessor, JsonSerializerOptions, McpServerTool, CancellationToken, Task, WardkittenMcpTools, Description
+### Community 29 - "Severity"
+Cohesion: 0.08
+Nodes (39): IHttpContextAccessor, McpServerTool, CancellationToken, JsonSerializerOptions, Task, WardkittenMcpTools, Dictionary, CriticalityCatalog (+31 more)
 
 ### Community 30 - ".AddWardkittenIntegrations"
-Cohesion: 0.13
-Nodes (12): IPasswordHasher, IConfiguration, IServiceCollection, IntegrationsRegistration, PushOptions, ServiceAccountJson, BcryptPasswordHasher, JwtOptions (+4 more)
+Cohesion: 0.11
+Nodes (15): FirebaseApp, IPasswordHasher, IConfiguration, IServiceCollection, IntegrationsRegistration, PushChannel, Channel, PushOptions (+7 more)
 
-### Community 31 - ".ChargeForMessageAsync"
-Cohesion: 0.22
-Nodes (7): CancellationToken, IReadOnlyList, Task, ChargeResult, IsCharged, IsInsufficient, WalletService
+### Community 31 - "IWalletRepository"
+Cohesion: 0.15
+Nodes (12): CancellationToken, IReadOnlyList, Task, ICreditTransactionRepository, IWalletRepository, CancellationToken, IReadOnlyList, Task (+4 more)
 
-### Community 32 - "AuthContracts.cs"
-Cohesion: 0.21
+### Community 32 - "UserDto"
+Cohesion: 0.18
 Nodes (11): DateTime, IReadOnlyList, AuthResponse, LoginRequest, PhoneOtpRequest, PushTokenRequest, RefreshRequest, RegisterRequest (+3 more)
 
 ### Community 33 - "http"
@@ -313,84 +341,84 @@ Cohesion: 0.12
 Nodes (17): ASPNETCORE_ENVIRONMENT, applicationUrl, commandName, dotnetRunMessages, environmentVariables, inspectUri, launchBrowser, applicationUrl (+9 more)
 
 ### Community 34 - "Wardkitten.Domain.Identity"
-Cohesion: 0.17
+Cohesion: 0.13
 Nodes (6): Wardkitten.Domain.Identity, Wardkitten.Application.Billing, Wardkitten.Tests.Application, Wardkitten.Infrastructure.Security, Wardkitten.Infrastructure.Billing, Wardkitten.Application.Security
 
 ### Community 35 - ".ToDtoAsync"
-Cohesion: 0.21
+Cohesion: 0.19
 Nodes (14): CancellationToken, Task, TeamDto, TeamEndpoints, DateTime, List, AddMemberRequest, AddOnCallOverrideRequest (+6 more)
 
-### Community 36 - ".ToDto"
-Cohesion: 0.20
-Nodes (9): DtoMappings, DateTime, List, CheckInDto, PingTestHitDto, PingTestStateDto, StartPingTestRequest, WatchDto (+1 more)
+### Community 36 - "PingTestStateDto"
+Cohesion: 0.28
+Nodes (8): PingProbeMode, Draft, DryRun, DateTime, List, PingTestHitDto, PingTestStateDto, WatchTemplateDto
 
 ### Community 37 - "CreditTransaction"
-Cohesion: 0.12
-Nodes (16): CreditTransaction, AmountCredits, BalanceAfter, Channel, IdempotencyKey, ProviderReference, Reason, Type (+8 more)
+Cohesion: 0.16
+Nodes (14): CreditTransaction, AmountCredits, BalanceAfter, Channel, IdempotencyKey, ProviderReference, Reason, Type (+6 more)
 
 ### Community 38 - "Subscription"
-Cohesion: 0.12
-Nodes (16): DateTime, Subscription, CancelAtPeriodEnd, CurrentPeriodEndUtc, GrantsPaidFeatures, Plan, Status, StripeCustomerId (+8 more)
-
-### Community 39 - "Severity"
 Cohesion: 0.17
-Nodes (12): Dictionary, CriticalityCatalog, CriticalityPolicy, Severity, Critical, High, Low, Medium (+4 more)
+Nodes (13): ISubscriptionRepository, DateTime, Subscription, CancelAtPeriodEnd, CurrentPeriodEndUtc, GrantsPaidFeatures, Plan, Status (+5 more)
+
+### Community 39 - "Welcome"
+Cohesion: 0.04
+Nodes (48): IDisposable, Dictionary, IReadOnlyList, NavigationManager, TimeSpan, WatchType, Welcome, Api (+40 more)
 
 ### Community 40 - "Wardkitten.Application.Services"
-Cohesion: 0.35
-Nodes (6): Wardkitten.Application.Services, Wardkitten.Domain.CheckIns, Wardkitten.Api.Security, Wardkitten.Api.Mapping, Wardkitten.Api.Endpoints, Wardkitten.Shared.Contracts
+Cohesion: 0.22
+Nodes (8): Wardkitten.Application.Services, Wardkitten.Api.Security, Wardkitten.Api.Mapping, Wardkitten.Api.Endpoints, Wardkitten.Shared.Contracts, Wardkitten.Api.RealTime, IEndpointRouteBuilder, InternalEndpoints
 
 ### Community 41 - "Wardkitten.Infrastructure"
 Cohesion: 0.12
 Nodes (16): Anthropic (12.39.0), BCrypt.Net-Next (4.2.0), Es.Nimita.Infra.Mongo (26.7.5), FirebaseAdmin (3.6.0), MailKit (4.17.0), Microsoft.Extensions.Configuration.Binder (10.0.10), Microsoft.Extensions.Hosting.Abstractions (10.0.10), Microsoft.Extensions.Options.ConfigurationExtensions (10.0.10) (+8 more)
 
-### Community 42 - "wardkitten.slnx"
-Cohesion: 0.16
-Nodes (15): Microsoft.AspNetCore.Components.Authorization (10.0.10), Microsoft.AspNetCore.Components.Web (10.0.10), Microsoft.AspNetCore.Components.WebAssembly (10.0.10), Microsoft.AspNetCore.Components.WebAssembly.DevServer (10.0.10), Microsoft.AspNetCore.SignalR.Client (9.0.18), Microsoft.Extensions.Hosting (10.0.10), Microsoft.NET.Sdk.BlazorWebAssembly, Microsoft.NET.Sdk.Razor (+7 more)
+### Community 42 - "Wardkitten.Shared.UI"
+Cohesion: 0.20
+Nodes (10): Microsoft.AspNetCore.Components.Authorization (10.0.10), Microsoft.AspNetCore.Components.Web (10.0.10), Microsoft.AspNetCore.Components.WebAssembly (10.0.10), Microsoft.AspNetCore.Components.WebAssembly.DevServer (10.0.10), Microsoft.AspNetCore.SignalR.Client (9.0.18), Microsoft.NET.Sdk.BlazorWebAssembly, Wardkitten.Shared.UI, Microsoft.Extensions.Http (10.0.10) (+2 more)
 
 ### Community 43 - "http"
 Cohesion: 0.13
 Nodes (15): ASPNETCORE_ENVIRONMENT, applicationUrl, commandName, dotnetRunMessages, environmentVariables, launchBrowser, applicationUrl, commandName (+7 more)
 
 ### Community 44 - "PlanLimits"
-Cohesion: 0.16
-Nodes (14): Dictionary, Plan, Free, Pro, Team, PlanCatalog, PlanLimits, EscalationPolicies (+6 more)
+Cohesion: 0.13
+Nodes (16): OnboardingState, Completed, Dictionary, Plan, Free, Pro, Team, PlanCatalog (+8 more)
 
-### Community 45 - "BillingService"
-Cohesion: 0.26
-Nodes (7): IConfiguration, IEndpointRouteBuilder, MoneyEndpoints, CancellationToken, DateTime, Task, BillingService
+### Community 45 - ".GetByIdAsync"
+Cohesion: 0.19
+Nodes (11): IConfiguration, IEndpointRouteBuilder, MoneyEndpoints, CancellationToken, IReadOnlyList, Task, IRepository, CancellationToken (+3 more)
 
 ### Community 46 - "Wallet"
-Cohesion: 0.17
-Nodes (12): Wallet, AutoTopUpAmountCredits, AutoTopUpEnabled, BalanceCredits, Currency, IsBelowThreshold, MinThresholdCredits, UserId (+4 more)
+Cohesion: 0.13
+Nodes (13): Wallet, AutoTopUpAmountCredits, AutoTopUpEnabled, BalanceCredits, Currency, IsBelowThreshold, MinThresholdCredits, UserId (+5 more)
 
 ### Community 47 - "EmailOptions"
 Cohesion: 0.15
 Nodes (12): CancellationToken, Task, EmailChannel, Channel, EmailOptions, FromAddress, FromName, Host (+4 more)
 
-### Community 48 - "Wardkitten.Domain.Common"
-Cohesion: 0.14
-Nodes (8): Wardkitten.Domain.Common, Wardkitten.Domain.Notifications, SubscriptionStatus, Active, Canceled, Incomplete, PastDue, Trialing
+### Community 48 - "SubscriptionStatus"
+Cohesion: 0.33
+Nodes (6): SubscriptionStatus, Active, Canceled, Incomplete, PastDue, Trialing
 
-### Community 49 - "NotificationMessage"
-Cohesion: 0.15
-Nodes (13): IReadOnlyList, Severity, NotificationAction, NotificationMessage, AckUrl, Actions, Body, Channel (+5 more)
+### Community 49 - "WelcomeTests"
+Cohesion: 0.17
+Nodes (10): WatchRequest, Fact, Func, IRenderedComponent, List, NavigationManager, Task, TimeSpan (+2 more)
 
 ### Community 50 - "CancellationToken"
 Cohesion: 0.33
-Nodes (5): CancellationToken, IReadOnlyList, Task, SubscriptionRepository, WalletRepository
+Nodes (5): CancellationToken, IReadOnlyList, Task, CreditTransactionRepository, WalletRepository
 
 ### Community 51 - "EvaluationWorker"
 Cohesion: 0.24
 Nodes (10): BackgroundService, PeriodicTimer, CancellationToken, IConfiguration, IHttpClientFactory, ILeaseStore, ILogger, Task (+2 more)
 
 ### Community 52 - "F04 — Motor de evaluación e incidentes"
-Cohesion: 0.17
-Nodes (8): Componentes, Descripción, F04 — Motor de evaluación e incidentes, Metadata, Modelo de datos, Reglas de negocio, Verificación, Feature Registry — Wardkitten
+Cohesion: 0.25
+Nodes (7): Componentes, Descripción, F04 — Motor de evaluación e incidentes, Metadata, Modelo de datos, Reglas de negocio, Verificación
 
-### Community 53 - "Wardkitten.Web/_Imports.razor"
-Cohesion: 0.15
-Nodes (11): Microsoft.AspNetCore.Components.Forms, Microsoft.AspNetCore.Components.Routing, Microsoft.AspNetCore.Components.Web.Virtualization, Microsoft.AspNetCore.Components.WebAssembly.Http, Microsoft.JSInterop, Microsoft.AspNetCore.Components.Authorization, Microsoft.AspNetCore.Components.Web, System.Net.Http (+3 more)
+### Community 53 - "Wardkitten.Domain.CheckIns"
+Cohesion: 0.08
+Nodes (22): Wardkitten.Shared.UI.Services, Wardkitten.Domain.CheckIns, Wardkitten.Web.Tests, Wardkitten.Shared.UI.DependencyInjection, Wardkitten.Shared.UI.Components, Wardkitten.Shared.UI.Auth, Wardkitten.Web.Onboarding, Wardkitten.Web.Pages (+14 more)
 
 ### Community 54 - "wardkitten/MainActivity.kt"
 Cohesion: 0.24
@@ -409,44 +437,44 @@ Cohesion: 0.28
 Nodes (7): CancellationToken, DateTime, ILogger, Task, EvaluationEngine, CancellationToken, Task
 
 ### Community 58 - "Schedule"
-Cohesion: 0.22
-Nodes (9): DateTime, List, TimeZoneInfo, Schedule, CalendarDatesLocal, CronExpression, IntervalSeconds, Kind (+1 more)
+Cohesion: 0.11
+Nodes (17): ScheduleKind, Calendar, Cron, Interval, DateTime, List, TimeZoneInfo, Schedule (+9 more)
 
 ### Community 59 - "Tolerance"
-Cohesion: 0.15
-Nodes (9): TimeSpan, Tolerance, Grace, GraceSeconds, None, SkipTolerance, InlineData, Theory (+1 more)
+Cohesion: 0.18
+Nodes (8): TimeSpan, Tolerance, Grace, GraceSeconds, None, SkipTolerance, InlineData, Theory
 
 ### Community 60 - "TelegramChannel"
 Cohesion: 0.17
 Nodes (11): CancellationToken, IHttpClientFactory, Task, TelegramChannel, Channel, TelegramMessage, TelegramOptions, BotToken (+3 more)
 
 ### Community 61 - "ITokenStore"
-Cohesion: 0.33
-Nodes (4): IJSRuntime, ValueTask, ITokenStore, LocalStorageTokenStore
+Cohesion: 0.28
+Nodes (5): Microsoft.JSInterop, IJSRuntime, ValueTask, ITokenStore, LocalStorageTokenStore
 
 ### Community 62 - "JwtAuthStateProvider"
-Cohesion: 0.23
+Cohesion: 0.21
 Nodes (8): AuthenticationState, AuthenticationStateProvider, Claim, Dictionary, IEnumerable, JsonElement, Task, JwtAuthStateProvider
 
 ### Community 63 - "Guía de publicación — Wardkitten (web + apps móviles)"
-Cohesion: 0.17
-Nodes (12): 0. Estado actual del proyecto, 2.1 Herramientas, 2.2 Assets pendientes, 2. MÓVIL — preparación común, 3.1 Clave de subida (una sola vez), 3.2 Compilar el bundle, 3.3 Subir, 3.4 Requisitos de ficha (+4 more)
+Cohesion: 0.11
+Nodes (18): 0. Estado actual del proyecto, 1.1 Probar en local, 1.2 Publicar la imagen a GHCR (automático con CI), 1.3 Desplegar en Kubernetes, 1.4 Dominios y orígenes, 1.5 Verificación, 1. WEB (Blazor WASM) — la más sencilla, 2.1 Herramientas (+10 more)
 
-### Community 64 - "WatchTemplateCatalog"
-Cohesion: 0.20
-Nodes (8): IEndpointRouteBuilder, TemplateEndpoints, ChannelBinding, IReadOnlyList, List, WatchTemplate, WatchTemplateCatalog, All
+### Community 64 - "ChannelBinding"
+Cohesion: 0.06
+Nodes (31): IPAddress, IEndpointRouteBuilder, TemplateEndpoints, ChannelBindingRules, ChannelDestinations, CancellationToken, Task, ChannelBinding (+23 more)
 
-### Community 65 - "ICreditTransactionRepository"
-Cohesion: 0.27
-Nodes (5): CancellationToken, IReadOnlyList, Task, ICreditTransactionRepository, CreditTransactionRepository
+### Community 65 - ".Build"
+Cohesion: 0.13
+Nodes (19): Wardkitten.Infrastructure.Time, Wardkitten.Tests, DateTimeOffset, ClockTimeProvider, CancellationToken, DateTime, Fact, InlineData (+11 more)
 
 ### Community 66 - "App.razor"
-Cohesion: 0.18
-Nodes (10): AuthorizeRouteView, Authorizing, CascadingAuthenticationState, FocusOnNavigate, Found, RedirectToLogin, Router, Microsoft.AspNetCore.Components.Authorization (+2 more)
+Cohesion: 0.20
+Nodes (9): AuthorizeRouteView, Authorizing, CascadingAuthenticationState, FocusOnNavigate, Found, RedirectToLogin, Router, Microsoft.AspNetCore.Components.Authorization (+1 more)
 
 ### Community 67 - "Wardkitten.IntegrationTests.csproj"
-Cohesion: 0.18
-Nodes (10): net10.0, EphemeralMongo (3.2.0), coverlet.collector (10.0.1), Microsoft.Extensions.Configuration (10.0.10), Microsoft.Extensions.DependencyInjection (10.0.10), Microsoft.NET.Test.Sdk (18.8.1), Shouldly (4.3.0), xunit (2.9.3) (+2 more)
+Cohesion: 0.17
+Nodes (11): net10.0, EphemeralMongo (3.2.0), Microsoft.AspNetCore.Mvc.Testing (10.0.10), coverlet.collector (10.0.1), Microsoft.Extensions.Configuration (10.0.10), Microsoft.Extensions.DependencyInjection (10.0.10), Microsoft.NET.Test.Sdk (18.8.1), Shouldly (4.3.0) (+3 more)
 
 ### Community 68 - "Wallet.razor"
 Cohesion: 0.18
@@ -456,17 +484,17 @@ Nodes (10): route:/wallet, LoadAsync, OnInitializedAsync, PortalAsync, CreditTra
 Cohesion: 0.33
 Nodes (6): Session, CancellationToken, ILogger, Subscription, Task, StripeWebhookProcessor
 
-### Community 70 - "List"
-Cohesion: 0.20
-Nodes (5): DateTime, CreditTransactionDto, IncidentDto, WatchTemplateDto, List
+### Community 70 - ".ToDto"
+Cohesion: 0.12
+Nodes (9): DtoMappings, DateTime, CheckoutResponse, CreditTransactionDto, IncidentDto, SubscribeRequest, TopUpRequest, WalletDto (+1 more)
 
-### Community 71 - "Wardkitten.Shared.UI.Auth"
-Cohesion: 0.24
-Nodes (4): Wardkitten.Shared.UI.Services, Wardkitten.Shared.UI.Auth, Microsoft.AspNetCore.Components.Authorization, Microsoft.AspNetCore.Components.Web
+### Community 71 - ".Build"
+Cohesion: 0.14
+Nodes (20): Harness, TelegramLinkOptions, BotUsername, WebhookSecret, CancellationToken, DateTime, Fact, InlineData (+12 more)
 
 ### Community 72 - ".AddWardkittenClient"
-Cohesion: 0.20
-Nodes (7): Wardkitten.Shared.UI.DependencyInjection, AuthenticationStateProvider, IServiceCollection, ClientServiceCollectionExtensions, Type, Uri, Wardkitten.Web
+Cohesion: 0.40
+Nodes (4): AuthenticationStateProvider, IServiceCollection, Type, Uri
 
 ### Community 73 - "WatchStatus"
 Cohesion: 0.22
@@ -474,67 +502,67 @@ Nodes (7): WardkittenApi, Watch, WatchStatus, Failing, Late, Ok, Paused
 
 ### Community 74 - "Wardkitten.Tests"
 Cohesion: 0.20
-Nodes (10): NSubstitute (5.3.0), Wardkitten.Tests, coverlet.collector (10.0.1), Microsoft.Extensions.Configuration (10.0.10), Microsoft.Extensions.DependencyInjection (10.0.10), Microsoft.NET.Test.Sdk (18.8.1), Shouldly (4.3.0), xunit (2.9.3) (+2 more)
+Nodes (10): Wardkitten.Tests, coverlet.collector (10.0.1), Microsoft.Extensions.Configuration (10.0.10), Microsoft.Extensions.DependencyInjection (10.0.10), Microsoft.NET.Test.Sdk (18.8.1), NSubstitute (5.3.0), Shouldly (4.3.0), xunit (2.9.3) (+2 more)
 
 ### Community 75 - "StripePaymentGateway"
 Cohesion: 0.42
 Nodes (5): SessionCreateOptions, SessionLineItemOptions, CancellationToken, Task, StripePaymentGateway
 
-### Community 76 - "IWatchEventPublisher"
-Cohesion: 0.42
-Nodes (4): CancellationToken, Task, IWatchEventPublisher, NoopWatchEventPublisher
+### Community 76 - "IWatchRepository"
+Cohesion: 0.21
+Nodes (15): IIncidentRepository, IWatchRepository, IServiceCollection, ApplicationRegistration, INotificationDispatcher, IWatchEventPublisher, CheckInService, IncidentService (+7 more)
 
-### Community 77 - "IncidentService"
-Cohesion: 0.38
-Nodes (5): CancellationToken, IReadOnlyList, Task, TimeSpan, IncidentService
+### Community 77 - "PingTestBenchTests"
+Cohesion: 0.17
+Nodes (5): CheckInDto, StartPingTestRequest, Fact, Task, PingTestBenchTests
 
-### Community 78 - "ChannelType"
-Cohesion: 0.20
-Nodes (10): ChannelType, Discord, Email, MicrosoftTeams, Push, Slack, Sms, Telegram (+2 more)
+### Community 78 - "PingTestBench"
+Cohesion: 0.06
+Nodes (31): ComponentBase, IJSRuntime, List, TimeSpan, ValueTask, PingTestBench, Active, Api (+23 more)
 
 ### Community 79 - "StripeOptions"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (10): StripeOptions, AutomaticTaxEnabled, CreditCurrency, CreditTaxBehavior, CreditUnitAmountCents, PriceCredit, PriceProMonthly, PriceTeamMonthly (+2 more)
 
 ### Community 80 - "HttpWatchEventPublisher"
 Cohesion: 0.47
 Nodes (6): InternalEventRequest, CancellationToken, IHttpClientFactory, ILogger, Task, HttpWatchEventPublisher
 
-### Community 81 - "StatusContracts.cs"
-Cohesion: 0.29
-Nodes (6): DateTime, List, PublicStatusPageDto, StatusItemDto, StatusPageDto, StatusPageRequest
+### Community 81 - ".MapStatusPageEndpoints"
+Cohesion: 0.22
+Nodes (8): IEndpointRouteBuilder, StatusPageEndpoints, DateTime, List, PublicStatusPageDto, StatusItemDto, StatusPageDto, StatusPageRequest
 
 ### Community 82 - "MainLayout.razor"
 Cohesion: 0.22
-Nodes (8): Authorized, AuthorizeView, LayoutComponentBase, NavLink, LogoutAsync, ClientAuthService, NavigationManager, NotAuthorized
+Nodes (8): Authorized, AuthorizeView, NavLink, LogoutAsync, ClientAuthService, LayoutComponentBase, NavigationManager, NotAuthorized
 
 ### Community 83 - "Política de seguridad — Wardkitten"
 Cohesion: 0.22
 Nodes (8): 1. Gestión de secretos, 2. Autenticación y autorización, 3. Endpoints públicos (sin sesión), 4. Wallet / canales metered (anti-abuso), 5. Datos y privacidad (GDPR), 6. Dependencias y supply chain, 7. Reporte de vulnerabilidades, Política de seguridad — Wardkitten
 
-### Community 84 - "IChannelRateRepository"
-Cohesion: 0.25
-Nodes (7): IChannelRateRepository, ChannelRate, Channel, CountryPrefix, CreditsPerMessage, Dictionary, ChannelRateRepository
+### Community 84 - ".AddWardkittenInfrastructure"
+Cohesion: 0.13
+Nodes (15): IMongoClient, IServiceProvider, IChannelRateRepository, ChannelRate, Channel, CountryPrefix, CreditsPerMessage, CancellationToken (+7 more)
 
-### Community 85 - ".AddWardkittenApplication"
-Cohesion: 0.25
-Nodes (5): IServiceCollection, ApplicationRegistration, DefaultAckLinkBuilder, NotificationOptions, PublicBaseUrl
+### Community 85 - "IAckLinkBuilder"
+Cohesion: 0.29
+Nodes (4): DefaultAckLinkBuilder, IAckLinkBuilder, NotificationOptions, PublicBaseUrl
 
-### Community 86 - "WatchStatus"
-Cohesion: 0.22
-Nodes (7): ChannelTypeExtensions, WatchStatus, Down, Grace, New, Paused, Up
+### Community 86 - ".Wizard_Profile_Channels_Test_FirstPingMonitor_AndComplete"
+Cohesion: 0.12
+Nodes (21): ApiFactory, Client, RecordingChannel, Program, List, ChannelTestRequest, ChannelTestResultDto, OnboardingStateDto (+13 more)
 
-### Community 87 - "BillingContracts.cs"
-Cohesion: 0.28
-Nodes (4): CheckoutResponse, SubscribeRequest, TopUpRequest, WalletDto
+### Community 87 - "CancellationToken"
+Cohesion: 0.21
+Nodes (8): CancellationToken, DateTime, IAsyncEnumerable, IReadOnlyList, Task, IncidentRepository, PingProbeRepository, WatchRepository
 
 ### Community 88 - ".SendAsync"
 Cohesion: 0.25
-Nodes (6): DelegatingHandler, HttpRequestMessage, CancellationToken, HttpResponseMessage, Task, BearerHandler
+Nodes (6): DelegatingHandler, CancellationToken, HttpRequestMessage, HttpResponseMessage, Task, BearerHandler
 
 ### Community 89 - "Apps móviles nativas"
-Cohesion: 0.25
-Nodes (5): Android, Apps móviles nativas, Contratos, Estado, iOS + watchOS
+Cohesion: 0.13
+Nodes (10): Android, Apps móviles nativas, Contratos, Estado, iOS + watchOS, Arquitectura, Cómo funciona, Desarrollo (+2 more)
 
 ### Community 90 - "F02.01 — Watch (tarea vigilada)"
 Cohesion: 0.25
@@ -545,7 +573,7 @@ Cohesion: 0.25
 Nodes (8): Dependencias / Sub-features, Descripción, Elementos UI, Endpoints, F03.03 — Banco de pruebas de la URL de ping (dry-run), Metadata, Modelo de datos (MongoDB, `pingProbes`), Reglas de negocio
 
 ### Community 92 - "F06 — Wallet de créditos (canales metered)"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (8): Descripción, Elementos UI, Endpoints, F06 — Wallet de créditos (canales metered), Metadata, Modelo de datos (MongoDB), Reglas de negocio, Verificación
 
 ### Community 93 - "LiveHubConnection"
@@ -572,21 +600,21 @@ Nodes (7): route:/register, ClientAuthService, EditForm, InputText, NavigationMa
 Cohesion: 0.25
 Nodes (7): route:/templates, OnInitializedAsync, NavigationManager, PageTitle, WardkittenApiClient, WatchTemplateDto, UseAsync
 
-### Community 99 - "ChannelBinding"
-Cohesion: 0.25
-Nodes (8): TimeSpan, ChannelBinding, DestinationOverride, Enabled, EscalationDelay, EscalationDelaySeconds, Order, QuietHours
+### Community 99 - "Task"
+Cohesion: 0.11
+Nodes (6): CancellationToken, CancellationTokenSource, ChannelBinding, List, Task, WizardStep
 
-### Community 100 - "ScheduleKind"
-Cohesion: 0.25
-Nodes (6): ScheduleKind, Calendar, Cron, Interval, InlineData, Theory
+### Community 100 - "FakeApi"
+Cohesion: 0.13
+Nodes (15): Body, HttpMessageHandler, HttpStatusCode, Key, CancellationToken, Dictionary, Func, HttpRequestMessage (+7 more)
 
 ### Community 101 - "Wardkitten.Worker"
 Cohesion: 0.25
 Nodes (7): DOTNET_ENVIRONMENT, profiles, Wardkitten.Worker, $schema, commandName, dotnetRunMessages, environmentVariables
 
-### Community 102 - "🐾 Wardkitten"
-Cohesion: 0.29
-Nodes (5): Arquitectura, Cómo funciona, Desarrollo, Planes y créditos, 🐾 Wardkitten
+### Community 102 - ".Build"
+Cohesion: 0.24
+Nodes (11): CancellationToken, DateTime, Dictionary, Fact, InlineData, List, Task, Theory (+3 more)
 
 ### Community 103 - "F14 — Endpoints MCP (Model Context Protocol)"
 Cohesion: 0.29
@@ -597,8 +625,8 @@ Cohesion: 0.29
 Nodes (6): Directivas de documentación — Wardkitten, Estructura, Ficha de feature (`docs/features/FXX-nombre/overview.md`), Principios, Reglas para agentes, Sistema de numeración de features
 
 ### Community 105 - "SignalRWatchEventPublisher"
-Cohesion: 0.48
-Nodes (4): IHubContext, CancellationToken, Task, SignalRWatchEventPublisher
+Cohesion: 0.25
+Nodes (7): Hub, IHubContext, CancellationToken, Task, SignalRWatchEventPublisher, Task, WatchHub
 
 ### Community 106 - "StatusView.razor"
 Cohesion: 0.29
@@ -612,9 +640,9 @@ Nodes (4): CancellationToken, Plan, Task, IPaymentGateway
 Cohesion: 0.33
 Nodes (5): DateTime, MaintenanceWindow, EndUtc, Reason, StartUtc
 
-### Community 109 - "Wardkitten.Api.RealTime"
-Cohesion: 0.33
-Nodes (4): Wardkitten.Api.RealTime, Hub, Task, WatchHub
+### Community 109 - "OnboardingHelpersTests"
+Cohesion: 0.18
+Nodes (8): IEnumerable, List, TimeSpan, TimeZoneInfo, TimeZoneOption, TimeZoneOptions, Fact, OnboardingHelpersTests
 
 ### Community 110 - "ADR · Apps móviles nativas en lugar de MAUI"
 Cohesion: 0.33
@@ -624,29 +652,33 @@ Nodes (6): ADR · Apps móviles nativas en lugar de MAUI, Alternativa descartada
 Cohesion: 0.33
 Nodes (5): Cuándo, Cómo ejecutarlo, El problema, Futura mejora — NSwag: operationIds estables, La idea
 
-### Community 112 - "1. WEB (Blazor WASM) — la más sencilla"
-Cohesion: 0.33
-Nodes (6): 1.1 Probar en local, 1.2 Publicar la imagen a GHCR (automático con CI), 1.3 Desplegar en Kubernetes, 1.4 Dominios y orígenes, 1.5 Verificación, 1. WEB (Blazor WASM) — la más sencilla
+### Community 112 - "OnboardingPagesTests"
+Cohesion: 0.23
+Nodes (7): Home, OnboardingLayout, RenderFragment, Fact, IRenderedComponent, NavigationManager, OnboardingPagesTests
 
 ### Community 113 - "4. iOS y watchOS"
 Cohesion: 0.33
 Nodes (6): 4.1 Requisito previo, 4.2 Certificados, 4.3 Archivar y subir, 4.4 TestFlight, 4.5 Requisitos de ficha, 4. iOS y watchOS
 
-### Community 114 - ".WithConfiguration_UsesConfiguredValues"
-Cohesion: 0.53
-Nodes (4): IOptions, MongoSettings, Fact, MongoSettingsRegistrationTests
+### Community 114 - "TelegramLinkCodeDto"
+Cohesion: 0.16
+Nodes (10): BunitContext, DateTime, TelegramLinkCodeDto, TelegramStatusDto, Func, Task, WebTestBase, Api (+2 more)
 
 ### Community 115 - "Wardkitten.Application"
-Cohesion: 0.33
-Nodes (6): Es.Nimita.Domain.Primitives (26.7.5), Microsoft.Extensions.DependencyInjection.Abstractions (10.0.10), Microsoft.Extensions.Logging.Abstractions (10.0.10), Microsoft.Extensions.Options (10.0.10), Wardkitten.Application, Microsoft.NET.Sdk
+Cohesion: 0.18
+Nodes (14): Es.Nimita.Domain.Primitives (26.7.5), Microsoft.Extensions.DependencyInjection.Abstractions (10.0.10), Microsoft.Extensions.Hosting (10.0.10), Microsoft.Extensions.Logging.Abstractions (10.0.10), Microsoft.Extensions.Options (10.0.10), NCrontab (3.4.0), Microsoft.NET.Sdk.Worker, Wardkitten.Application (+6 more)
 
-### Community 116 - "QuietHours"
-Cohesion: 0.33
-Nodes (4): DateTime, QuietHours, EndMinute, StartMinute
+### Community 116 - "EscalationPolicy"
+Cohesion: 0.17
+Nodes (14): IEscalationPolicyRepository, List, TimeSpan, EscalationPolicy, Name, Steps, UserId, EscalationStep (+6 more)
 
 ### Community 117 - "UserRepository"
-Cohesion: 0.53
-Nodes (3): CancellationToken, Task, UserRepository
+Cohesion: 0.33
+Nodes (5): CancellationToken, Task, CancellationToken, Task, UserRepository
+
+### Community 118 - "IUserRepository"
+Cohesion: 0.37
+Nodes (9): IUserRepository, CancellationToken, DateTime, Fact, List, Task, User, Harness (+1 more)
 
 ### Community 119 - "ToDo — Wardkitten"
 Cohesion: 0.33
@@ -668,29 +700,141 @@ Nodes (3): Iconos (front), Publicar nueva versión (K8S deploy), Wardkitten
 Cohesion: 0.50
 Nodes (4): ChargeOutcome, Charged, Free, InsufficientFunds
 
-### Community 127 - "Wardkitten.Domain"
-Cohesion: 0.67
-Nodes (3): NCrontab (3.4.0), Wardkitten.Domain, Microsoft.NET.Sdk
+### Community 125 - "TelegramLinkService"
+Cohesion: 0.22
+Nodes (7): SecureTokenGenerator, CancellationToken, IEnumerable, Task, TimeSpan, TelegramLinkService, IsConfigured
+
+### Community 127 - ".CreateAsync"
+Cohesion: 0.25
+Nodes (8): GeneratedRegex, Regex, CancellationToken, IReadOnlyList, List, Task, StatusPageService, StatusPageView
+
+### Community 128 - "Wardkitten.Domain.Billing"
+Cohesion: 0.11
+Nodes (7): Wardkitten.Domain.Teams, Wardkitten.Domain.StatusPages, Wardkitten.Domain.Common, Wardkitten.Domain.Billing, Wardkitten.Infrastructure.Mongo, CreditLots, CollectionNames
+
+### Community 138 - "OnboardingService"
+Cohesion: 0.33
+Nodes (7): IEndpointRouteBuilder, OnboardingEndpoints, CancellationToken, ChannelBinding, IReadOnlyList, Task, OnboardingService
+
+### Community 139 - "AlertDelivery"
+Cohesion: 0.14
+Nodes (14): AlertDelivery, Channel, CreditsCharged, Destination, Error, EscalationStep, ProviderMessageId, SentAtUtc (+6 more)
+
+### Community 140 - "OnboardingProgress"
+Cohesion: 0.19
+Nodes (6): IReadOnlyList, Task, OnboardingProgress, Current, Furthest, Task
+
+### Community 141 - "RefreshToken"
+Cohesion: 0.22
+Nodes (10): IRefreshTokenRepository, DateTime, RefreshToken, CreatedByIp, ExpiresAtUtc, ReplacedByTokenHash, RevokedAtUtc, TokenHash (+2 more)
+
+### Community 142 - "CheckIn"
+Cohesion: 0.17
+Nodes (12): DateTime, CheckIn, DurationMs, Kind, Payload, ReceivedAtUtc, RemoteIp, Source (+4 more)
+
+### Community 143 - "MongoRepository"
+Cohesion: 0.33
+Nodes (6): FilterDefinition, CancellationToken, IMongoCollection, IReadOnlyList, Task, MongoRepository
+
+### Community 144 - "Task"
+Cohesion: 0.29
+Nodes (3): CancellationToken, CancellationTokenSource, Task
+
+### Community 145 - ".Hace_IsHumanReadable"
+Cohesion: 0.22
+Nodes (4): DateTime, DateTime, InlineData, Theory
+
+### Community 146 - "PingTestModeTests"
+Cohesion: 0.38
+Nodes (3): DateTime, Fact, PingTestModeTests
+
+### Community 147 - ".ProbeDuringCreation_DoesNotCount_AndItsUrlBecomesTheRealOne"
+Cohesion: 0.33
+Nodes (6): IMongoRunner, ServiceProvider, PingRequest, Fact, Task, PingTestBenchTests
+
+### Community 148 - "OnboardingLayout.razor"
+Cohesion: 0.22
+Nodes (8): CascadingValue, Dispose, OnInitialized, OnProgressChanged, LayoutComponentBase, NavigationManager, WardkittenApiClient, SkipAllAsync
+
+### Community 149 - "F05.05 — Vinculación de Telegram por deep link"
+Cohesion: 0.22
+Nodes (9): Configuración (variables de entorno), Dependencias / Sub-features, Descripción, Elementos UI, Endpoints, F05.05 — Vinculación de Telegram por deep link, Metadata, Modelo de datos (MongoDB, `users`) (+1 more)
+
+### Community 150 - "Wardkitten.Web.Tests"
+Cohesion: 0.22
+Nodes (9): bunit (2.11.3), Wardkitten.Web.Tests, coverlet.collector (10.0.1), Microsoft.NET.Test.Sdk (18.8.1), NSubstitute (5.3.0), Shouldly (4.3.0), xunit (2.9.3), xunit.runner.visualstudio (3.1.5) (+1 more)
+
+### Community 151 - "F01.04 — Asistente de bienvenida (onboarding)"
+Cohesion: 0.25
+Nodes (8): Dependencias / Sub-features, Descripción, Elementos UI, Endpoints, F01.04 — Asistente de bienvenida (onboarding), Metadata, Modelo de datos (MongoDB, `users`), Reglas de negocio
+
+### Community 152 - "IClock"
+Cohesion: 0.32
+Nodes (7): DateTime, IClock, UtcNow, SystemClock, UtcNow, IReadOnlyDictionary, ChannelTestService
+
+### Community 153 - ".Load"
+Cohesion: 0.54
+Nodes (3): IReadOnlyList, IntervalPreset, IntervalPresets
+
+### Community 154 - "F05.06 — Envío de prueba por un canal"
+Cohesion: 0.29
+Nodes (7): Dependencias, Descripción, Elementos UI, Endpoints, F05.06 — Envío de prueba por un canal, Metadata, Reglas de negocio
+
+### Community 155 - "CheckInSource"
+Cohesion: 0.29
+Nodes (7): CheckInSource, App, Email, Http, Sms, System, Telegram
+
+### Community 156 - ".Current"
+Cohesion: 0.33
+Nodes (3): BrowserLocale, InlineData, Theory
+
+### Community 157 - "Welcome.razor"
+Cohesion: 0.33
+Nodes (5): ChannelTestButton, route:/welcome, PageTitle, PingTestBench, StepActions
+
+### Community 159 - "CreditTransactionType"
+Cohesion: 0.33
+Nodes (6): CreditTransactionType, Adjustment, AutoTopUp, Consumption, Refund, TopUp
+
+### Community 160 - "F02.05 — Canales por defecto del usuario"
+Cohesion: 0.40
+Nodes (5): Descripción, Endpoints, F02.05 — Canales por defecto del usuario, Metadata, Reglas de negocio (`ChannelBindingRules`)
+
+### Community 161 - "TelegramUpdateOutcome"
+Cohesion: 0.40
+Nodes (5): TelegramUpdateOutcome, Ignored, InvalidCode, Linked, MissingCode
+
+### Community 162 - "WizardStep"
+Cohesion: 0.40
+Nodes (5): WizardStep, Channels, Done, FirstWatch, Profile
+
+### Community 163 - ".Main"
+Cohesion: 0.50
+Nodes (3): App, HeadOutlet, Task
+
+### Community 164 - "PingResolution"
+Cohesion: 0.50
+Nodes (4): PingResolution, NotFound, Recorded, Test
 
 ## Knowledge Gaps
-- **678 isolated node(s):** `Ok`, `Late`, `Failing`, `Paused`, `PackageDescription` (+673 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 906 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **810 isolated node(s):** `Ok`, `Late`, `Failing`, `Paused`, `PackageDescription` (+805 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1115 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Watch` connect `Watch` to `MongoRepository`, `CheckIn`, `MongoContext`, `PingProbe`, `StatusPage`, `ChannelType`, `.GetByIdAsync`, `.CreateAsync`, `INotificationChannel`, `WardkittenMcpTools`, `.ToDto`, `Subscription`, `Severity`, `Wardkitten.Domain.Common`, `.EvaluateWatchAsync`, `Schedule`, `Tolerance`, `IWatchEventPublisher`, `IncidentService`, `HttpWatchEventPublisher`, `WatchStatus`, `ChannelBinding`, `SignalRWatchEventPublisher`, `MaintenanceWindow`?**
-  _High betweenness centrality (0.086) - this node is a cross-community bridge._
-- **Why does `Wardkitten.Domain.Watches` connect `Wardkitten.Domain.Watches` to `MongoRepository`, `.AddWardkittenInfrastructure`, `Wardkitten.Application.Abstractions.Persistence`, `WatchdogEndToEndTests.cs`, `Wardkitten.Domain.Identity`, `.ToDto`, `CreditTransaction`, `Severity`, `Wardkitten.Application.Services`, `Wardkitten.Domain.Common`, `NotificationMessage`, `Wardkitten.Web/_Imports.razor`, `Schedule`, `Tolerance`, `WatchTemplateCatalog`, `Wardkitten.Shared.UI.Auth`, `IChannelRateRepository`, `WatchStatus`, `MaintenanceWindow`, `QuietHours`, `ScheduleTests`, `Wardkitten.Tests.Domain`?**
-  _High betweenness centrality (0.068) - this node is a cross-community bridge._
-- **Why does `User` connect `User` to `Wardkitten.Domain.Identity`, `MongoContext`, `.ToDto`, `.ReplaceAsync`, `Subscription`, `ChannelType`, `IPaymentGateway`, `.AddWardkittenInfrastructure`, `StripePaymentGateway`, `UserRepository`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+- **Why does `Welcome` connect `Welcome` to `ChannelBinding`, `WizardStep`, `Task`, `FakeApi`, `WardkittenApiClient`, `ChannelType`, `OnboardingProgress`, `OnboardingHelpersTests`, `PingTestBench`, `OnboardingPagesTests`, `WelcomeTests`, `TelegramLinkCodeDto`, `Wardkitten.Domain.CheckIns`, `.Wizard_Profile_Channels_Test_FirstPingMonitor_AndComplete`, `.Load`?**
+  _High betweenness centrality (0.095) - this node is a cross-community bridge._
+- **Why does `Wardkitten.Domain.Watches` connect `Wardkitten.Domain.Watches` to `Wardkitten.Domain.Billing`, `ChannelBinding`, `Wardkitten.Domain.Identity`, `Watch`, `PingTestStateDto`, `Wardkitten.Application.Services`, `MaintenanceWindow`, `Wardkitten.Application.Abstractions.Persistence`, `Wardkitten.Domain.CheckIns`, `.Wizard_Profile_Channels_Test_FirstPingMonitor_AndComplete`, `NotificationMessage`, `Schedule`, `Tolerance`, `Wardkitten.Application.RealTime`, `Severity`?**
+  _High betweenness centrality (0.085) - this node is a cross-community bridge._
+- **Why does `Watch` connect `Watch` to `CancellationToken`, `Wardkitten.Domain.Billing`, `MongoContext`, `ChannelType`, `PingProbeService`, `PingTestModeTests`, `Result`, `Incident`, `Severity`, `Wallet`, `.EvaluateWatchAsync`, `Schedule`, `Tolerance`, `ChannelBinding`, `.ToDto`, `IWatchRepository`, `HttpWatchEventPublisher`, `CancellationToken`, `SignalRWatchEventPublisher`, `MaintenanceWindow`, `IUserRepository`, `.CreateAsync`?**
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `Watch` (e.g. with `.FullWatchdogLoop_OnRealMongo()` and `.BreachedWatch_OpensIncidentAndAlertsOnce()`) actually correct?**
   _`Watch` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Ok`, `Late`, `Failing` to the rest of the system?**
-  _678 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `MongoRepository` be split into smaller, more focused modules?**
-  _Cohesion score 0.05396825396825397 - nodes in this community are weakly interconnected._
-- **Should `CheckIn` be split into smaller, more focused modules?**
-  _Cohesion score 0.06009783368273934 - nodes in this community are weakly interconnected._
+  _810 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Watch` be split into smaller, more focused modules?**
+  _Cohesion score 0.06765327695560254 - nodes in this community are weakly interconnected._
+- **Should `MongoContext` be split into smaller, more focused modules?**
+  _Cohesion score 0.09 - nodes in this community are weakly interconnected._

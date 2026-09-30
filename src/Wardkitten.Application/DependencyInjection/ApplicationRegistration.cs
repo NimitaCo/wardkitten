@@ -32,6 +32,9 @@ public static class ApplicationRegistration
         services.AddSingleton<BillingService>();
         services.AddSingleton<StatusPageService>();
         services.AddSingleton<TeamService>();
+        services.AddSingleton<OnboardingService>();
+        services.AddSingleton<ChannelTestService>();
+        services.AddSingleton<TelegramLinkService>();
         services.AddSingleton<NotificationDispatcher>();
         services.AddSingleton<INotificationDispatcher>(sp => sp.GetRequiredService<NotificationDispatcher>());
         services.AddSingleton<EvaluationEngine>();

@@ -22,6 +22,8 @@ data:
   SMTP_PORT: "587"
   SMTP_FROM: "noreply@wardkitten.com"
   SMTP_FROM_NAME: "Wardkitten"
+  # Usuario del bot de Telegram (sin @) para el deep link de vinculación t.me/<bot>?start=<código> (F05.05).
+  TELEGRAM_BOT_USERNAME: ""
   # Stripe: los price IDs NO son secretos (van en cliente). Solo SECRET_KEY/WEBHOOK_SECRET son sensibles.
   STRIPE_PRICE_PRO: "price_1ToKobBwCubRzMH5DFj5JG5a"
   STRIPE_PRICE_TEAM: "price_1ToKpRBwCubRzMH53YcJwKit"
@@ -46,6 +48,7 @@ stringData:
   SMTP_USER: ""
   SMTP_PASSWORD: ""
   TELEGRAM_BOT_TOKEN: ""
+  TELEGRAM_WEBHOOK_SECRET: ""        # cabecera X-Telegram-Bot-Api-Secret-Token de /telegram/webhook (F05.05)
   FCM_SERVICE_ACCOUNT_JSON: ""
   TWILIO_ACCOUNT_SID: ""
   TWILIO_AUTH_TOKEN: ""

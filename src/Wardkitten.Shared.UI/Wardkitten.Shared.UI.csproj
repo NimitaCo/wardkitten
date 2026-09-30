@@ -19,4 +19,9 @@
     <ProjectReference Include="..\Wardkitten.Shared.Contracts\Wardkitten.Shared.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- La lógica del code-behind (internal) se prueba con bUnit. -->
+    <InternalsVisibleTo Include="Wardkitten.Web.Tests" />
+  </ItemGroup>
+
 </Project>

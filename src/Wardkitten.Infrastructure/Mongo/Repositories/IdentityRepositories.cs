@@ -16,6 +16,10 @@ public sealed class UserRepository : MongoRepository<User>, IUserRepository
     public async Task<User?> GetByStripeCustomerIdAsync(string stripeCustomerId, CancellationToken ct = default)
         => await Collection.Find(Builders<User>.Filter.Eq(u => u.StripeCustomerId, stripeCustomerId))
                            .FirstOrDefaultAsync(ct);
+
+    public async Task<User?> GetByTelegramLinkCodeHashAsync(string codeHash, CancellationToken ct = default)
+        => await Collection.Find(Builders<User>.Filter.Eq(u => u.TelegramLinkCodeHash, codeHash))
+                           .FirstOrDefaultAsync(ct);
 }
 
 public sealed class RefreshTokenRepository : MongoRepository<RefreshToken>, IRefreshTokenRepository

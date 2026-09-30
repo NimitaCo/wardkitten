@@ -20,5 +20,6 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/Wardkitten.Tests/Wardkitten.Tests.csproj" />
+    <Project Path="test/Wardkitten.Web.Tests/Wardkitten.Web.Tests.csproj" />
   </Folder>
 </Solution>

@@ -16,13 +16,15 @@ src/Wardkitten.Domain          # entidades, value objects, reglas, interfaces (s
 src/Wardkitten.Application      # casos de uso y servicios (scheduling, evaluación, wallet, billing, alertas, auth)
 src/Wardkitten.Infrastructure   # Mongo, Stripe, Twilio, Telegram, FCM, SMTP (implementa interfaces de Application/Domain)
 src/Wardkitten.Shared.Contracts # DTOs compartidos API <-> clientes
-src/Wardkitten.Shared.UI        # componentes Razor compartidos (web + móvil)
+src/Wardkitten.Shared.UI        # componentes Razor y cliente de la API de la web (las apps móviles son nativas y no lo usan)
 src/Wardkitten.Api              # ASP.NET Core API + SignalR + hosting del WASM
 src/Wardkitten.Worker           # motor de evaluación (BackgroundService)
 src/Wardkitten.Web              # Blazor WebAssembly
 mobile/ios                      # Apps nativas iOS + watchOS (SwiftUI)
 mobile/android                  # Apps nativas Android + Wear OS (Kotlin/Compose)
-test/Wardkitten.Tests           # unit + integration
+test/Wardkitten.Tests           # unit (dominio, aplicación, infraestructura)
+test/Wardkitten.Web.Tests       # bUnit: componentes y code-behind de la web (Web + Shared.UI)
+test/Wardkitten.IntegrationTests # EphemeralMongo + API en TestServer (fuera de la .slnx: `dotnet test test/Wardkitten.IntegrationTests`)
 ```
 
 ## Ramas y entornos

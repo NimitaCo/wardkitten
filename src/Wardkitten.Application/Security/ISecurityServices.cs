@@ -36,4 +36,13 @@ public static class SecureTokenGenerator
         var n = RandomNumberGenerator.GetInt32(0, max);
         return n.ToString(new string('0', digits));
     }
+
+    private const string LinkCodeAlphabet = "abcdefghjkmnpqrstuvwxyz23456789";
+
+    /// <summary>
+    /// Código corto sin caracteres ambiguos (sin 0/o, 1/l/i) para teclearlo o pegarlo en un chat: 12 símbolos
+    /// de 31 ≈ 59 bits. Se usa en el deep link de Telegram (<c>/start &lt;código&gt;</c>), que admite [A-Za-z0-9_-].
+    /// </summary>
+    public static string LinkCode(int length = 12)
+        => new(RandomNumberGenerator.GetItems<char>(LinkCodeAlphabet, length));
 }

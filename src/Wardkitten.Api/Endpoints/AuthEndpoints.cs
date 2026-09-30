@@ -81,6 +81,23 @@ public static class AuthEndpoints
             return r.Success ? Results.NoContent() : Results.BadRequest(new { error = r.Error });
         }).RequireAuthorization();
 
+        // ---- Vinculación de Telegram por deep link (F05.05). El webhook público está en PublicEndpoints. ----
+        g.MapPost("/telegram/link-code", async (ClaimsPrincipal principal, TelegramLinkService telegram, CancellationToken ct) =>
+        {
+            var r = await telegram.CreateLinkCodeAsync(principal.UserId()!, ct);
+            return r.Success
+                ? Results.Ok(new TelegramLinkCodeDto(r.Value!.Code, r.Value.DeepLink, r.Value.ExpiresAtUtc))
+                : Results.BadRequest(new { error = r.Error });
+        }).RequireAuthorization().RequireRateLimiting("auth");
+
+        g.MapGet("/telegram/status", async (ClaimsPrincipal principal, TelegramLinkService telegram, CancellationToken ct) =>
+            Results.Ok(new TelegramStatusDto(await telegram.IsLinkedAsync(principal.UserId()!, ct))))
+            .RequireAuthorization();
+
+        g.MapPost("/telegram/unlink", async (ClaimsPrincipal principal, TelegramLinkService telegram, CancellationToken ct) =>
+            (await telegram.UnlinkAsync(principal.UserId()!, ct)).Success ? Results.NoContent() : Results.NotFound())
+            .RequireAuthorization();
+
         // Registro del token de push (FCM) de un dispositivo móvil. Feature: F09.
         g.MapPost("/push-tokens", async (ClaimsPrincipal principal, PushTokenRequest req, IUserRepository users, CancellationToken ct) =>
         {

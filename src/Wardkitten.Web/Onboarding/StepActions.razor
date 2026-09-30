@@ -1,0 +1,21 @@
+@* Feature: F01.04 — botonera de cada paso del asistente: «Continuar» y «Saltar este paso» con su consecuencia. *@
+@if (Error is not null)
+{
+    <div class="alert alert-danger py-2 mt-3 mb-0" role="alert">@Error</div>
+}
+<div class="wk-step-actions">
+    <div class="wk-step-skip">
+        <button type="button" class="btn btn-link px-0" @onclick="OnSkip" disabled="@Busy">Saltar este paso</button>
+        <div class="small text-muted">@SkipConsequence</div>
+    </div>
+    <button type="button" class="btn btn-primary" @onclick="OnContinue" disabled="@Busy">@(Busy ? "Guardando…" : ContinueText)</button>
+</div>
+
+@code {
+    [Parameter] public bool Busy { get; set; }
+    [Parameter] public string? Error { get; set; }
+    [Parameter] public string ContinueText { get; set; } = "Continuar";
+    [Parameter] public string SkipConsequence { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnContinue { get; set; }
+    [Parameter] public EventCallback OnSkip { get; set; }
+}
