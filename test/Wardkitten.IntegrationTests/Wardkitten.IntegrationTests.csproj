@@ -10,6 +10,8 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.0.1" />
     <PackageReference Include="EphemeralMongo" Version="3.2.0" />
+    <!-- Tests HTTP de la API completa (onboarding, webhook de Telegram) sobre TestServer. -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
@@ -26,6 +28,7 @@
     <ProjectReference Include="..\..\src\Wardkitten.Infrastructure\Wardkitten.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Wardkitten.Application\Wardkitten.Application.csproj" />
     <ProjectReference Include="..\..\src\Wardkitten.Domain\Wardkitten.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Wardkitten.Api\Wardkitten.Api.csproj" />
   </ItemGroup>
 
 </Project>
