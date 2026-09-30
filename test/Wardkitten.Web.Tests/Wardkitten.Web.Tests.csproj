@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <RootNamespace>Wardkitten.Web.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bunit" Version="2.11.3" />
+    <PackageReference Include="coverlet.collector" Version="10.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="Shouldly" Version="4.3.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Referencias directas a los proyectos que muta Stryker (ver AGENTS.md). -->
+    <ProjectReference Include="..\..\src\Wardkitten.Web\Wardkitten.Web.csproj" />
+    <ProjectReference Include="..\..\src\Wardkitten.Shared.UI\Wardkitten.Shared.UI.csproj" />
+    <ProjectReference Include="..\..\src\Wardkitten.Shared.Contracts\Wardkitten.Shared.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

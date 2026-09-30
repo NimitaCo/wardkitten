@@ -63,6 +63,7 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
     private string? _savedTokenParam;
     private bool _paramsApplied;
     private bool _historyPending;
+    private DateTime _lastHistoryRefreshUtc = DateTime.MinValue;
     private CancellationTokenSource? _pollCts;
 
     /// <summary>Banco en curso: el padre lo manda como <c>PingProbeId</c> al guardar para adoptar la URL.</summary>
@@ -157,6 +158,7 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
     internal async Task RefreshHistoryAsync()
     {
         if (string.IsNullOrEmpty(_watchId)) return;
+        _lastHistoryRefreshUtc = DateTime.UtcNow;
         var r = await Api.GetCheckInsAsync(_watchId);
         if (!r.Ok || r.Value is null) return;
         Hits = r.Value.Select(c => new PingTestHitDto(c.ReceivedAtUtc, c.Kind, c.Source, true, null, null, null, null)).ToList();
@@ -182,7 +184,12 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
         return false;
     }
 
-    internal TimeSpan CurrentPollInterval => Test is not null ? TestPollInterval : HistoryPollInterval;
+    /// <summary>
+    /// ¿Toca refrescar? Con prueba en curso, en cada tic; si solo se mira el histórico real, cada
+    /// <see cref="HistoryPollInterval"/>. El tic es el intervalo rápido para que una prueba recién abierta
+    /// empiece a refrescarse enseguida.
+    /// </summary>
+    internal bool IsPollDue(DateTime nowUtc) => Test is not null || nowUtc - _lastHistoryRefreshUtc >= HistoryPollInterval;
 
     private async Task PollLoopAsync(CancellationToken ct)
     {
@@ -190,7 +197,8 @@ public partial class PingTestBench : ComponentBase, IAsyncDisposable
         {
             while (!ct.IsCancellationRequested)
             {
-                await Task.Delay(CurrentPollInterval, ct);
+                await Task.Delay(TestPollInterval, ct);
+                if (!IsPollDue(DateTime.UtcNow)) continue;
                 if (await PollOnceAsync()) await InvokeAsync(StateHasChanged);
             }
         }
