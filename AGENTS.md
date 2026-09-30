@@ -37,7 +37,14 @@ test/Wardkitten.IntegrationTests # EphemeralMongo + API en TestServer (fuera de 
 
 ## Publicar nueva versión (K8S deploy)
 
-> **⚠️ Sincronización de manifiestos K8S (temporal, hasta nueva orden):** los YAML de `K8S/` (`produccion/` y `preproduccion/`) deben mantenerse **a la vez** en este repo **y** en el repo de infraestructura (`Avanware/infra/Clusters/C/misc/wardkitten/wardkitten.yaml`). Temporalmente es **infra** quien los publica (ArgoCD app `infra`, sync recursivo de `Clusters/C/`); todo cambio en un manifiesto de `K8S/` hay que replicarlo en su copia de infra o no se desplegará.
+> **Dónde corre producción (actualizado 2026-09-30):** en el NAS `vault` con Synology Container
+> Manager (`compose.synology.yml`, imagen `:latest`), detrás del Traefik de
+> `NimitaCo/Infrastructure/deploy/nas/traefik` (enruta `www.wardkitten.com` y `api.wardkitten.com`).
+> Los despliegues NimitaCo se retiraron de `Avanware/infra` (commit `e648bed`): **ya no hay ArgoCD
+> que sincronice `K8S/`**. Los manifiestos `K8S/` quedan como referencia y el workflow sigue fijando
+> el tag en `K8S/produccion/`, pero eso no despliega nada. **Para desplegar:** tras el merge a `main`,
+> CI publica `:N` y `:latest`; en Container Manager → Proyecto `wardkitten` → «Compilar/Actualizar»
+> para que haga pull de `latest` y recree los contenedores (API y worker).
 
 La imagen Docker se etiqueta con el número de build del workflow de CI. `wardkitten` y
 `wardkitten-worker` tienen numeraciones independientes. **La imagen `wardkitten` empaqueta y sirve
@@ -56,8 +63,8 @@ git add K8S/ && git commit -m "K8S deploy wardkitten:$NEW" && git push
 ```
 
 Imágenes: `ghcr.io/nimitaco/wardkitten` y `ghcr.io/nimitaco/wardkitten-worker`. Pull secret:
-`nimitaco.ghcr.io` (el `dockerconfigjson`; debe tener acceso de lectura a `ghcr.io/nimitaco`). Entornos en `K8S/produccion/` y `K8S/preproduccion/`. Despliegue por ArgoCD;
-se considera completo con `sync == Synced` y `health == Healthy`.
+`nimitaco.ghcr.io` (el `dockerconfigjson`; debe tener acceso de lectura a `ghcr.io/nimitaco`). Entornos en `K8S/produccion/` y `K8S/preproduccion/` (referencia; el despliegue
+real es el del NAS, ver la nota de arriba).
 
 Dominio canónico de la web: `www.wardkitten.com` (la API sirve WASM + API same-origin);
 `app.wardkitten.com` redirige (308) a `www`. `api.wardkitten.com` sigue sirviendo la API.
