@@ -1,0 +1,139 @@
+@* Feature: F03.03 — banco de pruebas de la URL de ping. Lógica en PingTestBench.razor.cs. *@
+@if (Active)
+{
+    <div class="card border-primary-subtle mb-3 wk-ping-bench">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <div>
+                    <h2 class="h6 mb-0">@Title</h2>
+                    <small class="text-muted">@Subtitle</small>
+                </div>
+                @if (Test is not null)
+                {
+                    <div class="d-flex gap-2">
+                        @if (Test.Mode == PingProbeMode.DryRun && Test.TestModeUntilUtc is null)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="StartTestAsync" disabled="@Busy">Reanudar prueba</button>
+                        }
+                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="StopTestAsync" disabled="@Busy">Terminar prueba</button>
+                    </div>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="StartTestAsync" disabled="@Busy">
+                        @(HasSavedUrl ? "Probar sin que cuente" : "Obtener URL de prueba")
+                    </button>
+                }
+            </div>
+
+            @if (PingUrl is { Length: > 0 } url)
+            {
+                <div class="input-group input-group-sm mb-1">
+                    <input class="form-control font-monospace" readonly value="@url" aria-label="URL de ping" />
+                    <button type="button" class="btn btn-outline-secondary" @onclick="() => CopyAsync(url)">@(Copied ? "¡Copiada!" : "Copiar")</button>
+                </div>
+                <p class="small text-muted mb-2">
+                    <code>curl -fsS @url</code> · variantes <code>/start</code> y <code>/fail</code>.
+                </p>
+            }
+
+            @if (Test?.Mode == PingProbeMode.DryRun)
+            {
+                @if (Test.TestModeUntilUtc is DateTime until)
+                {
+                    <div class="alert alert-warning py-2 small mb-2">
+                        <strong>Prueba en curso hasta las @Hora(until).</strong> Las solicitudes a esta URL no
+                        reinician los contadores y, mientras dure, esta vigilancia no se evalúa ni avisa.
+                        Al guardar o al terminar la prueba vuelve a contar.
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary py-2 small mb-2">
+                        La ventana de prueba ha terminado: la URL <strong>vuelve a contar</strong>.
+                        Puedes reanudarla o cerrar el panel.
+                    </div>
+                }
+            }
+            else if (Test is not null)
+            {
+                <div class="alert alert-info py-2 small mb-2">
+                    Las solicitudes que lleguen ahora <strong>no cuentan</strong>. Al guardar, esta misma URL
+                    queda como definitiva: es la que reseteará los contadores en producción.
+                </div>
+            }
+            else if (HasSavedUrl && PendingTestModeUntil is DateTime pending && pending > DateTime.UtcNow)
+            {
+                <div class="alert alert-warning py-2 small mb-2">
+                    Hay una prueba en curso hasta las @Hora(pending): esta vigilancia <strong>no está
+                    contando</strong> ni se evalúa.
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" @onclick="StartTestAsync" disabled="@Busy">Ver la prueba</button>
+                </div>
+            }
+            else if (HasSavedUrl)
+            {
+                <p class="small text-muted mb-2">
+                    Esta URL está en producción: cada solicitud confirma la tarea. Para ensayar sin que
+                    cuente, pulsa «Probar sin que cuente».
+                </p>
+            }
+
+            <p class="mb-1 small wk-ping-bench-last">
+                @if (LastHit is DateTime last)
+                {
+                    <span class="badge text-bg-success">✔</span>
+                    <span class="ms-1">Última solicitud: <strong>@Hora(last)</strong> (@Hace(last, DateTime.UtcNow))</span>
+                }
+                else if (Test is not null || (HasSavedUrl && HistoryOpen))
+                {
+                    <span class="spinner-border spinner-border-sm text-secondary" role="status"></span>
+                    <span class="ms-1 text-muted">@WaitingText</span>
+                }
+                else
+                {
+                    <span class="text-muted">Todavía no ha llegado ninguna solicitud.</span>
+                }
+            </p>
+
+            @if (Hits.Count > 0)
+            {
+                <details open="@HistoryOpen">
+                    <summary class="small">Historial de solicitudes (@Hits.Count)</summary>
+                    <div class="table-responsive mt-2" style="max-height:16rem;overflow:auto">
+                        <table class="table table-sm small align-middle mb-0">
+                            <thead>
+                                <tr><th>Hora</th><th>Tipo</th><th>Origen</th><th>IP</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var h in Hits)
+                                {
+                                    <tr>
+                                        <td class="text-nowrap">@Hora(h.ReceivedAtUtc)</td>
+                                        <td>@Tipo(h.Kind)</td>
+                                        <td class="text-nowrap">@h.Source @(h.Method is null ? null : $"({h.Method})")</td>
+                                        <td class="font-monospace">@h.RemoteIp</td>
+                                        <td>
+                                            @if (h.Counted)
+                                            {
+                                                <span class="badge text-bg-success">cuenta</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge text-bg-secondary">prueba</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            }
+
+            @if (Error is not null)
+            {
+                <div class="alert alert-danger py-2 small mb-0 mt-2">@Error</div>
+            }
+        </div>
+    </div>
+}

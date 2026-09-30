@@ -25,7 +25,7 @@ public sealed class ClientAuthService
 
     public async Task<ApiResult<UserDto>> RegisterAsync(string email, string password, string displayName, string? timeZoneId)
     {
-        var result = await _api.RegisterAsync(new RegisterRequest(email, password, displayName, timeZoneId, "es"));
+        var result = await _api.RegisterAsync(new RegisterRequest(email, password, displayName, timeZoneId, BrowserLocale.Current()));
         return await PersistAsync(result);
     }
 
