@@ -11,6 +11,9 @@ public abstract class WebTestBase : BunitContext
 
     protected FakeApi Api { get; } = new();
 
+    // Los agentes de CI son más lentos que un portátil: margen para los tests con polling.
+    static WebTestBase() => DefaultWaitTimeout = TimeSpan.FromSeconds(5);
+
     protected WebTestBase()
     {
         Services.AddSingleton(new WardkittenApiClient(new HttpClient(Api) { BaseAddress = new Uri(BaseUrl) }));
