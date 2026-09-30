@@ -20,18 +20,16 @@ public static class TimeZoneOptions
         => (offset < TimeSpan.Zero ? "-" : "+") + offset.Duration().ToString(@"hh\:mm");
 
     /// <summary>
-    /// Zona a preseleccionar: la guardada en la cuenta (el registro ya guarda la del navegador) y, si no
-    /// existe en la lista, la del navegador. Si ninguna está en la lista se añade la elegida para no perderla.
+    /// Zona a preseleccionar: la guardada en la cuenta (el registro guarda la del navegador, así que para una
+    /// cuenta nueva es la del navegador) y, si la cuenta no tiene, la del navegador. Si la elegida no está en
+    /// la lista (p. ej. ids con otro formato) se añade al principio para no perderla.
     /// </summary>
     public static string Pick(List<TimeZoneOption> options, string? saved, string? browser)
     {
-        foreach (var candidate in new[] { saved, browser })
-        {
-            if (!string.IsNullOrWhiteSpace(candidate) && options.Any(o => o.Id == candidate)) return candidate!;
-        }
-
-        var chosen = !string.IsNullOrWhiteSpace(saved) ? saved! : !string.IsNullOrWhiteSpace(browser) ? browser! : "UTC";
-        options.Insert(0, new TimeZoneOption(chosen, chosen));
+        var chosen = !string.IsNullOrWhiteSpace(saved) ? saved.Trim()
+            : !string.IsNullOrWhiteSpace(browser) ? browser.Trim()
+            : "UTC";
+        if (!options.Any(o => o.Id == chosen)) options.Insert(0, new TimeZoneOption(chosen, chosen));
         return chosen;
     }
 }

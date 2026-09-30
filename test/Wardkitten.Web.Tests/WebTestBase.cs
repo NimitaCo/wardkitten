@@ -16,4 +16,18 @@ public abstract class WebTestBase : BunitContext
         Services.AddSingleton(new WardkittenApiClient(new HttpClient(Api) { BaseAddress = new Uri(BaseUrl) }));
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
+
+    /// <summary>
+    /// Espera a que se cumpla una condición que no provoca render (p. ej. una llamada de polling):
+    /// <c>WaitForAssertion</c> de bUnit solo reevalúa cuando el componente se vuelve a pintar.
+    /// </summary>
+    protected static async Task Eventually(Func<bool> condition, int timeoutMs = 3000)
+    {
+        var until = DateTime.UtcNow.AddMilliseconds(timeoutMs);
+        while (!condition())
+        {
+            if (DateTime.UtcNow > until) throw new TimeoutException("La condición no se cumplió a tiempo.");
+            await Task.Delay(10);
+        }
+    }
 }
