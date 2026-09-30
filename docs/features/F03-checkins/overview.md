@@ -19,9 +19,16 @@ Dos modos, según haya o no URL todavía:
 | `DryRun` | Vigilancia ya guardada con URL | Ventana corta (15 min por defecto, 60 máx.) en la que su URL real **deja de contar** y la vigilancia **no se evalúa**, para que el ensayo no dispare alertas. Requiere pulsarlo explícitamente. |
 
 ## Elementos UI
-- `Pages/WatchEdit.razor`: tarjeta «🧪 Comprobar que llegan las solicitudes» con la URL (+ copiar y ejemplo
-  `curl`), la hora de la última solicitud («hace N s») y un desplegable con el historial. Refresco cada 3 s
-  mientras hay prueba en curso; cada 15 s si solo se mira el histórico real.
+- `Shared.UI/Components/PingTestBench.razor` (+ `.razor.cs`): componente reutilizable «🧪 Comprobar que llegan
+  las solicitudes» con la URL (+ copiar y ejemplo `curl`), la hora de la última solicitud («hace N s») y la
+  tabla de solicitudes (distintivos «prueba»/«cuenta»). Reserva la URL en cuanto se activa (borrador) o ensaya
+  la guardada (dry-run), refresca cada 2 s mientras hay prueba y cada 15 s si solo se mira el histórico real,
+  y cierra la prueba al desmontarse salvo que el padre la haya adoptado (`Release` / `AttachToWatchAsync`).
+  Polling, no SignalR (varias réplicas de la API sin backplane).
+- `Pages/WatchEdit.razor`: usa `PingTestBench` (mismo comportamiento; se mantiene montado para conservar la
+  URL reservada aunque se cambie de tipo y se vuelva).
+- `Pages/Welcome.razor` (asistente F01.04, paso «Tu primer monitor»): usa `PingTestBench` con la tabla abierta;
+  al crear el monitor pasa a mostrar sus check-ins reales (`GET /api/watches/{id}/checkins`).
 - `Pages/Home.razor`: distintivo 🧪 en las vigilancias con un ensayo en curso (no están contando).
 
 ## Endpoints

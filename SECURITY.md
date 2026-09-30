@@ -30,10 +30,12 @@ Tres familias de endpoints son públicas por diseño; cada una tiene su propia d
 |---|---|
 | **Ping** `/p/{token}` (+ `/start`, `/fail`) | `pingToken` = UUIDv4 **no adivinable** (128 bits). Rate-limit por token e IP. No revela existencia del watch a terceros. Un token en pruebas (F03.03) responde igual que uno real (`200`), sin distinguir para terceros si la vigilancia existe. |
 | **Webhooks** Stripe/Twilio | **Verificación de firma** obligatoria (`Stripe-Signature`, `X-Twilio-Signature`) antes de procesar. Idempotencia por event id. |
+| **Webhook de Telegram** `/telegram/webhook` (F05.05) | Cabecera `X-Telegram-Bot-Api-Secret-Token` comparada en tiempo constante con `TELEGRAM_WEBHOOK_SECRET` (sin secreto configurado, 401 a todo). Solo atiende `/start <código>`; el código es de un solo uso, hasheado y caduca en 15 min. Rate-limit `ping`. |
 | **Magic links** (ACK/Snooze/Done) | Token **firmado** (HMAC) con expiración corta y un solo uso; acción acotada al watch/incident. |
 
 - **Rate-limiting** global y por endpoint (ASP.NET Core RateLimiter). Límites más estrictos en
   login, registro, OTP, ping y recargas.
+- **Envíos a demanda** (`POST /api/onboarding/channels/test`, F05.06): rate-limit `auth`, sin canales de pago y solo a destinos que pasan `ChannelBindingRules` (las URLs deben ser `https` y no apuntar a loopback ni a rangos privados), para que no sirvan de sonda de la red interna ni de pasarela de spam.
 
 ## 4. Wallet / canales metered (anti-abuso)
 
