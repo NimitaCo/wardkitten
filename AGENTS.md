@@ -35,6 +35,25 @@ test/Wardkitten.IntegrationTests # EphemeralMongo + API en TestServer (fuera de 
 - **Commitea y pushea con frecuencia**: un commit/push sobrevive a cualquier reset del working tree;
   los cambios sin commitear, no. Si trabajas en otra rama sobre el mismo directorio, usa `git worktree`.
 
+## Despliegue en el NAS: carpeta compartida
+
+Las carpetas de los proyectos de Container Manager del NAS `vault` son accesibles desde Windows por SMB:
+
+- `\\vault.avanware.com\docker\nimita-wardkitten` (en el NAS: `/volume1/docker/nimita-wardkitten`)
+
+Contienen el `docker-compose.yml` del proyecto y su `.env` con los secretos. **Cuando un cambio afecte al
+despliegue** (variables de entorno o secretos nuevos o renombrados, puertos, servicios, volúmenes, imágenes),
+actualiza también esa carpeta, en el mismo cambio, para que el NAS lo recoja:
+
+- Antes de tocar nada, haz copia: `<fichero>.bak-AAAA-MM-DD`.
+- Los secretos van **solo** en el `.env` del NAS; el compose los referencia con `${VAR}`. Nunca en git.
+- Mantén `compose.synology.yml` del repo como copia de referencia del compose del NAS (sin secretos).
+- `/volume1/docker/update-nimita.sh` (programado en DSM) hace `pull` + `up -d` de todos los proyectos
+  `nimita-*` salvo los que tengan `.no-auto-update`. Para aplicar un cambio en el momento hay que actualizar
+  el proyecto en Container Manager (no hay SSH al NAS).
+- Enrutado público: Traefik en `\\vault.avanware.com\docker\nimita-traefik` (copia de referencia en
+  `NimitaCo/Infrastructure/deploy/nas/traefik`).
+
 ## Publicar nueva versión (K8S deploy)
 
 > **Dónde corre producción (actualizado 2026-09-30):** en el NAS `vault` con Synology Container
